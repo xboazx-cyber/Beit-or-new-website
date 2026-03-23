@@ -303,6 +303,7 @@
       .nav-right{gap:14px;}
     }
   </style>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
 
@@ -595,6 +596,7 @@
         </select>
       </div>
       <div class="form-group"><label data-i18n="form_msg"></label><textarea id="f-msg" name="message" required></textarea></div>
+      <div class="g-recaptcha" data-sitekey="6LcV3JQsAAAAALhciu-YbvBHAZU-RTcxib6BmOZt" style="margin-bottom:12px;"></div>
       <button type="submit" class="form-submit" id="form-submit-btn" data-i18n="form_submit"></button>
       <div id="form-success" style="display:none; color:#2C4A36; font-size:14px; letter-spacing:0.1em; margin-top:12px;" data-i18n="form_success"></div>
       <div id="form-error" style="display:none; color:#c0392b; font-size:14px; letter-spacing:0.1em; margin-top:12px;" data-i18n="form_error"></div>
@@ -957,6 +959,8 @@ document.getElementById('contact-form').addEventListener('submit', async functio
   const btn = document.getElementById('form-submit-btn');
   const success = document.getElementById('form-success');
   const error = document.getElementById('form-error');
+  const recaptcha = grecaptcha.getResponse();
+  if (!recaptcha) { error.style.display = 'block'; return; }
   btn.disabled = true;
   success.style.display = 'none';
   error.style.display = 'none';
@@ -969,6 +973,7 @@ document.getElementById('contact-form').addEventListener('submit', async functio
     if (res.ok) {
       success.style.display = 'block';
       this.reset();
+      grecaptcha.reset();
     } else {
       error.style.display = 'block';
     }
