@@ -614,14 +614,14 @@
         </div>
       </div>
     </div>
-    <form class="contact-form reveal" onsubmit="return false;">
+    <form class="contact-form reveal" id="contact-form">
       <div class="form-row">
-        <div class="form-group"><label data-i18n="form_fname"></label><input type="text" id="f-fname"/></div>
-        <div class="form-group"><label data-i18n="form_lname"></label><input type="text" id="f-lname"/></div>
+        <div class="form-group"><label data-i18n="form_fname"></label><input type="text" id="f-fname" name="first_name" required/></div>
+        <div class="form-group"><label data-i18n="form_lname"></label><input type="text" id="f-lname" name="last_name" required/></div>
       </div>
-      <div class="form-group"><label data-i18n="form_email"></label><input type="email" id="f-email"/></div>
+      <div class="form-group"><label data-i18n="form_email"></label><input type="email" id="f-email" name="email" required/></div>
       <div class="form-group"><label data-i18n="form_interest"></label>
-        <select id="f-interest">
+        <select id="f-interest" name="interest">
           <option value="" data-i18n="form_select"></option>
           <option data-i18n="svc1_title"></option>
           <option data-i18n="svc2_title"></option>
@@ -634,8 +634,10 @@
           <option data-i18n="svc13_title"></option>
         </select>
       </div>
-      <div class="form-group"><label data-i18n="form_msg"></label><textarea id="f-msg"></textarea></div>
-      <button type="submit" class="form-submit" data-i18n="form_submit"></button>
+      <div class="form-group"><label data-i18n="form_msg"></label><textarea id="f-msg" name="message" required></textarea></div>
+      <button type="submit" class="form-submit" id="form-submit-btn" data-i18n="form_submit"></button>
+      <div id="form-success" style="display:none; color:#2C4A36; font-size:14px; letter-spacing:0.1em; margin-top:12px;" data-i18n="form_success"></div>
+      <div id="form-error" style="display:none; color:#c0392b; font-size:14px; letter-spacing:0.1em; margin-top:12px;" data-i18n="form_error"></div>
     </form>
   </div>
 </section>
@@ -792,7 +794,7 @@ const T = {
     label_email:'אימייל', label_phone:'טלפון',
     form_fname:'שם פרטי', form_lname:'שם משפחה', form_email:'אימייל',
     form_interest:'מעוניין ב', form_select:'בחר טיפול...',
-    form_msg:'הודעה', form_submit:'שלח הודעה',
+    form_msg:'הודעה', form_submit:'שלח הודעה', form_success:'ההודעה נשלחה בהצלחה! נחזור אליך בקרוב.', form_error:'אירעה שגיאה. אנא נסה שוב.',
     footer_desc:'מקדש לריפוי הוליסטי השרוי בטבע, במסורת ובחכמה השקטה של הגוף.',
     footer_col1:'טיפולים', footer_col2:'סטודיו', footer_col3:'התחברות',
     footer_copy:'© 2025 בית אור · כל הזכויות שמורות',
@@ -881,7 +883,7 @@ const T = {
     label_email:'Email', label_phone:'Phone',
     form_fname:'First Name', form_lname:'Last Name', form_email:'Email',
     form_interest:'I am interested in', form_select:'Select an offering…',
-    form_msg:'Message', form_submit:'Send Message',
+    form_msg:'Message', form_submit:'Send Message', form_success:'Message sent successfully! We will get back to you soon.', form_error:'An error occurred. Please try again.',
     footer_desc:'A sanctuary of holistic healing rooted in nature, tradition, and the quiet wisdom of the body.',
     footer_col1:'Offerings', footer_col2:'Studio', footer_col3:'Connect',
     footer_copy:'© 2025 Beit Or · בית אור · All rights reserved',
@@ -1002,6 +1004,32 @@ function toggleMenu() {
 }
 
 // Navbar scroll
+document.getElementById('contact-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('form-submit-btn');
+  const success = document.getElementById('form-success');
+  const error = document.getElementById('form-error');
+  btn.disabled = true;
+  success.style.display = 'none';
+  error.style.display = 'none';
+  try {
+    const res = await fetch('https://formspree.io/f/maqpgkad', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: new FormData(this)
+    });
+    if (res.ok) {
+      success.style.display = 'block';
+      this.reset();
+    } else {
+      error.style.display = 'block';
+    }
+  } catch(err) {
+    error.style.display = 'block';
+  }
+  btn.disabled = false;
+});
+
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 40);
 });
