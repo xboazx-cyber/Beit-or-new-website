@@ -245,11 +245,12 @@
     .prac-role { font-size:13px; font-weight:300; letter-spacing:0.18em; color:var(--copper); text-transform:uppercase; margin-bottom:4px; }
     .prac-text p { font-size:14px; font-weight:300; line-height:2; color:var(--text-light); margin-bottom:16px; }
     @media(max-width:900px){
-      .prac-inner{grid-template-columns:1fr; display:flex; flex-direction:column;}
-      .prac-name-mobile{display:block; margin-bottom:20px; order:1;}
-      #practitioner .prac-text{order:2;}
-      #practitioner .prac-photo{order:3;}
+      .prac-inner{grid-template-columns:1fr; display:flex; flex-direction:column; gap:24px;}
+      .prac-name-mobile{display:block; margin-bottom:0; order:1;}
+      #practitioner .prac-text{order:2; margin-top:0;}
+      #practitioner .prac-photo{order:3; margin-top:0;}
       #practitioner .prac-text h2, #practitioner .prac-text .prac-role{display:none;}
+      #practitioner .prac-text .divider{margin:12px 0;}
     }
 
     /* PRACTITIONER ALT (Boaz – photo on left in LTR, right in RTL) */
