@@ -974,11 +974,13 @@ document.getElementById('contact-form').addEventListener('submit', async functio
       headers: { 'Accept': 'application/json' },
       body: formData
     });
+    const data = await res.json();
     if (res.ok) {
       success.style.display = 'block';
       this.reset();
       grecaptcha.reset();
     } else {
+      error.textContent = JSON.stringify(data);
       error.style.display = 'block';
     }
   } catch(err) {
