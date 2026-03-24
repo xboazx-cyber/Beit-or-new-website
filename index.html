@@ -64,6 +64,21 @@
   }
   </script>
 
+  <!-- FAQ Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {"@type":"Question","name":"כמה עולה טיפול דיקור סיני?","acceptedAnswer":{"@type":"Answer","text":"מחיר הטיפול משתנה בהתאם לסוג הטיפול ומשך הפגישה. צרו קשר לקבלת מידע על מחירים."}},
+      {"@type":"Question","name":"כמה טיפולים צריך עד שמרגישים שינוי?","acceptedAnswer":{"@type":"Answer","text":"רוב המטופלים מדווחים על שיפור כבר לאחר 3–5 טיפולים. מצבים כרוניים עשויים לדרוש סדרה ארוכה יותר."}},
+      {"@type":"Question","name":"האם דיקור סיני כואב?","acceptedAnswer":{"@type":"Answer","text":"המחטים דקות מאוד ורוב האנשים כמעט ולא מרגישים אותן. תחושה נפוצה היא עקצוץ קל, חום או כובד."}},
+      {"@type":"Question","name":"מה ההבדל בין שיאצו לעיסוי רגיל?","acceptedAnswer":{"@type":"Answer","text":"שיאצו הוא שיטת ריפוי מלאה המבוססת על הרפואה הסינית, עובד עם נקודות לחץ לאורך מרידיאני האנרגיה."}},
+      {"@type":"Question","name":"כיצד קובעים פגישה?","acceptedAnswer":{"@type":"Answer","text":"ניתן לפנות דרך טופס הצור קשר, בטלפון 054-5222209 או במייל xboazx@gmail.com."}}
+    ]
+  }
+  </script>
+
   <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Assistant:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -355,7 +370,13 @@
       .wa-btn{width:48px;height:48px;bottom:20px;left:20px;}
       [dir="ltr"] .wa-btn{right:20px;left:auto;}
     }
-    @media(max-width:900px){ .blog-section .container > div { grid-template-columns:1fr !important; } }
+    .faq-item { background:var(--cream); border-radius:1px; overflow:hidden; }
+    .faq-q { width:100%; background:none; border:none; padding:22px 28px; text-align:right; font-family:'Assistant',sans-serif; font-size:15px; font-weight:400; color:var(--brown-dark); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:16px; }
+    [dir="ltr"] .faq-q { text-align:left; }
+    .faq-q span { color:var(--copper); font-size:20px; transition:transform .3s; flex-shrink:0; }
+    .faq-q.open span { transform:rotate(45deg); }
+    .faq-a { max-height:0; overflow:hidden; transition:max-height .4s ease; }
+    .faq-a p { padding:0 28px 22px; font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light); }
     @media(max-width:480px){
       .services-grid{grid-template-columns:1fr;}
       .hero-actions{flex-direction:column;gap:16px;}
@@ -390,6 +411,7 @@
         <li><a href="#services" data-i18n="nav_services"></a></li>
         <li><a href="#practitioner" data-i18n="nav_team"></a></li>
         <li><a href="#philosophy" data-i18n="nav_philosophy"></a></li>
+        <li><a href="blog.html" data-i18n="nav_blog"></a></li>
         <li><a href="#contact" class="nav-cta" data-i18n="nav_cta"></a></li>
       </ul>
       <div class="nav-socials">
@@ -420,6 +442,7 @@
   <a href="#services" onclick="toggleMenu()" data-i18n="nav_services"></a>
   <a href="#practitioner" onclick="toggleMenu()" data-i18n="nav_team"></a>
   <a href="#philosophy" onclick="toggleMenu()" data-i18n="nav_philosophy"></a>
+  <a href="blog.html" onclick="toggleMenu()" data-i18n="nav_blog"></a>
   <a href="#contact" onclick="toggleMenu()" class="mobile-cta" data-i18n="nav_cta"></a>
 </div>
 
@@ -611,32 +634,12 @@
   </div>
 </section>
 
-<!-- BLOG -->
-<section class="blog-section" id="blog" style="padding:100px 0; background:var(--cream-mid);">
-  <div class="container">
-    <p class="eyebrow" style="text-align:center; margin-bottom:12px;" data-i18n="blog_eyebrow"></p>
-    <h2 style="text-align:center; font-family:'Rubik',sans-serif; font-weight:300; font-size:clamp(28px,3.5vw,42px); color:var(--brown-dark); margin-bottom:60px;" data-i18n="blog_title"></h2>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:32px;">
-
-      <article style="background:var(--cream); border-radius:2px; padding:36px 28px; border-top:2px solid var(--copper);">
-        <p class="eyebrow" style="margin-bottom:12px;" data-i18n="blog1_tag"></p>
-        <h3 style="font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:16px; line-height:1.5;" data-i18n="blog1_title"></h3>
-        <p style="font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light);" data-i18n="blog1_body"></p>
-      </article>
-
-      <article style="background:var(--cream); border-radius:2px; padding:36px 28px; border-top:2px solid var(--copper);">
-        <p class="eyebrow" style="margin-bottom:12px;" data-i18n="blog2_tag"></p>
-        <h3 style="font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:16px; line-height:1.5;" data-i18n="blog2_title"></h3>
-        <p style="font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light);" data-i18n="blog2_body"></p>
-      </article>
-
-      <article style="background:var(--cream); border-radius:2px; padding:36px 28px; border-top:2px solid var(--copper);">
-        <p class="eyebrow" style="margin-bottom:12px;" data-i18n="blog3_tag"></p>
-        <h3 style="font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:16px; line-height:1.5;" data-i18n="blog3_title"></h3>
-        <p style="font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light);" data-i18n="blog3_body"></p>
-      </article>
-
-    </div>
+<!-- FAQ -->
+<section id="faq" style="padding:100px 0; background:var(--cream-mid);">
+  <div class="container" style="max-width:800px;">
+    <p class="eyebrow" style="text-align:center; margin-bottom:12px;" data-i18n="faq_eyebrow"></p>
+    <h2 style="text-align:center; font-family:'Rubik',sans-serif; font-weight:300; font-size:clamp(28px,3.5vw,42px); color:var(--brown-dark); margin-bottom:60px;" data-i18n="faq_title"></h2>
+    <div id="faq-list" style="display:flex; flex-direction:column; gap:2px;"></div>
   </div>
 </section>
 
@@ -829,6 +832,16 @@ const T = {
     boaz_cred1:'🌿 הרבליסט קליני Cl.H. — ליקוט, גידול ורקיחת צמחי מרפא',
     boaz_cred2:'🧭 בוגר התוכנית הרב-שנתית — בית הספר ׳דרך העומק׳',
     boaz_cred3:'🎓 תואר ראשון במדעי הרוח | תואר שני בחינוך',
+    nav_blog:'בלוג',
+    faq_eyebrow:'שאלות נפוצות', faq_title:'יש לך שאלות?',
+    faqs:[
+      {q:'כמה עולה טיפול דיקור סיני?', a:'מחיר הטיפול משתנה בהתאם לסוג הטיפול ומשך הפגישה. צרו קשר ישירות לקבלת מידע על מחירים ותנאים. אנחנו מאמינים שריפוי צריך להיות נגיש.'},
+      {q:'כמה טיפולים צריך עד שמרגישים שינוי?', a:'רוב המטופלים מדווחים על שיפור כבר לאחר 3–5 טיפולים. מצבים כרוניים עשויים לדרוש סדרה ארוכה יותר. בפגישה הראשונה נבנה תוכנית טיפול מותאמת אישית.'},
+      {q:'האם דיקור סיני כואב?', a:'המחטים דקות מאוד (דקות הרבה יותר ממחט רגילה) ורוב האנשים כמעט ולא מרגישים אותן. תחושה נפוצה היא עקצוץ קל, חום או כובד — סימנים לכך שהאנרגיה מתחילה לזוז.'},
+      {q:'האם ניתן לשלב בין דיקור סיני לתרופות קונבנציונליות?', a:'כן. הרפואה הסינית עובדת בצורה מושלמת לצד הטיפול הרפואי המערבי. חשוב ליידע את המטפל על כל התרופות שאתם נוטלים.'},
+      {q:'מה ההבדל בין שיאצו לעיסוי רגיל?', a:'שיאצו הוא לא סתם עיסוי — הוא שיטת ריפוי מלאה המבוססת על הרפואה הסינית. עובדים עם נקודות לחץ ספציפיות לאורך מרידיאני האנרגיה, לא רק עם שרירים. מטרתו לאזן את מערכות הגוף מבפנים.'},
+      {q:'כיצד קובעים פגישה?', a:'ניתן לפנות אלינו דרך טופס הצור קשר באתר, בטלפון/ווצאפ 054-5222209 או במייל xboazx@gmail.com. נשמח לענות על כל שאלה ולמצוא את הזמן המתאים לכם.'}
+    ],
     blog_eyebrow:'מאמרים', blog_title:'קצת ידע לדרך',
     blog1_tag:'רפואה סינית', blog1_title:'מה זה דיקור סיני ואיך הוא עובד?', blog1_body:'דיקור סיני הוא ענף מרכזי ברפואה הסינית המסורתית, הנהוג כבר למעלה מ-2,500 שנה. הטיפול מבוסס על הכנסת מחטים דקות לנקודות ספציפיות לאורך מסלולי אנרגיה (מרידיאנים) בגוף, במטרה לשחרר חסימות ולהחזיר את זרימת האנרגיה החיונית לאיזון. דיקור סיני יעיל לכאבים כרוניים, חרדה, הפרעות שינה, בעיות עיכול ועוד.',
     blog2_tag:'שיאצו', blog2_title:'שיאצו – הריפוי שבמגע', blog2_body:'שיאצו היא שיטת עיסוי יפנית המבוססת על עקרונות הרפואה הסינית המסורתית. המטפל משתמש בלחץ אצבעות, כפות ידיים ומרפקים לאורך מרידיאני האנרגיה בגוף. הטיפול משחרר מתחים, מחזק את מערכת החיסון, מפחית כאבים ומחזיר תחושת שלמות ורוגע עמוק. מתאים לכל גיל ומצב.',
@@ -926,6 +939,16 @@ const T = {
     blog1_tag:'Chinese Medicine', blog1_title:'What is Acupuncture and How Does it Work?', blog1_body:'Acupuncture is a central branch of Traditional Chinese Medicine, practiced for over 2,500 years. Treatment involves inserting fine needles into specific points along energy pathways (meridians) in the body, releasing blockages and restoring the flow of vital energy. Acupuncture is effective for chronic pain, anxiety, sleep disorders, digestive issues and more.',
     blog2_tag:'Shiatsu', blog2_title:'Shiatsu – The Healing Power of Touch', blog2_body:'Shiatsu is a Japanese massage method based on Traditional Chinese Medicine principles. The practitioner uses finger, palm and elbow pressure along the body\'s energy meridians. Treatment releases tension, strengthens the immune system, reduces pain and restores a deep sense of wholeness and calm. Suitable for all ages and conditions.',
     blog3_tag:'Herbal Medicine', blog3_title:'Medicinal Herbs – Nature\'s Medicine', blog3_body:'Clinical herbalism is the scientific and traditional use of medicinal plants to treat a range of health conditions. At Beit Or, formulas are individually tailored to each patient after an in-depth assessment. Herbs support the immune system, regulate hormones, strengthen the nervous system and more — all from nature.',
+    nav_blog:'Blog',
+    faq_eyebrow:'FAQ', faq_title:'Do You Have Questions?',
+    faqs:[
+      {q:'How much does an acupuncture treatment cost?', a:'Prices vary depending on the type of treatment and session length. Contact us directly for pricing and terms. We believe healing should be accessible.'},
+      {q:'How many treatments until I feel a difference?', a:'Most patients report improvement after 3–5 treatments. Chronic conditions may require a longer series. In the first session we build a personalised treatment plan.'},
+      {q:'Does acupuncture hurt?', a:'The needles are very fine (much thinner than a regular needle) and most people barely feel them. Common sensations include a slight tingle, warmth or heaviness — signs that energy is beginning to move.'},
+      {q:'Can acupuncture be combined with conventional medication?', a:'Yes. Chinese medicine works perfectly alongside Western medical treatment. It is important to inform your practitioner of all medications you are taking.'},
+      {q:'What is the difference between shiatsu and a regular massage?', a:'Shiatsu is not just a massage — it is a complete healing method based on Chinese Medicine. It works with specific pressure points along the energy meridians, not just muscles. Its goal is to balance the body\'s systems from within.'},
+      {q:'How do I book an appointment?', a:'You can contact us via the contact form on the website, by phone/WhatsApp at 054-5222209 or by email at xboazx@gmail.com. We are happy to answer any questions and find the right time for you.'}
+    ],
     testi_eyebrow:'Voices', testi_title:'What People Say',
     contact_eyebrow:'Get in Touch', contact_title:'Begin your journey <em>home</em>',
     contact_body:'We would love to hear from you. Whether you have questions about a specific offering or you\'re simply feeling the pull — reach out. The first step is always the gentlest.',
@@ -969,8 +992,29 @@ function setLang(l) {
   buildStrip();
   buildServices();
   buildTestimonials();
-  // update logo name
+  buildFAQ();
   document.querySelector('.nav-logo-text').textContent = l === 'he' ? 'בית אור' : 'Beit Or';
+}
+
+function buildFAQ() {
+  const list = document.getElementById('faq-list');
+  if (!list) return;
+  list.innerHTML = T[lang].faqs.map((f,i) => `
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFAQ(${i})" id="faq-btn-${i}">
+        <span id="faq-icon-${i}">+</span>${f.q}
+      </button>
+      <div class="faq-a" id="faq-a-${i}"><p>${f.a}</p></div>
+    </div>`).join('');
+}
+
+function toggleFAQ(i) {
+  const a = document.getElementById('faq-a-'+i);
+  const btn = document.getElementById('faq-btn-'+i);
+  const isOpen = a.style.maxHeight && a.style.maxHeight !== '0px';
+  document.querySelectorAll('.faq-a').forEach(el => el.style.maxHeight = '0px');
+  document.querySelectorAll('.faq-q').forEach(el => el.classList.remove('open'));
+  if (!isOpen) { a.style.maxHeight = a.scrollHeight + 'px'; btn.classList.add('open'); }
 }
 
 function buildStrip() {
