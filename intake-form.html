@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"><link rel="icon" type="image/png" href="favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>שאלון מטופל חדש | בית אור</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&family=Assistant:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --brown-dark:#2C4A36; --copper:#6B9E62; --copper-light:#A3C49B;
+      --cream:#F5EFE6; --cream-mid:#EDE8DC; --cream-dark:#D5CBBB;
+      --text:#1E3324; --text-light:#527A5A;
+    }
+    body { font-family:'Assistant',sans-serif; background:var(--cream); color:var(--text); -webkit-font-smoothing:antialiased; }
+    .container { max-width:780px; margin:0 auto; padding:0 32px 64px; }
+
+    header { background:var(--brown-dark); padding:36px 0 32px; text-align:center; }
+    header img { width:56px; height:56px; margin-bottom:14px; display:block; margin-inline:auto; }
+    header h1 { font-family:'Rubik',sans-serif; font-weight:300; font-size:26px; color:white; margin-bottom:5px; }
+    header p { color:var(--copper-light); font-size:13px; font-weight:300; }
+
+    .intro { background:linear-gradient(135deg,#e8f0e5,#f0ece4); border-right:4px solid var(--copper); padding:18px 22px; margin:32px 0 0; border-radius:1px; }
+    .intro p { font-size:13.5px; font-weight:300; line-height:1.9; color:var(--text-light); }
+
+    .section { margin-top:44px; }
+    .section-title { font-family:'Rubik',sans-serif; font-weight:400; font-size:15px; color:var(--brown-dark); padding-bottom:9px; border-bottom:1.5px solid var(--copper-light); margin-bottom:22px; display:flex; align-items:center; gap:9px; }
+    .section-title .num { background:var(--copper); color:white; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:500; flex-shrink:0; }
+
+    .field { margin-bottom:18px; }
+    .field label { display:block; font-size:13px; font-weight:500; color:var(--text); margin-bottom:5px; }
+    .field label .opt { font-weight:300; color:var(--text-light); font-size:11.5px; }
+    .field input[type="text"],
+    .field input[type="email"],
+    .field input[type="tel"],
+    .field input[type="number"],
+    .field input[type="date"],
+    .field select,
+    .field textarea {
+      width:100%; padding:10px 13px; border:1px solid var(--cream-dark); border-radius:1px;
+      background:white; font-family:'Assistant',sans-serif; font-size:14px; color:var(--text);
+      outline:none; transition:border-color .2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--copper); }
+    .field textarea { min-height:80px; resize:vertical; line-height:1.7; }
+
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+    .row4 { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:14px; }
+
+    .radio-group, .check-group { display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+    .radio-group label, .check-group label {
+      display:flex; align-items:center; gap:6px; font-size:13px; font-weight:300;
+      color:var(--text); cursor:pointer; background:white; border:1px solid var(--cream-dark);
+      padding:6px 13px; border-radius:1px; transition:all .15s; user-select:none;
+    }
+    .radio-group input, .check-group input { accent-color:var(--copper); }
+    .radio-group label:has(input:checked), .check-group label:has(input:checked) {
+      background:var(--cream-mid); border-color:var(--copper); color:var(--brown-dark); font-weight:400;
+    }
+
+    .scale-row { display:flex; align-items:center; gap:10px; margin-top:5px; }
+    .scale-row span { font-size:12px; color:var(--text-light); white-space:nowrap; }
+    .scale-row input[type="range"] { flex:1; accent-color:var(--copper); }
+    .scale-val { font-family:'Rubik',sans-serif; font-size:15px; color:var(--copper); min-width:18px; text-align:center; }
+
+    .subsection { background:white; border:1px solid var(--cream-dark); border-radius:1px; padding:18px 20px; margin-bottom:16px; }
+    .subsection h4 { font-family:'Rubik',sans-serif; font-weight:400; font-size:13px; color:var(--brown-dark); margin-bottom:14px; border-bottom:1px solid var(--cream-dark); padding-bottom:8px; }
+
+    .note { font-size:12px; font-weight:300; color:var(--text-light); margin-top:5px; line-height:1.7; }
+
+    .submit-area { margin-top:44px; padding:32px; background:var(--brown-dark); border-radius:2px; text-align:center; }
+    .submit-area p { color:var(--copper-light); font-size:13px; margin-bottom:18px; font-weight:300; }
+    .btn-submit { display:inline-block; background:var(--copper); color:white; padding:14px 48px; font-size:11px; letter-spacing:0.24em; text-transform:uppercase; border:none; border-radius:1px; cursor:pointer; font-family:'Assistant',sans-serif; font-weight:500; transition:opacity .2s; }
+    .btn-submit:hover { opacity:.88; }
+    .btn-submit:disabled { opacity:.5; cursor:default; }
+
+    #success-msg { display:none; background:#e8f0e5; border:1px solid var(--copper); border-radius:2px; padding:32px; text-align:center; margin-top:32px; }
+    #success-msg h3 { font-family:'Rubik',sans-serif; font-weight:300; color:var(--brown-dark); margin-bottom:8px; }
+    #success-msg p { color:var(--text-light); font-size:14px; }
+
+    footer { background:var(--brown-dark); padding:22px; text-align:center; }
+    footer a { color:var(--copper-light); font-size:13px; text-decoration:none; }
+
+    @media(max-width:600px){
+      .row2,.row3,.row4 { grid-template-columns:1fr; }
+      .container { padding:0 18px 48px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="brand_assets/logos/new logo.png" alt="בית אור">
+  <h1>שאלון מטופל חדש — Intake</h1>
+  <p>בית אור | דריה פורת ובועז אור | כרמי יוסף | 054-5222209</p>
+</header>
+
+<div class="container">
+  <div class="intro">
+    <p>שאלון זה עוזר לנו להכיר אותך לפני הפגישה הראשונה. כל פרט — גם אם נראה לך קטן — עשוי להיות משמעותי. ניתן להשאיר שדות לא רלוונטיים ריקים. המידע נשמר בסודיות מלאה.</p>
+  </div>
+
+  <form id="intake-form" action="https://formspree.io/f/xbljonyw" method="POST">
+    <input type="hidden" name="_subject" value="שאלון מטופל חדש – בית אור">
+
+    <!-- 1. PERSONAL DETAILS -->
+    <div class="section">
+      <div class="section-title"><span class="num">1</span> פרטים אישיים</div>
+      <div class="row2">
+        <div class="field"><label>שם פרטי</label><input type="text" name="שם פרטי" required></div>
+        <div class="field"><label>שם משפחה</label><input type="text" name="שם משפחה" required></div>
+      </div>
+      <div class="row4">
+        <div class="field"><label>תאריך לידה</label><input type="date" name="תאריך לידה"></div>
+        <div class="field"><label>גיל</label><input type="number" name="גיל" min="1" max="120"></div>
+        <div class="field"><label>גובה (ס"מ)</label><input type="number" name="גובה" min="100" max="220"></div>
+        <div class="field"><label>משקל (ק"ג)</label><input type="number" name="משקל" min="30" max="250"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>טלפון / ווצאפ</label><input type="tel" name="טלפון" required></div>
+        <div class="field"><label>אימייל</label><input type="email" name="אימייל"></div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>מצב משפחתי</label>
+          <select name="מצב משפחתי">
+            <option value="">בחר...</option>
+            <option>רווק/ה</option><option>נשוי/אה</option><option>גרוש/ה</option>
+            <option>אלמן/ה</option><option>בזוגיות</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>מגדר</label>
+          <div class="radio-group">
+            <label><input type="radio" name="מגדר" value="זכר"> זכר</label>
+            <label><input type="radio" name="מגדר" value="נקבה"> נקבה</label>
+            <label><input type="radio" name="מגדר" value="אחר"> אחר</label>
+          </div>
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>עיסוק / מקצוע</label><input type="text" name="עיסוק"></div>
+        <div class="field"><label>תנאי עבודה <span class="opt">(שטח, משרד, עומד, יושב...)</span></label><input type="text" name="תנאי עבודה"></div>
+        <div class="field"><label>קופת חולים</label><input type="text" name="קופת חולים" placeholder="מכבי, מאוחדת, כללית, לאומית..."></div>
+      </div>
+      <div class="field">
+        <label>איך שמעת על בית אור?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="הגעה דרך" value="חבר/משפחה"> חבר / משפחה</label>
+          <label><input type="radio" name="הגעה דרך" value="גוגל"> גוגל</label>
+          <label><input type="radio" name="הגעה דרך" value="רשתות חברתיות"> רשתות חברתיות</label>
+          <label><input type="radio" name="הגעה דרך" value="מטפל אחר"> מטפל אחר</label>
+          <label><input type="radio" name="הגעה דרך" value="אחר"> אחר</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. REASON FOR TREATMENT -->
+    <div class="section">
+      <div class="section-title"><span class="num">2</span> סיבת ההגעה לטיפול</div>
+      <div class="field">
+        <label>מאפייני המחלה / הבעיה וסיבותיה <span class="opt">(תאר בחופשיות)</span></label>
+        <textarea name="תיאור הבעיה" placeholder="מה מביא אותך לטיפול? מה מפריע לך יותר מכל?"></textarea>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>מה מקל על הבעיה?</label>
+          <textarea name="מה מקל" style="min-height:60px;" placeholder="חום, מנוחה, תנועה, תרופות..."></textarea>
+        </div>
+        <div class="field">
+          <label>מה מחמיר את הבעיה?</label>
+          <textarea name="מה מחמיר" style="min-height:60px;" placeholder="קור, לחץ, אוכל, מאמץ..."></textarea>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>משך הבעיה</label>
+          <select name="משך הבעיה">
+            <option value="">בחר...</option>
+            <option>פחות מחודש</option><option>1–3 חודשים</option>
+            <option>3–6 חודשים</option><option>חצי שנה עד שנה</option>
+            <option>1–3 שנים</option><option>יותר מ-3 שנים</option><option>כל חיי</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>עוצמת הבעיה כעת (0–10)</label>
+          <div class="scale-row">
+            <span>0</span>
+            <input type="range" min="0" max="10" value="5" name="עוצמת הבעיה" id="pain-scale" oninput="document.getElementById('pain-val').textContent=this.value">
+            <span>10</span>
+            <div class="scale-val" id="pain-val">5</div>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>האם עברת בירור רפואי / ביקרת אצל רופא? האם ברשותך אבחון / תיעוד רפואי?</label>
+        <textarea name="בירור רפואי" style="min-height:60px;" placeholder="בדיקות דם, שתן, הדמיה, אבחנה..."></textarea>
+      </div>
+      <div class="field">
+        <label>האם קיבלת טיפול קודם לבעיה זו? <span class="opt">(קונבנציונלי, משלים)</span></label>
+        <textarea name="טיפולים קודמים" style="min-height:60px;" placeholder="מה קיבלת? אצל מי? האם עזר?"></textarea>
+      </div>
+      <div class="field">
+        <label>האם אתה נוטל תוספים? <span class="opt">(ויטמינים, תכשירים...)</span></label>
+        <textarea name="תוספים" style="min-height:60px;" placeholder="שם התוסף ומינון"></textarea>
+      </div>
+      <div class="field">
+        <label>תרופות קבועות שאתה נוטל כיום</label>
+        <textarea name="תרופות" style="min-height:60px;" placeholder="שם התרופה, מינון, כמה זמן — אם נוטל תרופה לבעיה מסוימת נשמח שתביא את העלון"></textarea>
+      </div>
+      <div class="field">
+        <label>הטיפול שמעניין אותך בבית אור</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="טיפול מבוקש" value="דיקור סיני"> דיקור סיני</label>
+          <label><input type="checkbox" name="טיפול מבוקש" value="שיאצו"> שיאצו</label>
+          <label><input type="checkbox" name="טיפול מבוקש" value="רפואת צמחים"> רפואת צמחים</label>
+          <label><input type="checkbox" name="טיפול מבוקש" value="רפואה סינית"> רפואה סינית</label>
+          <label><input type="checkbox" name="טיפול מבוקש" value="קונסטלציה משפחתית"> קונסטלציה משפחתית</label>
+          <label><input type="checkbox" name="טיפול מבוקש" value="לא בטוח"> לא בטוח — צריך ייעוץ</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. NUTRITION -->
+    <div class="section">
+      <div class="section-title"><span class="num">3</span> תזונה</div>
+      <div class="subsection">
+        <h4>בוקר</h4>
+        <div class="row3">
+          <div class="field"><label>מה אוכל/ה?</label><input type="text" name="בוקר - מזון"></div>
+          <div class="field"><label>הרגשה לאחר הארוחה</label><input type="text" name="בוקר - הרגשה"></div>
+          <div class="field"><label>הרגלי שתייה</label><input type="text" name="בוקר - שתייה"></div>
+        </div>
+      </div>
+      <div class="subsection">
+        <h4>צהריים</h4>
+        <div class="row3">
+          <div class="field"><label>מה אוכל/ה?</label><input type="text" name="צהריים - מזון"></div>
+          <div class="field"><label>הרגשה לאחר הארוחה</label><input type="text" name="צהריים - הרגשה"></div>
+          <div class="field"><label>הרגלי שתייה</label><input type="text" name="צהריים - שתייה"></div>
+        </div>
+      </div>
+      <div class="subsection">
+        <h4>ערב</h4>
+        <div class="row3">
+          <div class="field"><label>מה אוכל/ה?</label><input type="text" name="ערב - מזון"></div>
+          <div class="field"><label>הרגשה לאחר הארוחה</label><input type="text" name="ערב - הרגשה"></div>
+          <div class="field"><label>הרגלי שתייה</label><input type="text" name="ערב - שתייה"></div>
+        </div>
+      </div>
+      <div class="row3">
+        <div class="field"><label>קפה / תה <span class="opt">(כמות ביום)</span></label><input type="text" name="קפה תה"></div>
+        <div class="field"><label>אלכוהול <span class="opt">(סוג ותדירות)</span></label><input type="text" name="אלכוהול"></div>
+        <div class="field"><label>אלרגיות / אי סבילות למזון</label><input type="text" name="אלרגיות מזון"></div>
+      </div>
+    </div>
+
+    <!-- 4. DIGESTION & ELIMINATION -->
+    <div class="section">
+      <div class="section-title"><span class="num">4</span> עיכול ופינוי</div>
+      <div class="row2">
+        <div class="field">
+          <label>תיאבון</label>
+          <div class="radio-group">
+            <label><input type="radio" name="תיאבון" value="חלש"> חלש</label>
+            <label><input type="radio" name="תיאבון" value="תקין"> תקין</label>
+            <label><input type="radio" name="תיאבון" value="חזק"> חזק</label>
+            <label><input type="radio" name="תיאבון" value="משתנה"> משתנה</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>צמא / שתיית מים</label>
+          <div class="radio-group">
+            <label><input type="radio" name="צמא" value="מועט"> מועט</label>
+            <label><input type="radio" name="צמא" value="רגיל"> רגיל</label>
+            <label><input type="radio" name="צמא" value="מרובה"> מרובה</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>תלונות עיכול קיימות</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="עיכול" value="נפיחות"> נפיחות</label>
+          <label><input type="checkbox" name="עיכול" value="גזים"> גזים / גיהוקים</label>
+          <label><input type="checkbox" name="עיכול" value="כבדות"> כבדות לאחר אכילה</label>
+          <label><input type="checkbox" name="עיכול" value="ריפלוקס צרבת"> ריפלוקס / צרבת</label>
+          <label><input type="checkbox" name="עיכול" value="בחילות"> בחילות</label>
+          <label><input type="checkbox" name="עיכול" value="כאב בטן"> כאבי בטן</label>
+          <label><input type="checkbox" name="עיכול" value="כיבים"> כיבים / אולקוס</label>
+          <label><input type="checkbox" name="עיכול" value="קרוהן קוליטיס"> קרוהן / קוליטיס</label>
+          <label><input type="checkbox" name="עיכול" value="IBS"> IBS</label>
+          <label><input type="checkbox" name="עיכול" value="עצירות"> עצירות</label>
+          <label><input type="checkbox" name="עיכול" value="שלשולים"> שלשולים</label>
+          <label><input type="checkbox" name="עיכול" value="טחורים"> טחורים</label>
+        </div>
+      </div>
+      <div class="row4">
+        <div class="field"><label>צבע השתן</label><input type="text" name="צבע שתן" placeholder="בהיר, צהוב, כהה..."></div>
+        <div class="field"><label>פעמים למתן שתן ביום</label><input type="number" name="תדירות שתן" min="1" max="20"></div>
+        <div class="field"><label>מספר יציאות ביום</label><input type="number" name="תדירות יציאות" min="0" max="10"></div>
+        <div class="field">
+          <label>יציאה</label>
+          <select name="עקביות יציאות">
+            <option value="">בחר...</option>
+            <option>רכה</option><option>תקינה</option><option>קשה</option><option>משתנה</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. SLEEP -->
+    <div class="section">
+      <div class="section-title"><span class="num">5</span> שינה</div>
+      <div class="row4">
+        <div class="field"><label>שעת הירדמות משוערת</label><input type="text" name="שעת הירדמות" placeholder="23:00..."></div>
+        <div class="field"><label>שעת יקיצה</label><input type="text" name="שעת יקיצה" placeholder="06:30..."></div>
+        <div class="field">
+          <label>ההתעוררות</label>
+          <select name="איכות ההתעוררות">
+            <option value="">בחר...</option>
+            <option>קלה ורעננה</option><option>כבדה</option><option>כואבת</option><option>עייפות</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>שעות שינה סה"כ</label>
+          <select name="שעות שינה">
+            <option value="">בחר...</option>
+            <option>פחות מ-5</option><option>5–6</option><option>6–7</option><option>7–8</option><option>יותר מ-8</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>בעיות שינה</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="בעיות שינה" value="קשיי הירדמות"> קשיי הירדמות</label>
+          <label><input type="checkbox" name="בעיות שינה" value="התעוררויות בלילה"> התעוררויות בלילה</label>
+          <label><input type="checkbox" name="בעיות שינה" value="שינה קלה"> שינה קלה מדי</label>
+          <label><input type="checkbox" name="בעיות שינה" value="חלומות חיים סיוטים"> חלומות חיים / סיוטים</label>
+          <label><input type="checkbox" name="בעיות שינה" value="שינה טובה"> שינה טובה</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. ENERGY & BODY -->
+    <div class="section">
+      <div class="section-title"><span class="num">6</span> אנרגיה ותחושות גוף</div>
+      <div class="row2">
+        <div class="field">
+          <label>רמת אנרגיה כללית</label>
+          <div class="radio-group">
+            <label><input type="radio" name="רמת אנרגיה" value="נמוכה מאוד"> נמוכה מאוד</label>
+            <label><input type="radio" name="רמת אנרגיה" value="נמוכה"> נמוכה</label>
+            <label><input type="radio" name="רמת אנרגיה" value="בינונית"> בינונית</label>
+            <label><input type="radio" name="רמת אנרגיה" value="טובה"> טובה</label>
+            <label><input type="radio" name="רמת אנרגיה" value="גבוהה"> גבוהה</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>שיא האנרגיה ביום</label>
+          <div class="radio-group">
+            <label><input type="radio" name="שיא אנרגיה" value="בוקר"> בוקר</label>
+            <label><input type="radio" name="שיא אנרגיה" value="צהריים"> צהריים</label>
+            <label><input type="radio" name="שיא אנרגיה" value="ערב"> ערב</label>
+            <label><input type="radio" name="שיא אנרגיה" value="לילה"> לילה</label>
+          </div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>תחושת חום / קור כללית</label>
+          <div class="radio-group">
+            <label><input type="radio" name="חום קור" value="תמיד קר"> תמיד קר/ה</label>
+            <label><input type="radio" name="חום קור" value="נוטה לקור"> נוטה לקור</label>
+            <label><input type="radio" name="חום קור" value="מאוזן"> מאוזן</label>
+            <label><input type="radio" name="חום קור" value="נוטה לחום"> נוטה לחום</label>
+            <label><input type="radio" name="חום קור" value="תמיד חם"> תמיד חם/ה</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>הזעה</label>
+          <div class="radio-group">
+            <label><input type="radio" name="הזעה" value="מועטת"> מועטת</label>
+            <label><input type="radio" name="הזעה" value="רגילה"> רגילה</label>
+            <label><input type="radio" name="הזעה" value="מרובה"> מרובה</label>
+            <label><input type="radio" name="הזעה" value="הזעת לילה"> הזעת לילה</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>כאבים קיימים <span class="opt">(מיקום ואופי)</span></label>
+        <textarea name="כאבים" style="min-height:70px;" placeholder="גב תחתון, צוואר, כתפיים, ברכיים... האם דוקר, עמום, שורף, מתפשט?"></textarea>
+      </div>
+      <div class="field">
+        <label>תחושות נוספות</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="תחושות" value="סחרחורות"> סחרחורות</label>
+          <label><input type="checkbox" name="תחושות" value="טנטון"> טנטון</label>
+          <label><input type="checkbox" name="תחושות" value="ראייה מטושטשת"> ראייה מטושטשת</label>
+          <label><input type="checkbox" name="תחושות" value="כאבי ראש מיגרנות"> כאבי ראש / מיגרנות</label>
+          <label><input type="checkbox" name="תחושות" value="כבדות גפיים"> כבדות בגפיים</label>
+          <label><input type="checkbox" name="תחושות" value="נימול עקצוצים"> נימול / עקצוצים</label>
+          <label><input type="checkbox" name="תחושות" value="בצקות"> בצקות</label>
+          <label><input type="checkbox" name="תחושות" value="קוצר נשימה"> קוצר נשימה</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. RESPIRATORY & IMMUNE -->
+    <div class="section">
+      <div class="section-title"><span class="num">7</span> מערכת הנשימה ומערכת החיסון</div>
+      <div class="field">
+        <label>בעיות נשימה</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="נשימה" value="נזלת כרונית"> נזלת כרונית</label>
+          <label><input type="checkbox" name="נשימה" value="גודש"> גודש</label>
+          <label><input type="checkbox" name="נשימה" value="ליחה"> ליחה</label>
+          <label><input type="checkbox" name="נשימה" value="שיעול"> שיעול</label>
+          <label><input type="checkbox" name="נשימה" value="אסטמה"> אסטמה</label>
+          <label><input type="checkbox" name="נשימה" value="התקררויות חוזרות"> התקררויות חוזרות</label>
+          <label><input type="checkbox" name="נשימה" value="אלרגיות עונתיות"> אלרגיות עונתיות</label>
+          <label><input type="checkbox" name="נשימה" value="ללא"> ללא</label>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>תפקוד בעונות השנה <span class="opt">(איזו עונה אהובה? מה קשה?)</span></label><textarea name="עונות" style="min-height:60px;"></textarea></div>
+        <div class="field"><label>מחלות / דלקות / זיהומים — כמה פעמים בשנה?</label><textarea name="מחלות בשנה" style="min-height:60px;"></textarea></div>
+      </div>
+    </div>
+
+    <!-- 8. CARDIOVASCULAR -->
+    <div class="section">
+      <div class="section-title"><span class="num">8</span> מערכת לב וכלי דם</div>
+      <div class="field">
+        <label>לחץ דם</label>
+        <div class="radio-group">
+          <label><input type="radio" name="לחץ דם" value="תקין"> תקין (120/80)</label>
+          <label><input type="radio" name="לחץ דם" value="גבוה"> גבוה</label>
+          <label><input type="radio" name="לחץ דם" value="נמוך"> נמוך</label>
+          <label><input type="radio" name="לחץ דם" value="לא יודע"> לא יודע/ת</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>בעיות לב / כלי דם</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="לב וכלי דם" value="דפיקות לב"> דפיקות לב מורגשות</label>
+          <label><input type="checkbox" name="לב וכלי דם" value="רגישות לקור אנמיה"> רגישות לקור / אנמיה</label>
+          <label><input type="checkbox" name="לב וכלי דם" value="ורידים"> ורידים</label>
+          <label><input type="checkbox" name="לב וכלי דם" value="כולסטרול"> כולסטרול / טריגליצרידים גבוהים</label>
+          <label><input type="checkbox" name="לב וכלי דם" value="התקפי לב עבר"> התקפי לב / צנתורים בעבר</label>
+          <label><input type="checkbox" name="לב וכלי דם" value="ללא"> ללא</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. ENDOCRINE & SKIN -->
+    <div class="section">
+      <div class="section-title"><span class="num">9</span> מערכת הורמונלית / עור ושיער</div>
+      <div class="field">
+        <label>מערכת אנדוקרינית-הורמונלית</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="הורמונים" value="סוכרת"> סוכרת</label>
+          <label><input type="checkbox" name="הורמונים" value="היפוגליקמיה"> נטייה להיפוגליקמיה</label>
+          <label><input type="checkbox" name="הורמונים" value="היפותירואיד"> היפו-תירואיד</label>
+          <label><input type="checkbox" name="הורמונים" value="היפרתירואיד"> היפר-תירואיד</label>
+          <label><input type="checkbox" name="הורמונים" value="בצקות נוזלים"> בצקות / צבירת נוזלים</label>
+          <label><input type="checkbox" name="הורמונים" value="ללא"> ללא</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>בעיות עור ושיער</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="עור שיער" value="פסוריאזיס"> פסוריאזיס</label>
+          <label><input type="checkbox" name="עור שיער" value="אקזמה"> אקזמה</label>
+          <label><input type="checkbox" name="עור שיער" value="קשקשת"> קשקשת / סבוריאה</label>
+          <label><input type="checkbox" name="עור שיער" value="פריחות"> פריחות</label>
+          <label><input type="checkbox" name="עור שיער" value="יובש"> יובש</label>
+          <label><input type="checkbox" name="עור שיער" value="גירודים"> גירודים</label>
+          <label><input type="checkbox" name="עור שיער" value="נשירת שיער"> נשירת שיער</label>
+          <label><input type="checkbox" name="עור שיער" value="ללא"> ללא</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10. MUSCULOSKELETAL -->
+    <div class="section">
+      <div class="section-title"><span class="num">10</span> מערכת השלד והשרירים</div>
+      <div class="field">
+        <label>בעיות שלד / שרירים</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="שלד שרירים" value="כאבי גב תחתון"> כאבי גב תחתון</label>
+          <label><input type="checkbox" name="שלד שרירים" value="פריצת דיסק"> פריצת דיסק</label>
+          <label><input type="checkbox" name="שלד שרירים" value="צוואר כתפיים"> צוואר / כתפיים</label>
+          <label><input type="checkbox" name="שלד שרירים" value="ברכיים"> ברכיים</label>
+          <label><input type="checkbox" name="שלד שרירים" value="דלקות מפרקים"> דלקות מפרקים</label>
+          <label><input type="checkbox" name="שלד שרירים" value="כאבי שרירים"> כאבי שרירים כרוניים</label>
+          <label><input type="checkbox" name="שלד שרירים" value="שברים בעבר"> שברים בעבר</label>
+          <label><input type="checkbox" name="שלד שרירים" value="ללא"> ללא</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>ניתוחים ואשפוזים בעבר</label>
+        <textarea name="ניתוחים אשפוזים" style="min-height:70px;" placeholder="סוג הניתוח / סיבת האשפוז, שנה, האם בהרדמה מלאה?"></textarea>
+      </div>
+    </div>
+
+    <!-- 11. WOMEN'S HEALTH -->
+    <div class="section">
+      <div class="section-title"><span class="num">11</span> בריאות האישה <span style="font-size:11.5px;font-weight:300;color:var(--text-light);margin-right:4px;">(למילוי על ידי נשים)</span></div>
+      <div class="row2">
+        <div class="field">
+          <label>מחזור חודשי</label>
+          <div class="radio-group">
+            <label><input type="radio" name="מחזור סדיר" value="סדיר"> סדיר</label>
+            <label><input type="radio" name="מחזור סדיר" value="לא סדיר"> לא סדיר</label>
+            <label><input type="radio" name="מחזור סדיר" value="גיל המעבר"> גיל המעבר</label>
+            <label><input type="radio" name="מחזור סדיר" value="לא רלוונטי"> לא רלוונטי</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>זרימת המחזור</label>
+          <div class="radio-group">
+            <label><input type="radio" name="זרימת מחזור" value="גדוש"> גדוש</label>
+            <label><input type="radio" name="זרימת מחזור" value="תקין"> תקין</label>
+            <label><input type="radio" name="זרימת מחזור" value="דליל"> דליל</label>
+            <label><input type="radio" name="זרימת מחזור" value="קרישי"> קרישי</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>הרגשה לפני המחזור (PMS)</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="PMS" value="נפיחות"> נפיחות</label>
+          <label><input type="checkbox" name="PMS" value="עצבנות"> עצבנות</label>
+          <label><input type="checkbox" name="PMS" value="כאבי מחזור"> כאבי מחזור</label>
+          <label><input type="checkbox" name="PMS" value="כאבי ראש"> כאבי ראש</label>
+          <label><input type="checkbox" name="PMS" value="ללא"> ללא</label>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>הריון / הנקה</label>
+          <div class="radio-group">
+            <label><input type="radio" name="הריון הנקה" value="לא"> לא</label>
+            <label><input type="radio" name="הריון הנקה" value="הריון"> בהריון</label>
+            <label><input type="radio" name="הריון הנקה" value="מנסה להיכנס"> מנסה להיכנס להריון</label>
+            <label><input type="radio" name="הריון הנקה" value="מניקה"> מניקה</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>טיפולי פוריות</label>
+          <div class="radio-group">
+            <label><input type="radio" name="פוריות" value="לא"> לא</label>
+            <label><input type="radio" name="פוריות" value="עבר"> בעבר</label>
+            <label><input type="radio" name="פוריות" value="כיום"> כיום</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>גיל המעבר — כיצד מתאפיין? <span class="opt">(אם רלוונטי)</span></label>
+        <div class="check-group">
+          <label><input type="checkbox" name="גיל המעבר" value="גלי חום"> גלי חום</label>
+          <label><input type="checkbox" name="גיל המעבר" value="עצבנות"> עצבנות</label>
+          <label><input type="checkbox" name="גיל המעבר" value="עייפות"> עייפות</label>
+          <label><input type="checkbox" name="גיל המעבר" value="נדודי שינה"> נדודי שינה</label>
+          <label><input type="checkbox" name="גיל המעבר" value="נוטלת הורמונים"> נוטלת הורמונים</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. LIFESTYLE -->
+    <div class="section">
+      <div class="section-title"><span class="num">12</span> אורח חיים</div>
+      <div class="row2">
+        <div class="field">
+          <label>פעילות גופנית</label>
+          <div class="radio-group">
+            <label><input type="radio" name="פעילות גופנית" value="ללא"> ללא</label>
+            <label><input type="radio" name="פעילות גופנית" value="מועטה"> מועטה</label>
+            <label><input type="radio" name="פעילות גופנית" value="2-3 פעמים"> 2–3 פעמים/שבוע</label>
+            <label><input type="radio" name="פעילות גופנית" value="יומיומית"> יומיומית</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>עישון</label>
+          <div class="radio-group">
+            <label><input type="radio" name="עישון" value="לא"> לא</label>
+            <label><input type="radio" name="עישון" value="לשעבר"> לשעבר</label>
+            <label><input type="radio" name="עישון" value="כן"> כן</label>
+          </div>
+          <input type="text" name="פרוט עישון" placeholder="אם כן — כמה? כמה זמן?" style="margin-top:8px;">
+        </div>
+      </div>
+      <div class="field">
+        <label>שימוש בסמים <span class="opt">(אם רלוונטי)</span></label>
+        <input type="text" name="סמים" placeholder="מריחואנה, אחר, תדירות...">
+      </div>
+      <div class="field">
+        <label>מחלות תורשתיות / משפחתיות <span class="opt">(הורים, אחים)</span></label>
+        <input type="text" name="מחלות משפחתיות" placeholder="סרטן, לחץ דם, לב, סוכרת, אחר...">
+      </div>
+    </div>
+
+    <!-- 13. EMOTIONAL & MENTAL -->
+    <div class="section">
+      <div class="section-title"><span class="num">13</span> מצב נפשי ורגשי</div>
+      <div class="field">
+        <label>רמת לחץ / סטרס יומיומי</label>
+        <div class="scale-row">
+          <span>0</span>
+          <input type="range" min="0" max="10" value="5" name="רמת סטרס" id="stress-scale" oninput="document.getElementById('stress-val').textContent=this.value">
+          <span>10</span>
+          <div class="scale-val" id="stress-val">5</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>מצב נפשי רגיל</label>
+        <div class="check-group">
+          <label><input type="checkbox" name="מצב נפשי" value="חרדה"> חרדה</label>
+          <label><input type="checkbox" name="מצב נפשי" value="דיכאון עצב"> דיכאון / עצב</label>
+          <label><input type="checkbox" name="מצב נפשי" value="עצבנות כעס"> עצבנות / כעס</label>
+          <label><input type="checkbox" name="מצב נפשי" value="שחיקה"> שחיקה</label>
+          <label><input type="checkbox" name="מצב נפשי" value="מחשבות מרובות"> מחשבות מרובות</label>
+          <label><input type="checkbox" name="מצב נפשי" value="חוסר מוטיבציה"> חוסר מוטיבציה</label>
+          <label><input type="checkbox" name="מצב נפשי" value="יציבות"> יציבות רגשית</label>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>סיפוק מהעבודה ומחיי היום-יום?</label>
+          <textarea name="סיפוק מהחיים" style="min-height:60px;" placeholder="מה מצחיק / משמח / מלחיץ אותך? מה התחביבים שלך?"></textarea>
+        </div>
+        <div class="field">
+          <label>האם עברת טראומה בעבר? <span class="opt">(אם בנוח לשתף)</span></label>
+          <textarea name="טראומה" style="min-height:60px;" placeholder="מינית, נפשית, תאונה, אובדן..."></textarea>
+        </div>
+      </div>
+      <div class="field">
+        <label>אירועי חיים משמעותיים לאחרונה</label>
+        <textarea name="אירועי חיים" style="min-height:60px;" placeholder="מעבר דירה, גירושים, לידה, אובדן..."></textarea>
+      </div>
+      <div class="field">
+        <label>מה הציפיות שלך מהטיפול? איפה אתה רוצה להיות בעוד 4–5 חודשים?</label>
+        <textarea name="ציפיות מהטיפול" placeholder="תאר בחופשיות את המטרות שלך..."></textarea>
+      </div>
+    </div>
+
+    <!-- 14. TCM DIAGNOSIS -->
+    <div class="section">
+      <div class="section-title"><span class="num">14</span> אבחון סיני — שאלות ספציפיות</div>
+      <div class="row2">
+        <div class="field">
+          <label>העדפת טעמים</label>
+          <div class="check-group">
+            <label><input type="checkbox" name="טעמים" value="מלוח"> מלוח</label>
+            <label><input type="checkbox" name="טעמים" value="חמוץ"> חמוץ</label>
+            <label><input type="checkbox" name="טעמים" value="מתוק"> מתוק</label>
+            <label><input type="checkbox" name="טעמים" value="חריף"> חריף</label>
+            <label><input type="checkbox" name="טעמים" value="מר"> מר</label>
+          </div>
+        </div>
+        <div class="field">
+          <label>העדפת טמפרטורה במזון ושתייה</label>
+          <div class="radio-group">
+            <label><input type="radio" name="העדפת טמפרטורה" value="חם"> מעדיף/ה חם</label>
+            <label><input type="radio" name="העדפת טמפרטורה" value="קר"> מעדיף/ה קר</label>
+            <label><input type="radio" name="העדפת טמפרטורה" value="ניטרלי"> ניטרלי</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label>צבע הלשון <span class="opt">(אם שמת לב)</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="צבע לשון" value="ורדרד"> ורדרד (נורמלי)</label>
+          <label><input type="radio" name="צבע לשון" value="חיוור"> חיוור</label>
+          <label><input type="radio" name="צבע לשון" value="אדום"> אדום</label>
+          <label><input type="radio" name="צבע לשון" value="סגלגל"> סגלגל</label>
+          <label><input type="radio" name="צבע לשון" value="לא שמתי לב"> לא שמתי לב</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>ציפורניים <span class="opt">(אם שמת לב)</span></label>
+        <div class="check-group">
+          <label><input type="checkbox" name="ציפורניים" value="תקינות"> תקינות</label>
+          <label><input type="checkbox" name="ציפורניים" value="פסים לבנים"> פסים / כתמים לבנים</label>
+          <label><input type="checkbox" name="ציפורניים" value="שבירות"> שבירות</label>
+          <label><input type="checkbox" name="ציפורניים" value="כחלחלות"> כחלחלות</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15. ANYTHING ELSE -->
+    <div class="section">
+      <div class="section-title"><span class="num">15</span> כל מה שנשאר</div>
+      <div class="field">
+        <label>האם יש משהו נוסף שחשוב לך לספר? <span class="opt">(פיזי, רגשי, רוחני — כל מה שמרגיש רלוונטי)</span></label>
+        <textarea name="הערות נוספות" style="min-height:100px;" placeholder="המקום הזה פתוח לכל מה שלא מצא מקום בשאלות למעלה..."></textarea>
+      </div>
+    </div>
+
+    <!-- CONSENT -->
+    <div class="section">
+      <div class="section-title"><span class="num">16</span> הסכמה</div>
+      <div class="field">
+        <label>נכונות לשינויים באורח החיים</label>
+        <div class="radio-group">
+          <label><input type="radio" name="נכונות לשינוי" value="גבוהה"> גבוהה — מוכן/ה לשינויים משמעותיים</label>
+          <label><input type="radio" name="נכונות לשינוי" value="בינונית"> בינונית — מוכן/ה לשינויים מסוימים</label>
+          <label><input type="radio" name="נכונות לשינוי" value="נמוכה"> נמוכה — קשה לי עם שינויים</label>
+        </div>
+      </div>
+      <div class="field">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-weight:300;">
+          <input type="checkbox" name="הסכמה" value="מסכים" required style="margin-top:3px;accent-color:var(--copper);flex-shrink:0;">
+          <span>אני מאשר/ת שהמידע שמסרתי נכון ומלא למיטב ידיעתי, ומסכים/ה שיישמר בסודיות לצורכי הטיפול בלבד. <strong>שדה חובה.</strong></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="submit-area">
+      <p>השאלון ישלח ישירות לצוות בית אור ויישמר בסודיות מלאה.</p>
+      <button type="submit" class="btn-submit">שליחת השאלון</button>
+    </div>
+
+    <div id="success-msg">
+      <h3>תודה רבה! השאלון התקבל.</h3>
+      <p>נציג מבית אור יצור איתך קשר בקרוב לתיאום הפגישה הראשונה.</p>
+    </div>
+  </form>
+</div>
+
+<footer>
+  <a href="index.html">← חזרה לבית אור | boazor.com</a>
+</footer>
+
+<script>
+  document.getElementById('intake-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('.btn-submit');
+    btn.textContent = 'שולח...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(form.action, {
+        method:'POST',
+        body: new FormData(form),
+        headers:{ 'Accept':'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        btn.textContent = 'אירעה שגיאה — נסה שוב';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      btn.textContent = 'אירעה שגיאה — נסה שוב';
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
