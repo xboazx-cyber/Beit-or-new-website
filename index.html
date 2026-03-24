@@ -45,7 +45,19 @@
       "https://www.facebook.com/Beit.Or.Center"
     ],
     "priceRange": "$$",
-    "openingHours": "Mo-Fr 09:00-18:00"
+    "openingHours": "Mo-Fr 09:00-18:00",
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "טיפולים",
+      "itemListElement": [
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"דיקור סיני","description":"טיפול דיקור סיני מסורתי לאיזון גוף ונפש"}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"שיאצו","description":"עיסוי שיאצו יפני לשחרור מתחים וחיזוק האנרגיה"}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"רפואת צמחים","description":"הרבליזם קליני – תכשירי צמחי מרפא מותאמים אישית"}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"קונסטלציה משפחתית","description":"קונסטלציה משפחתית לריפוי דינמיקות משפחתיות"}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"ריפוי אנרגטי","description":"טיפול ריפוי אנרגטי הוליסטי"}},
+        {"@type":"Offer","itemOffered":{"@type":"Service","name":"תזונה מקרוביוטית","description":"ייעוץ תזונה מקרוביוטית מותאם אישית"}}
+      ]
+    }
   }
   </script>
 
@@ -340,6 +352,7 @@
       .wa-btn{width:48px;height:48px;bottom:20px;left:20px;}
       [dir="ltr"] .wa-btn{right:20px;left:auto;}
     }
+    @media(max-width:900px){ .blog-section .container > div { grid-template-columns:1fr !important; } }
     @media(max-width:480px){
       .services-grid{grid-template-columns:1fr;}
       .hero-actions{flex-direction:column;gap:16px;}
@@ -595,6 +608,35 @@
   </div>
 </section>
 
+<!-- BLOG -->
+<section class="blog-section" id="blog" style="padding:100px 0; background:var(--cream-mid);">
+  <div class="container">
+    <p class="eyebrow" style="text-align:center; margin-bottom:12px;" data-i18n="blog_eyebrow"></p>
+    <h2 style="text-align:center; font-family:'Rubik',sans-serif; font-weight:300; font-size:clamp(28px,3.5vw,42px); color:var(--brown-dark); margin-bottom:60px;" data-i18n="blog_title"></h2>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:32px;">
+
+      <article style="background:var(--cream); border-radius:2px; padding:36px 28px; border-top:2px solid var(--copper);">
+        <p class="eyebrow" style="margin-bottom:12px;" data-i18n="blog1_tag"></p>
+        <h3 style="font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:16px; line-height:1.5;" data-i18n="blog1_title"></h3>
+        <p style="font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light);" data-i18n="blog1_body"></p>
+      </article>
+
+      <article style="background:var(--cream); border-radius:2px; padding:36px 28px; border-top:2px solid var(--copper);">
+        <p class="eyebrow" style="margin-bottom:12px;" data-i18n="blog2_tag"></p>
+        <h3 style="font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:16px; line-height:1.5;" data-i18n="blog2_title"></h3>
+        <p style="font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light);" data-i18n="blog2_body"></p>
+      </article>
+
+      <article style="background:var(--cream); border-radius:2px; padding:36px 28px; border-top:2px solid var(--copper);">
+        <p class="eyebrow" style="margin-bottom:12px;" data-i18n="blog3_tag"></p>
+        <h3 style="font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:16px; line-height:1.5;" data-i18n="blog3_title"></h3>
+        <p style="font-size:14px; font-weight:300; line-height:1.9; color:var(--text-light);" data-i18n="blog3_body"></p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
 <!-- CONTACT -->
 <section class="contact" id="contact">
   <div class="container">
@@ -784,6 +826,10 @@ const T = {
     boaz_cred1:'🌿 הרבליסט קליני Cl.H. — ליקוט, גידול ורקיחת צמחי מרפא',
     boaz_cred2:'🧭 בוגר התוכנית הרב-שנתית — בית הספר ׳דרך העומק׳',
     boaz_cred3:'🎓 תואר ראשון במדעי הרוח | תואר שני בחינוך',
+    blog_eyebrow:'מאמרים', blog_title:'קצת ידע לדרך',
+    blog1_tag:'רפואה סינית', blog1_title:'מה זה דיקור סיני ואיך הוא עובד?', blog1_body:'דיקור סיני הוא ענף מרכזי ברפואה הסינית המסורתית, הנהוג כבר למעלה מ-2,500 שנה. הטיפול מבוסס על הכנסת מחטים דקות לנקודות ספציפיות לאורך מסלולי אנרגיה (מרידיאנים) בגוף, במטרה לשחרר חסימות ולהחזיר את זרימת האנרגיה החיונית לאיזון. דיקור סיני יעיל לכאבים כרוניים, חרדה, הפרעות שינה, בעיות עיכול ועוד.',
+    blog2_tag:'שיאצו', blog2_title:'שיאצו – הריפוי שבמגע', blog2_body:'שיאצו היא שיטת עיסוי יפנית המבוססת על עקרונות הרפואה הסינית המסורתית. המטפל משתמש בלחץ אצבעות, כפות ידיים ומרפקים לאורך מרידיאני האנרגיה בגוף. הטיפול משחרר מתחים, מחזק את מערכת החיסון, מפחית כאבים ומחזיר תחושת שלמות ורוגע עמוק. מתאים לכל גיל ומצב.',
+    blog3_tag:'הרבליזם', blog3_title:'צמחי מרפא – הרפואה שבטבע', blog3_body:'הרבליזם קליני הוא שימוש מדעי ומסורתי בצמחי מרפא לטיפול במצבים בריאותיים מגוונים. בבית אור, הפורמולות מותאמות אישית לכל מטופל לאחר הערכה מעמיקה. צמחי המרפא תומכים במערכת החיסון, מווסתים הורמונים, מחזקים את מערכת העצבים ועוד – הכל מהטבע.',
     testi_eyebrow:'קולות', testi_title:'מה אנשים אומרים',
     contact_eyebrow:'צור קשר', contact_title:'התחל את המסע <em>הביתה</em>',
     contact_body:'נשמח לשמוע ממך. בין אם יש לך שאלות על טיפול ספציפי ובין אם אתה פשוט מרגיש את הקריאה — פנה אלינו. הצעד הראשון הוא תמיד העדין ביותר.',
@@ -873,6 +919,10 @@ const T = {
     boaz_cred1:'🌿 Clinical Herbalist (Cl.H.) — foraging, cultivation & plant compounding',
     boaz_cred2:'🧭 Graduate of the multi-year programme — Derech HaOmek School',
     boaz_cred3:'🎓 BA in Humanities | MA in Education',
+    blog_eyebrow:'Articles', blog_title:'A Little Knowledge for the Journey',
+    blog1_tag:'Chinese Medicine', blog1_title:'What is Acupuncture and How Does it Work?', blog1_body:'Acupuncture is a central branch of Traditional Chinese Medicine, practiced for over 2,500 years. Treatment involves inserting fine needles into specific points along energy pathways (meridians) in the body, releasing blockages and restoring the flow of vital energy. Acupuncture is effective for chronic pain, anxiety, sleep disorders, digestive issues and more.',
+    blog2_tag:'Shiatsu', blog2_title:'Shiatsu – The Healing Power of Touch', blog2_body:'Shiatsu is a Japanese massage method based on Traditional Chinese Medicine principles. The practitioner uses finger, palm and elbow pressure along the body\'s energy meridians. Treatment releases tension, strengthens the immune system, reduces pain and restores a deep sense of wholeness and calm. Suitable for all ages and conditions.',
+    blog3_tag:'Herbal Medicine', blog3_title:'Medicinal Herbs – Nature\'s Medicine', blog3_body:'Clinical herbalism is the scientific and traditional use of medicinal plants to treat a range of health conditions. At Beit Or, formulas are individually tailored to each patient after an in-depth assessment. Herbs support the immune system, regulate hormones, strengthen the nervous system and more — all from nature.',
     testi_eyebrow:'Voices', testi_title:'What People Say',
     contact_eyebrow:'Get in Touch', contact_title:'Begin your journey <em>home</em>',
     contact_body:'We would love to hear from you. Whether you have questions about a specific offering or you\'re simply feeling the pull — reach out. The first step is always the gentlest.',
@@ -1019,13 +1069,11 @@ document.getElementById('contact-form').addEventListener('submit', async functio
       headers: { 'Accept': 'application/json' },
       body: formData
     });
-    const data = await res.json();
     if (res.ok) {
       success.style.display = 'block';
       this.reset();
       grecaptcha.reset();
     } else {
-      error.textContent = JSON.stringify(data);
       error.style.display = 'block';
     }
   } catch(err) {
