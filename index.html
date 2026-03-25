@@ -222,8 +222,8 @@
     .section-head { text-align:center; margin-bottom:56px; }
     .section-head h2 { font-family:'Rubik',sans-serif; font-weight:300; font-size:clamp(28px,4vw,44px); color:var(--brown-dark); margin:14px 0 0; }
     [lang="en"] .section-head h2 { font-family:'Rubik',sans-serif; }
-    .services-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
-    .service-card { background:var(--cream); padding:22px 18px 18px; border-radius:2px; position:relative; overflow:hidden; transition:transform .35s cubic-bezier(.22,.61,.36,1),box-shadow .35s ease,background .35s ease; opacity:0; transform:translateY(32px); }
+    .services-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .service-card { background:var(--cream); padding:28px 22px 22px; border-radius:2px; position:relative; overflow:hidden; transition:transform .35s cubic-bezier(.22,.61,.36,1),box-shadow .35s ease,background .35s ease; opacity:0; transform:translateY(32px); }
     .service-card.svc-visible { opacity:1; transform:translateY(0); }
     .service-card:hover { transform:translateY(-5px) scale(1.02); box-shadow:0 20px 52px rgba(44,74,54,.13); }
     .service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--copper); transform:scaleX(0); transition:transform .35s cubic-bezier(.22,.61,.36,1); transform-origin:left; }
@@ -240,15 +240,15 @@
     .service-num { position:absolute; top:16px; right:16px; font-family:'Rubik',sans-serif; font-size:32px; font-weight:300; color:var(--cream-dark); line-height:1; }
     [dir="rtl"] .service-num { right:auto; left:16px; }
     [lang="en"] .service-num { font-family:'Rubik',sans-serif; }
-    .service-card h3 { font-family:'Rubik',sans-serif; font-size:18px; font-weight:400; color:var(--brown-dark); margin-bottom:8px; }
-    [lang="en"] .service-card h3 { font-family:'Rubik',sans-serif; font-size:18px; }
-    .service-card p { font-size:14px; font-weight:300; line-height:1.8; color:var(--text-light); }
+    .service-card h3 { font-family:'Rubik',sans-serif; font-size:20px; font-weight:400; color:var(--brown-dark); margin-bottom:10px; }
+    [lang="en"] .service-card h3 { font-family:'Rubik',sans-serif; font-size:20px; }
+    .service-card p { font-size:15px; font-weight:300; line-height:1.85; color:var(--text-light); }
     .service-link { display:inline-flex; align-items:center; gap:8px; margin-top:14px; font-size:10px; font-weight:400; letter-spacing:0.24em; text-transform:uppercase; color:var(--copper); text-decoration:none; transition:gap .2s; background:none; border:none; cursor:pointer; padding:0; font-family:inherit; }
     .service-link:hover { gap:14px; }
     .service-card.featured .service-link { color:var(--copper-light); }
     .svc-expand { margin-top:16px; padding-top:16px; border-top:0.75px solid var(--cream-dark); }
     .service-card.featured .svc-expand { border-top-color:rgba(255,255,255,0.1); }
-    .svc-expand-body { font-size:15.5px; font-weight:300; line-height:1.9; color:var(--text-light); }
+    .svc-expand-body { font-size:15px; font-weight:300; line-height:1.9; color:var(--text-light); }
     .service-card.featured .svc-expand-body { color:rgba(255,255,255,0.55); }
 
     /* PHILOSOPHY */
@@ -385,7 +385,7 @@
     .reveal.visible { opacity:1; transform:translateY(0); }
 
     /* RESPONSIVE */
-    @media(max-width:1024px){ .services-grid{grid-template-columns:repeat(3,1fr);} }
+    @media(max-width:1024px){ .services-grid{grid-template-columns:repeat(2,1fr);} }
     @media(max-width:900px){
       .container{padding:0 24px;}
       .about .container{grid-template-columns:1fr;gap:48px;}
@@ -1070,7 +1070,6 @@ function buildServices() {
     { key:'svc1', featured:true,  icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/><path d="M12 8v4l3 3"/>' },
     { key:'svc2', featured:true,  icon:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
     { key:'svc4', featured:false, icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/>' },
-    { key:'svc6', featured:false, icon:'<path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
     { key:'svc9', featured:true,  icon:'<line x1="12" y1="2" x2="12" y2="22"/><line x1="6" y1="6" x2="18" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="6" y1="18" x2="18" y2="18"/>' },
     { key:'svc10', featured:false, icon:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>' },
     { key:'svc11', featured:false, icon:'<path d="M12 22s-8-4-8-10V5l8-3 8 3v7c0 6-8 10-8 10z"/>' },
