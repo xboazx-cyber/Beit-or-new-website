@@ -759,17 +759,21 @@
         body: new FormData(form),
         headers:{ 'Accept':'application/json' }
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         form.style.display = 'none';
         document.getElementById('success-msg').style.display = 'block';
         window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
-        btn.textContent = 'אירעה שגיאה — נסה שוב';
+        const errMsg = data.error || data.errors?.map(e=>e.message).join(', ') || res.status;
+        btn.textContent = 'שגיאה: ' + errMsg;
         btn.disabled = false;
+        console.error('Formspree error:', data);
       }
     } catch(err) {
-      btn.textContent = 'אירעה שגיאה — נסה שוב';
+      btn.textContent = 'שגיאת רשת — נסה שוב';
       btn.disabled = false;
+      console.error('Network error:', err);
     }
   });
 </script>
