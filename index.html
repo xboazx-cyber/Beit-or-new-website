@@ -223,9 +223,10 @@
     .section-head h2 { font-family:'Rubik',sans-serif; font-weight:300; font-size:clamp(28px,4vw,44px); color:var(--brown-dark); margin:14px 0 0; }
     [lang="en"] .section-head h2 { font-family:'Rubik',sans-serif; }
     .services-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }
-    .service-card { background:var(--cream); padding:22px 18px 18px; border-radius:2px; position:relative; overflow:hidden; transition:transform .3s,box-shadow .3s; }
-    .service-card:hover { transform:translateY(-4px); box-shadow:0 16px 48px rgba(92,53,32,.08); }
-    .service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--copper); transform:scaleX(0); transition:transform .3s; transform-origin:left; }
+    .service-card { background:var(--cream); padding:22px 18px 18px; border-radius:2px; position:relative; overflow:hidden; transition:transform .35s cubic-bezier(.22,.61,.36,1),box-shadow .35s ease,background .35s ease; opacity:0; transform:translateY(32px); }
+    .service-card.svc-visible { opacity:1; transform:translateY(0); }
+    .service-card:hover { transform:translateY(-5px) scale(1.02); box-shadow:0 20px 52px rgba(44,74,54,.13); }
+    .service-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:var(--copper); transform:scaleX(0); transition:transform .35s cubic-bezier(.22,.61,.36,1); transform-origin:left; }
     [dir="rtl"] .service-card::before { transform-origin:right; }
     .service-card:hover::before { transform:scaleX(1); }
     .service-card.featured { background:var(--brown-dark); }
@@ -1094,6 +1095,21 @@ function buildServices() {
     </div>`;
   }).join('');
   observeReveals();
+
+  // Staggered entrance animation for service cards
+  const svcObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const cards = document.querySelectorAll('.service-card');
+        cards.forEach((card, i) => {
+          setTimeout(() => card.classList.add('svc-visible'), i * 80);
+        });
+        svcObs.disconnect();
+      }
+    });
+  }, { threshold: 0.1 });
+  const grid = document.getElementById('services-grid');
+  if (grid) svcObs.observe(grid);
 }
 
 let testitIdx = 0;
