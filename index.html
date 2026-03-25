@@ -270,9 +270,9 @@
     .testimonials .section-head h2 { color:rgba(255,255,255,.9); }
     .testimonials .eyebrow { color:var(--copper-light); }
     .testimonials .divider span { background:rgba(255,255,255,.15); }
-    .testi-slider-wrap { position:relative; }
-    .testi-grid { display:flex; gap:22px; overflow:hidden; }
-    .testi-card { background:rgba(255,255,255,.05); border:0.75px solid rgba(255,255,255,.1); border-radius:2px; padding:32px 28px; min-width:calc(50% - 11px); flex-shrink:0; box-sizing:border-box; transition:opacity .3s; }
+    .testi-slider-wrap { overflow:hidden; }
+    .testi-grid { display:flex; gap:22px; transition:transform 0.4s ease; }
+    .testi-card { background:rgba(255,255,255,.05); border:0.75px solid rgba(255,255,255,.1); border-radius:2px; padding:32px 28px; min-width:calc(50% - 11px); flex-shrink:0; box-sizing:border-box; }
     .testi-stars { display:flex; gap:3px; margin-bottom:18px; }
     .testi-stars span { font-size:13px; color:var(--copper); }
     .testi-card p { font-family:'Rubik',sans-serif; font-size:16px; font-weight:300; font-style:italic; line-height:1.8; color:rgba(255,255,255,.82); margin-bottom:22px; }
@@ -287,7 +287,7 @@
     .testi-dots { display:flex; gap:8px; }
     .testi-dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.25); cursor:pointer; transition:background .2s; }
     .testi-dot.active { background:var(--copper); }
-    @media(max-width:700px){ .testi-card { min-width:100%; } }
+    @media(max-width:700px){ .testi-card { min-width:100%; } .testi-grid { gap:0; } }
 
     /* CONTACT */
     .contact { padding:120px 0; }
@@ -1132,8 +1132,9 @@ function goToTesti(idx) {
   const totalPages = Math.ceil(cards.length / perPage);
   testitIdx = (idx + totalPages) % totalPages;
 
-  const cardWidth = cards[0] ? cards[0].offsetWidth + 22 : 0;
-  grid.scrollTo({ left: testitIdx * perPage * cardWidth, behavior: 'smooth' });
+  const shiftPct = (testitIdx * perPage / cards.length) * 100;
+  const isRTL = document.documentElement.dir === 'rtl';
+  grid.style.transform = `translateX(${isRTL ? shiftPct : -shiftPct}%)`;
 
   document.querySelectorAll('.testi-dot').forEach((d,i) => d.classList.toggle('active', i === testitIdx));
 }
