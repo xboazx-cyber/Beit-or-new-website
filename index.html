@@ -168,8 +168,8 @@
     .hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom, rgba(20,40,28,.55) 0%, rgba(20,40,28,.40) 60%, rgba(20,40,28,.65) 100%); pointer-events:none; }
     .hero-bg { display:none; }
     .hero::before { display:none; }
-    /* on mobile hide video, show fallback */
-    @media(max-width:768px){ .hero-video { display:none; } .hero { background:url('brand_assets/backgrounds/מרווה לרגע.jpeg') center/cover no-repeat; } .hero-overlay { background:rgba(20,40,28,.55); } }
+    /* on mobile show video */
+    @media(max-width:768px){ .hero-video { display:block; } }
     /* adjust text colors for dark video background */
     .hero h1 { color:#f0ece4; }
     .hero h1 em { color:#D4A090; }
