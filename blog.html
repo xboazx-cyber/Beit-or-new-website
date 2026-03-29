@@ -75,6 +75,14 @@
     article h2 { font-family:'Rubik',sans-serif; font-weight:300; font-size:20px; color:var(--brown-dark); margin-bottom:18px; line-height:1.5; }
     article p { font-size:14px; font-weight:300; line-height:2; color:var(--text-light); margin-bottom:14px; }
     article p:last-child { margin-bottom:0; }
+    .read-more-btn { background:none; border:none; cursor:pointer; font-family:'Assistant',sans-serif; font-size:11px; font-weight:400; letter-spacing:0.22em; text-transform:uppercase; color:var(--copper); padding:10px 0 0; display:inline-block; transition:color .2s; }
+    .read-more-btn:hover { color:var(--brown-dark); }
+    .read-more-wrap { display:none; }
+    .article-text-wrap { position:relative; max-height:280px; overflow:hidden; transition:max-height .4s ease; }
+    .article-text-wrap.expanded { max-height:2000px; }
+    .article-text-wrap:not(.expanded)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:60px; background:linear-gradient(to bottom, transparent, white); pointer-events:none; }
+    .article-read-more { background:none; border:none; cursor:pointer; font-family:'Assistant',sans-serif; font-size:11px; font-weight:400; letter-spacing:0.22em; text-transform:uppercase; color:var(--copper); padding:12px 0 0; display:inline-block; transition:color .2s; }
+    .article-read-more:hover { color:var(--brown-dark); }
 
     /* FOOTER */
     .blog-footer { background:var(--brown-dark); padding:40px 0; text-align:center; }
@@ -117,8 +125,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag1"></p>
         <h2 itemprop="headline" id="title1"></h2>
-        <p itemprop="description" id="body1a"></p>
-        <p id="body1b"></p>
+        <div class="article-text-wrap" id="wrap1">
+          <p itemprop="description" id="body1a"></p>
+          <p id="body1b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap1',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -127,8 +138,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag2"></p>
         <h2 itemprop="headline" id="title2"></h2>
-        <p itemprop="description" id="body2a"></p>
-        <p id="body2b"></p>
+        <div class="article-text-wrap" id="wrap2">
+          <p itemprop="description" id="body2a"></p>
+          <p id="body2b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap2',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -137,8 +151,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag3"></p>
         <h2 itemprop="headline" id="title3"></h2>
-        <p itemprop="description" id="body3a"></p>
-        <p id="body3b"></p>
+        <div class="article-text-wrap" id="wrap3">
+          <p itemprop="description" id="body3a"></p>
+          <p id="body3b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap3',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -147,8 +164,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag4"></p>
         <h2 itemprop="headline" id="title4"></h2>
-        <p itemprop="description" id="body4a"></p>
-        <p id="body4b"></p>
+        <div class="article-text-wrap" id="wrap4">
+          <p itemprop="description" id="body4a"></p>
+          <p id="body4b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap4',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -157,8 +177,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag5"></p>
         <h2 itemprop="headline" id="title5"></h2>
-        <p itemprop="description" id="body5a"></p>
-        <p id="body5b"></p>
+        <div class="article-text-wrap" id="wrap5">
+          <p itemprop="description" id="body5a"></p>
+          <p id="body5b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap5',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -167,8 +190,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag7"></p>
         <h2 itemprop="headline" id="title7"></h2>
-        <p itemprop="description" id="body7a"></p>
-        <p id="body7b"></p>
+        <div class="article-text-wrap" id="wrap7">
+          <p itemprop="description" id="body7a"></p>
+          <p id="body7b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap7',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -177,8 +203,11 @@
       <div class="article-body">
         <p class="eyebrow article-tag" id="tag6"></p>
         <h2 itemprop="headline" id="title6"></h2>
-        <p itemprop="description" id="body6a"></p>
-        <p id="body6b"></p>
+        <div class="article-text-wrap" id="wrap6">
+          <p itemprop="description" id="body6a"></p>
+          <p id="body6b"></p>
+        </div>
+        <button class="article-read-more" onclick="toggleArticle('wrap6',this)">...להמשך קריאה</button>
       </div>
     </article>
 
@@ -236,7 +265,7 @@ const T = {
     body5a:'1. טיפול בשורש הבעיה – הרפואה הסינית לא מכסה תסמינים, היא מחפשת ומטפלת בגורם העמוק. 2. מתאים לכמעט כל מצב – כאבים, חרדה, עייפות, בעיות הורמונליות, פוריות, עיכול ועוד. 3. ללא תופעות לוואי – הטיפולים טבעיים ובטוחים לרוב האוכלוסייה.',
     body5b:'4. מותאם אישית – כל טיפול בנוי לפי הצרכים הייחודיים שלך. 5. תוצאות מוכחות – מחקרים רבים מאששים את יעילות הדיקור הסיני והשיאצו למגוון מצבים רפואיים. בבית אור תקבל טיפול מקצועי, אישי ומכיל.',
     tag7:'צמחי מרפא', title7:'ישנן אינסוף דרכים — וויתניה ודמויות פנימיות',
-    body7a:'ישנן אינסוף דרכים בהם אנו יכולים להתפתח ולרפא את עצמנו. אחת מהן היא צמחי מרפא. שניה, היא עבודה פנימית באמצעות דמויות פנימיות בדרך העומק. לעיתים קרובות השתיים חוברות להן יחדיו, והנה סיפור קצר על וויתניה משכרת וכמה דמויות שהתגלו להן.\n\nפרק א׳. במהלך שיטוטים קבועים, ליד ביתנו הקט, נדהמתי לגלות כמויות עצומות של צמח מופלא במיוחד. כן, זו היא שוב ושוב הוויתניה (withania somnifera) או כפי שההודים קוראים לה, אשווגנדה. ובאופן לא מפתיע בכלל, זהו צמח שאני עושה שימוש מרובה בשורש שלו. מחזק אותי, משמח אותי, ממריץ את מערכת החיסון ועוד כל מיני דברים נהדרים. וכך, גיליתי יום אחד, שממש בשביל שליד הבית צומחים להם עשרים שתילים צעירים ויפים, מביטים בי, ואומרים לי: ״בועז, זכור אותנו, קטוף אותנו, ועשה מאיתנו מיצוי נפלא״. ויום עובר, ויום בא, ואני מתמהמה. לאחר כמה שבועות, אני עובר ורואה שהויתניות יבשות, עצובות. גנן מסור החליט לרסס אותן בקור רוח. העצבנות געתה בי. רגש דומיננטי השתלט עלי — כעס גדול: גבר בין 50 לערך, גדול וכעוס, ששונא ורוצה להרוס מן היסוד את כל מי שפוגע בדברים היפים והעדינים שבטבע.',
+    body7a:'ישנן אינסוף דרכים בהם אנו יכולים להתפתח ולרפא את עצמנו. אחת מהן היא צמחי מרפא. שניה, היא עבודה פנימית באמצעות דמויות פנימיות בדרך העומק. לעיתים קרובות השתיים חוברות להן יחדיו, והנה סיפור קצר על וויתניה משכרת וכמה דמויות שהתגלו להן.\n\nפרק א׳. במהלך שיטוטים קבועים, ליד ביתנו הקט, נדהמתי לגלות כמויות עצומות של צמח מופלא במיוחד. כן, זו היא שוב ושוב הוויתניה (withania somnifera) או כפי שההודים קוראים לה, אשווגנדה. ובאופן לא מפתיע בכלל, זהו צמח שאני עושה שימוש מרובה בשורש שלו. מחזק אותי, משמח אותי, מווסת את מערכת החיסון ועוד כל מיני דברים נהדרים. וכך, גיליתי יום אחד, שממש בשביל שליד הבית צומחים להם עשרים שתילים צעירים ויפים, מביטים בי, ואומרים לי: ״בועז, זכור אותנו, קטוף אותנו, ועשה מאיתנו מיצוי נפלא״. ויום עובר, ויום בא, ואני מתמהמה. לאחר כמה שבועות, אני עובר ורואה שהויתניות יבשות, עצובות. גנן מסור החליט לרסס אותן בקור רוח. העצבנות געתה בי. רגש דומיננטי השתלט עלי — כעס גדול: גבר בין 50 לערך, גדול וכעוס, ששונא ורוצה להרוס מן היסוד את כל מי שפוגע בדברים היפים והעדינים שבטבע.',
     body7b:'פרק ב׳. יום שישי, יום רענן, אני קם, לוקח את הכלבה מונה לטיול בוקר, ובאופן מוזר נזכר: ״אני חייב לקחת את הטוריה״. שם ידעתי כי מחכה לי צמח. השמים כחולים, האדמה לחה, ותוך כמה דקות אני מוצא וויתניה בדיוק בגודל המתאים. אני עודר בזהירות, עוקר את הצמח בשלמותו, אוסף זרעים וטומן באדמה. ברכת הודיה. חוזר הביתה, שוטף, חותך, ושם בטינקטורה.\n\nפרק ג׳. אני מהרהר בעצב שעלה בי למראה הוויתניות הגוססות. הדמות העצובה מתכנסת פנימה, בוכה, ולעיתים מזמנת את הדמות הכועסת. ולקח זמן מה, כמה שבועות, עד שהתעוררה לה דמות אחרת ועליזה — דמות נערית ופרקטית, רעננה וצעירה, שבשבילה מדובר במשחק. אך הופעתה יכלה להתרחש רק לאחר שמחסום עלום הוסר. הכל פשוט, כמו צמח ויתניה ירקרק ורענן שנובט לו בחורף היפה.',
     tag6:'השוואה', title6:'מה ההבדל בין דיקור סיני לשיאצו?',
     body6a:'שני הטיפולים מבוססים על עקרונות הרפואה הסינית ועובדים עם מרידיאני האנרגיה בגוף, אך הכלים שונים. דיקור סיני משתמש במחטים דקות המוכנסות לנקודות ספציפיות. שיאצו עובד עם לחץ ידיים על אותן נקודות ומרידיאנים.',
@@ -266,13 +295,24 @@ const T = {
     body5a:'1. Treating the root cause – Chinese medicine doesn\'t mask symptoms, it seeks and treats the deep underlying cause. 2. Suitable for almost any condition – pain, anxiety, fatigue, hormonal issues, fertility, digestion and more. 3. No side effects – treatments are natural and safe for most people.',
     body5b:'4. Personalised – every treatment is built around your unique needs. 5. Proven results – numerous studies confirm the effectiveness of acupuncture and shiatsu for a range of medical conditions. At Beit Or you will receive professional, personal and compassionate care.',
     tag7:'Herbal Medicine', title7:'Infinite Paths — Withania and the Inner Figures',
-    body7a:'There are infinite ways in which we can develop and heal ourselves. One of them is medicinal plants. Another is inner work through inner figures in Derech HaOmek (The Path of Depth). Often the two come together, and here is a short story about Withania somnifera and the figures that emerged.\n\nChapter 1. During regular walks near our home, I was amazed to discover enormous quantities of a truly wonderful plant — Withania somnifera, or Ashwagandha as the Indians call it. I make extensive use of its root: it strengthens me, uplifts me, stimulates the immune system. One day I found twenty young, beautiful seedlings growing in the path near the house, looking at me and saying: "Boaz, remember us, pick us, make a wonderful extract." Days passed and I kept putting it off. After a few weeks, I found them sprayed and dying. A dedicated gardener had decided to spray them without feeling. Rage rose in me — a dominant figure took over: a large, angry man of about 50, who hates and wants to destroy anyone who harms the beautiful, delicate things of nature.',
+    body7a:'There are infinite ways in which we can develop and heal ourselves. One of them is medicinal plants. Another is inner work through inner figures in Derech HaOmek (The Path of Depth). Often the two come together, and here is a short story about Withania somnifera and the figures that emerged.\n\nChapter 1. During regular walks near our home, I was amazed to discover enormous quantities of a truly wonderful plant — Withania somnifera, or Ashwagandha as the Indians call it. I make extensive use of its root: it strengthens me, uplifts me, regulates the immune system. One day I found twenty young, beautiful seedlings growing in the path near the house, looking at me and saying: "Boaz, remember us, pick us, make a wonderful extract." Days passed and I kept putting it off. After a few weeks, I found them sprayed and dying. A dedicated gardener had decided to spray them without feeling. Rage rose in me — a dominant figure took over: a large, angry man of about 50, who hates and wants to destroy anyone who harms the beautiful, delicate things of nature.',
     body7b:'Chapter 2. A fresh Friday morning. I get up, take the dog Mona for a walk, and strangely remember: "I must take the hoe." Something inside knew a plant was waiting. The sky was blue, the earth damp. Within minutes I found a Withania of exactly the right size — alone, proud, facing the Carmel. I carefully dug, uprooted the plant whole, collected dry seeds and planted them in the ground. A blessing of gratitude. Home, washed, cut, placed in tincture.\n\nChapter 3. I reflected on the sadness that arose seeing the dying plants. The sad figure gathered inward, weeping, sometimes calling up the angry figure. And it took time — a few weeks — until a different, joyful figure awakened: a youthful, practical figure, fresh and young, for whom everything is a game. But her appearance could only happen after an unknown barrier was removed. Everything is simple — like a fresh green Withania plant sprouting in the beautiful winter.',
     tag6:'Comparison', title6:'What is the Difference Between Acupuncture and Shiatsu?',
     body6a:'Both treatments are based on Chinese Medicine principles and work with the body\'s energy meridians, but the tools differ. Acupuncture uses fine needles inserted at specific points. Shiatsu works with hand pressure on the same points and meridians.',
     body6b:'Acupuncture is better suited to chronic and deep conditions, pain and internal issues. Shiatsu is better for releasing tension, improving flow, deep relaxation and those who prefer not to use needles. At Beit Or, Daria offers both treatments and can recommend what is right for you.'
   }
 };
+
+function toggleExpand(n) {
+  const wrap = document.getElementById('wrap'+n+'b');
+  const btn = document.getElementById('toggle'+n);
+  const isOpen = wrap.style.display === 'block';
+  wrap.style.display = isOpen ? 'none' : 'block';
+  const l = document.documentElement.lang;
+  btn.textContent = isOpen
+    ? (l === 'he' ? 'לקריאה נוספת ←' : 'Read more ←')
+    : (l === 'he' ? 'סגור ↑' : 'Close ↑');
+}
 
 function setLang(l) {
   const t = T[l];
@@ -292,9 +332,20 @@ function setLang(l) {
   }
   document.getElementById('btn-he').classList.toggle('active', l==='he');
   document.getElementById('btn-en').classList.toggle('active', l==='en');
+  const toggle7 = document.getElementById('toggle7');
+  const wrap7b = document.getElementById('wrap7b');
+  if (toggle7) toggle7.textContent = wrap7b.style.display === 'block'
+    ? (l === 'he' ? 'סגור ↑' : 'Close ↑')
+    : (l === 'he' ? 'לקריאה נוספת ←' : 'Read more ←');
 }
 
 setLang('he');
+
+function toggleArticle(wrapId, btn) {
+  const wrap = document.getElementById(wrapId);
+  const expanded = wrap.classList.toggle('expanded');
+  btn.textContent = expanded ? 'סגור ↑' : '...להמשך קריאה';
+}
 </script>
 </body>
 </html>
