@@ -163,7 +163,8 @@
     [dir="rtl"] .testi-deco { left:auto; right:20px; }
     .contact-deco { position:absolute; top:40px; left:-40px; width:200px; opacity:0.35; mix-blend-mode:multiply; pointer-events:none; }
     [dir="rtl"] .contact-deco { left:auto; right:-40px; }
-    .hero-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; }
+    .hero-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; transition:opacity 1.2s ease; }
+    .hero-video.ready { opacity:1; }
     .hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom, rgba(20,40,28,.55) 0%, rgba(20,40,28,.40) 60%, rgba(20,40,28,.65) 100%); pointer-events:none; }
     .hero-bg { display:none; }
     .hero::before { display:none; }
@@ -1262,6 +1263,12 @@ window.addEventListener('scroll', () => {
 // Init
 setLang('he');
 observeReveals();
+
+// Hero video fade-in
+const heroVideo = document.querySelector('.hero-video');
+if (heroVideo) {
+  heroVideo.addEventListener('canplay', () => heroVideo.classList.add('ready'), { once: true });
+}
 </script>
 </body>
 </html>
