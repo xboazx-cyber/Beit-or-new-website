@@ -394,7 +394,7 @@
     .wa-btn { position:fixed; bottom:28px; left:28px; width:54px; height:54px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,.35); z-index:200; text-decoration:none; transition:transform .2s,box-shadow .2s; }
     /* EqualWeb accessibility button — positioned directly above WhatsApp */
     #INDmenu-btn { bottom:92px !important; left:28px !important; right:auto !important; top:auto !important; }
-    @media(max-width:768px){ #INDmenu-btn { bottom:92px !important; left:auto !important; right:16px !important; } }
+    @media(max-width:768px){ #INDmenu-btn { bottom:28px !important; left:auto !important; right:28px !important; top:auto !important; } }
     [dir="ltr"] .wa-btn { left:auto; right:28px; }
     .wa-btn:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(37,211,102,.45); }
 
@@ -1282,8 +1282,9 @@ if (window.innerWidth <= 768) {
     const btn = document.getElementById('INDmenu-btn');
     if (btn) {
       btn.style.setProperty('left', 'auto', 'important');
-      btn.style.setProperty('right', '16px', 'important');
-      btn.style.setProperty('bottom', '92px', 'important');
+      btn.style.setProperty('right', '28px', 'important');
+      btn.style.setProperty('bottom', '28px', 'important');
+      btn.style.setProperty('top', 'auto', 'important');
       clearInterval(fixBtn);
     }
   }, 300);
