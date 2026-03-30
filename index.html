@@ -122,11 +122,11 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --brown-dark:#2E5E44;--brown-mid:#4A7A5A;--copper:#5A9E50;
+      --brown-dark:#2E5E44;--brown-mid:#4A7A5A;--copper:#3A7835;
       --copper-light:#A8D4A0;--sage:#6AAD60;
       --rose:#B8705A;--rose-light:#D4A090;--rose-pale:#F0E4DF;
       --cream:#F5EFE6;--cream-mid:#EDE8DC;--cream-dark:#D5CBBB;
-      --text:#1E3324;--text-light:#3A7A4A;
+      --text:#1E3324;--text-light:#245C34;
     }
     html { scroll-behavior: smooth; }
     body { font-family:'Assistant',sans-serif; background:var(--cream); color:var(--text); -webkit-font-smoothing:antialiased; overflow-x:hidden; font-size:20px; font-weight:500; }
@@ -375,15 +375,15 @@
     .footer-logo { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
     .footer-logo svg { width:34px; height:34px; }
     .footer-logo span { font-family:'Rubik',sans-serif; font-size:18px; font-weight:400; color:rgba(255,255,255,.85); }
-    .footer-brand p { font-size:12.5px; font-weight:300; line-height:1.9; color:rgba(255,255,255,.35); max-width:210px; }
+    .footer-brand p { font-size:12.5px; font-weight:300; line-height:1.9; color:rgba(255,255,255,.65); max-width:210px; }
     .footer-social-icons { display:flex; gap:12px; margin-top:20px; }
     .footer-social-icons a { width:34px; height:34px; border:0.75px solid rgba(255,255,255,.12); border-radius:50%; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.4); text-decoration:none; transition:border-color .2s,color .2s; }
     .footer-social-icons a:hover { border-color:var(--copper-light); color:var(--copper-light); }
     .footer-col h5 { font-size:10px; letter-spacing:0.3em; text-transform:uppercase; color:var(--copper-light); margin-bottom:18px; }
     .footer-col ul { list-style:none; }
     .footer-col ul li { margin-bottom:11px; }
-    .footer-col ul a { font-size:12.5px; font-weight:300; color:rgba(255,255,255,.38); text-decoration:none; transition:color .2s; }
-    .footer-col ul a:hover { color:rgba(255,255,255,.75); }
+    .footer-col ul a { font-size:12.5px; font-weight:300; color:rgba(255,255,255,.70); text-decoration:none; transition:color .2s; }
+    .footer-col ul a:hover { color:rgba(255,255,255,.95); }
     .footer-bottom { display:flex; justify-content:space-between; align-items:center; }
     .footer-copy { font-size:11px; font-weight:300; color:rgba(255,255,255,.22); }
     .footer-legal { display:flex; gap:16px; }
@@ -394,7 +394,7 @@
     .wa-btn { position:fixed; bottom:28px; left:28px; width:54px; height:54px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,.35); z-index:200; text-decoration:none; transition:transform .2s,box-shadow .2s; }
     /* EqualWeb accessibility button — positioned directly above WhatsApp */
     #INDmenu-btn { bottom:92px !important; left:28px !important; right:auto !important; top:auto !important; }
-    @media(max-width:768px){ #INDmenu-btn { bottom:140px !important; left:2px !important; } }
+    @media(max-width:768px){ #INDmenu-btn { bottom:92px !important; left:auto !important; right:16px !important; } }
     [dir="ltr"] .wa-btn { left:auto; right:28px; }
     .wa-btn:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(37,211,102,.45); }
 
@@ -1261,9 +1261,20 @@ function toggleExpand(btn) {
 function toggleMenu() {
   const h = document.getElementById('hamburger');
   const m = document.getElementById('mobile-menu');
+  const isOpen = h.classList.contains('open');
   h.classList.toggle('open');
   m.classList.toggle('open');
+  if (!isOpen) {
+    m.setAttribute('aria-hidden', 'false');
+    setTimeout(() => { const first = m.querySelector('a'); if (first) first.focus(); }, 0);
+  } else {
+    m.setAttribute('aria-hidden', 'true');
+    h.focus();
+  }
 }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && document.getElementById('hamburger').classList.contains('open')) toggleMenu();
+});
 
 // Navbar scroll
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
