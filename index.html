@@ -1276,6 +1276,19 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('hamburger').classList.contains('open')) toggleMenu();
 });
 
+// Fix accessibility button position on mobile
+if (window.innerWidth <= 768) {
+  const fixBtn = setInterval(() => {
+    const btn = document.getElementById('INDmenu-btn');
+    if (btn) {
+      btn.style.setProperty('left', 'auto', 'important');
+      btn.style.setProperty('right', '16px', 'important');
+      btn.style.setProperty('bottom', '92px', 'important');
+      clearInterval(fixBtn);
+    }
+  }, 300);
+}
+
 // Navbar scroll
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
   e.preventDefault();
