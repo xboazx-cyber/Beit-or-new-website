@@ -83,6 +83,8 @@
     .article-text-wrap:not(.expanded)::after { content:''; position:absolute; bottom:0; left:0; right:0; height:60px; background:linear-gradient(to bottom, transparent, white); pointer-events:none; }
     .article-read-more { background:none; border:none; cursor:pointer; font-family:'Assistant',sans-serif; font-size:11px; font-weight:400; letter-spacing:0.22em; text-transform:uppercase; color:var(--copper); padding:12px 0 0; display:inline-block; transition:color .2s; }
     .article-read-more:hover { color:var(--brown-dark); }
+    .article-full-link { display:inline-block; margin-top:14px; font-family:'Assistant',sans-serif; font-size:11px; font-weight:500; letter-spacing:0.22em; text-transform:uppercase; color:var(--brown-dark); text-decoration:none; border-bottom:1px solid var(--copper-light); padding-bottom:2px; transition:color .2s,border-color .2s; }
+    .article-full-link:hover { color:var(--copper); border-color:var(--copper); }
 
     /* FOOTER */
     .blog-footer { background:var(--brown-dark); padding:40px 0; text-align:center; }
@@ -130,6 +132,7 @@
           <p id="body1b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap1',this)">...להמשך קריאה</button>
+        <a href="blog/acupuncture-how-it-works.html" class="article-full-link" id="full1">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -143,6 +146,7 @@
           <p id="body2b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap2',this)">...להמשך קריאה</button>
+        <a href="blog/shiatsu-healing-touch.html" class="article-full-link" id="full2">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -156,6 +160,7 @@
           <p id="body3b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap3',this)">...להמשך קריאה</button>
+        <a href="blog/herbal-medicine-nature.html" class="article-full-link" id="full3">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -169,6 +174,7 @@
           <p id="body4b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap4',this)">...להמשך קריאה</button>
+        <a href="blog/family-constellation-healing.html" class="article-full-link" id="full4">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -182,6 +188,7 @@
           <p id="body5b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap5',this)">...להמשך קריאה</button>
+        <a href="blog/5-reasons-chinese-medicine.html" class="article-full-link" id="full5">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -195,6 +202,7 @@
           <p id="body7b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap7',this)">...להמשך קריאה</button>
+        <a href="blog/withania-inner-figures.html" class="article-full-link" id="full7">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -208,6 +216,7 @@
           <p id="body6b"></p>
         </div>
         <button class="article-read-more" onclick="toggleArticle('wrap6',this)">...להמשך קריאה</button>
+        <a href="blog/acupuncture-vs-shiatsu.html" class="article-full-link" id="full6">לקריאת המאמר המלא ←</a>
       </div>
     </article>
 
@@ -269,7 +278,8 @@ const T = {
     body7b:'פרק ב׳. יום שישי, יום רענן, אני קם, לוקח את הכלבה מונה לטיול בוקר, ובאופן מוזר נזכר: ״אני חייב לקחת את הטוריה״. שם ידעתי כי מחכה לי צמח. השמים כחולים, האדמה לחה, ותוך כמה דקות אני מוצא וויתניה בדיוק בגודל המתאים. אני עודר בזהירות, עוקר את הצמח בשלמותו, אוסף זרעים וטומן באדמה. ברכת הודיה. חוזר הביתה, שוטף, חותך, ושם בטינקטורה.\n\nפרק ג׳. אני מהרהר בעצב שעלה בי למראה הוויתניות הגוססות. הדמות העצובה מתכנסת פנימה, בוכה, ולעיתים מזמנת את הדמות הכועסת. ולקח זמן מה, כמה שבועות, עד שהתעוררה לה דמות אחרת ועליזה — דמות נערית ופרקטית, רעננה וצעירה, שבשבילה מדובר במשחק. אך הופעתה יכלה להתרחש רק לאחר שמחסום עלום הוסר. הכל פשוט, כמו צמח ויתניה ירקרק ורענן שנובט לו בחורף היפה.',
     tag6:'השוואה', title6:'מה ההבדל בין דיקור סיני לשיאצו?',
     body6a:'שני הטיפולים מבוססים על עקרונות הרפואה הסינית ועובדים עם מרידיאני האנרגיה בגוף, אך הכלים שונים. דיקור סיני משתמש במחטים דקות המוכנסות לנקודות ספציפיות. שיאצו עובד עם לחץ ידיים על אותן נקודות ומרידיאנים.',
-    body6b:'דיקור סיני מתאים יותר למצבים כרוניים ועמוקים, כאבים ובעיות פנימיות. שיאצו מתאים לשחרור מתחים, שיפור זרימה, הרפיה עמוקה ומי שמעדיף לא להשתמש במחטים. בבית אור, דריה מציעה את שני הטיפולים ותוכל להמליץ על המתאים לך.'
+    body6b:'דיקור סיני מתאים יותר למצבים כרוניים ועמוקים, כאבים ובעיות פנימיות. שיאצו מתאים לשחרור מתחים, שיפור זרימה, הרפיה עמוקה ומי שמעדיף לא להשתמש במחטים. בבית אור, דריה מציעה את שני הטיפולים ותוכל להמליץ על המתאים לך.',
+    fullLink:'לקריאת המאמר המלא ←'
   },
   en: {
     lang:'en', dir:'ltr',
@@ -299,7 +309,8 @@ const T = {
     body7b:'Chapter 2. A fresh Friday morning. I get up, take the dog Mona for a walk, and strangely remember: "I must take the hoe." Something inside knew a plant was waiting. The sky was blue, the earth damp. Within minutes I found a Withania of exactly the right size — alone, proud, facing the Carmel. I carefully dug, uprooted the plant whole, collected dry seeds and planted them in the ground. A blessing of gratitude. Home, washed, cut, placed in tincture.\n\nChapter 3. I reflected on the sadness that arose seeing the dying plants. The sad figure gathered inward, weeping, sometimes calling up the angry figure. And it took time — a few weeks — until a different, joyful figure awakened: a youthful, practical figure, fresh and young, for whom everything is a game. But her appearance could only happen after an unknown barrier was removed. Everything is simple — like a fresh green Withania plant sprouting in the beautiful winter.',
     tag6:'Comparison', title6:'What is the Difference Between Acupuncture and Shiatsu?',
     body6a:'Both treatments are based on Chinese Medicine principles and work with the body\'s energy meridians, but the tools differ. Acupuncture uses fine needles inserted at specific points. Shiatsu works with hand pressure on the same points and meridians.',
-    body6b:'Acupuncture is better suited to chronic and deep conditions, pain and internal issues. Shiatsu is better for releasing tension, improving flow, deep relaxation and those who prefer not to use needles. At Beit Or, Daria offers both treatments and can recommend what is right for you.'
+    body6b:'Acupuncture is better suited to chronic and deep conditions, pain and internal issues. Shiatsu is better for releasing tension, improving flow, deep relaxation and those who prefer not to use needles. At Beit Or, Daria offers both treatments and can recommend what is right for you.',
+    fullLink:'Read full article →'
   }
 };
 
@@ -329,6 +340,8 @@ function setLang(l) {
     document.getElementById('title'+i).textContent = t['title'+i];
     document.getElementById('body'+i+'a').textContent = t['body'+i+'a'];
     document.getElementById('body'+i+'b').textContent = t['body'+i+'b'];
+    const fullEl = document.getElementById('full'+i);
+    if (fullEl) fullEl.textContent = t.fullLink;
   }
   document.getElementById('btn-he').classList.toggle('active', l==='he');
   document.getElementById('btn-en').classList.toggle('active', l==='en');
