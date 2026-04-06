@@ -396,9 +396,8 @@
 
     /* WHATSAPP BUTTON */
     .wa-btn { position:fixed; bottom:28px; left:28px; width:54px; height:54px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,.35); z-index:200; text-decoration:none; transition:transform .2s,box-shadow .2s; }
-    /* EqualWeb accessibility button — right side, all screens */
-    #INDmenu-btn { position:fixed !important; bottom:28px !important; right:28px !important; left:auto !important; top:auto !important; }
-    @media(max-width:768px){ #INDmenu-btn { position:fixed !important; bottom:28px !important; right:0 !important; left:auto !important; top:auto !important; } }
+    /* EqualWeb accessibility button — fixed middle-right */
+    #INDmenu-btn { position:fixed !important; top:50% !important; bottom:auto !important; right:0 !important; left:auto !important; transform:translateY(-50%) !important; z-index:9999 !important; }
     [dir="ltr"] .wa-btn { left:auto; right:28px; }
     .wa-btn:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(37,211,102,.45); }
 
@@ -1280,18 +1279,19 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('hamburger').classList.contains('open')) toggleMenu();
 });
 
-// Fix accessibility button position — right side on all screens
+// Fix accessibility button — fixed middle-right, all screens
 function fixA11yBtn() {
   const btn = document.getElementById('INDmenu-btn');
   if (!btn) return;
-  const isMobile = window.innerWidth <= 768;
-  const right = isMobile ? '0px' : '28px';
-  // Override inline style completely for position props
+  btn.setAttribute('aria-label', 'כלי נגישות');
+  btn.setAttribute('role', 'button');
   btn.style.setProperty('position', 'fixed', 'important');
-  btn.style.setProperty('bottom', '28px', 'important');
-  btn.style.setProperty('right', right, 'important');
+  btn.style.setProperty('top', '50%', 'important');
+  btn.style.setProperty('bottom', 'auto', 'important');
+  btn.style.setProperty('right', '0', 'important');
   btn.style.setProperty('left', 'auto', 'important');
-  btn.style.setProperty('top', 'auto', 'important');
+  btn.style.setProperty('transform', 'translateY(-50%)', 'important');
+  btn.style.setProperty('z-index', '9999', 'important');
 }
 // Run on DOM changes, scroll, resize, and rapidly on load
 const a11yObserver = new MutationObserver(fixA11yBtn);
