@@ -1279,29 +1279,25 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('hamburger').classList.contains('open')) toggleMenu();
 });
 
-// Fix accessibility button — fixed middle-right, all screens
-function fixA11yBtn() {
-  const btn = document.getElementById('INDmenu-btn');
-  if (!btn) return;
-  btn.setAttribute('aria-label', 'כלי נגישות');
-  btn.setAttribute('role', 'button');
-  btn.style.setProperty('position', 'fixed', 'important');
-  btn.style.setProperty('top', '50%', 'important');
-  btn.style.setProperty('bottom', 'auto', 'important');
-  btn.style.setProperty('right', '0', 'important');
-  btn.style.setProperty('left', 'auto', 'important');
-  btn.style.setProperty('transform', 'translateY(-50%)', 'important');
-  btn.style.setProperty('z-index', '9999', 'important');
-}
-// Run on DOM changes, scroll, resize, and rapidly on load
-const a11yObserver = new MutationObserver(fixA11yBtn);
-a11yObserver.observe(document.body, { childList: true, subtree: true, attributes: true });
-setInterval(fixA11yBtn, 100);
-window.addEventListener('scroll', fixA11yBtn, { passive: true });
-window.addEventListener('resize', fixA11yBtn);
-// Run eagerly on load
-document.addEventListener('DOMContentLoaded', fixA11yBtn);
-window.addEventListener('load', fixA11yBtn);
+// Accessibility button — force to right edge using rAF loop
+(function() {
+  function applyA11yPos() {
+    const btn = document.getElementById('INDmenu-btn');
+    if (btn) {
+      const s = btn.style;
+      s.cssText = s.cssText
+        .replace(/\bright\s*:[^;]+;?/gi, '')
+        .replace(/\bleft\s*:[^;]+;?/gi, '')
+        .replace(/\btop\s*:[^;]+;?/gi, '')
+        .replace(/\bbottom\s*:[^;]+;?/gi, '')
+        .replace(/\btransform\s*:[^;]+;?/gi, '')
+        .replace(/\bposition\s*:[^;]+;?/gi, '');
+      s.cssText += ';position:fixed!important;right:0!important;left:auto!important;top:50%!important;bottom:auto!important;transform:translateY(-50%)!important;z-index:9999!important;';
+    }
+    requestAnimationFrame(applyA11yPos);
+  }
+  requestAnimationFrame(applyA11yPos);
+})();
 
 // Navbar scroll
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
