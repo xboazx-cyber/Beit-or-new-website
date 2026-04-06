@@ -157,7 +157,8 @@
     .nav-cta:hover { background:var(--brown-mid) !important; }
     /* HAMBURGER */
     .hamburger { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:6px; background:none; border:none; }
-    .hamburger span { display:block; width:22px; height:1.5px; background:var(--text); transition:transform .3s,opacity .3s; }
+    .hamburger span { display:block; width:22px; height:1.5px; background:rgba(245,239,230,0.88); transition:transform .3s,opacity .3s; }
+    nav.scrolled .hamburger span { background:var(--text); }
     .hamburger.open span:nth-child(1){ transform:translateY(6.5px) rotate(45deg); }
     .hamburger.open span:nth-child(2){ opacity:0; }
     .hamburger.open span:nth-child(3){ transform:translateY(-6.5px) rotate(-45deg); }
