@@ -144,12 +144,15 @@
     nav .container { display:flex; align-items:center; justify-content:space-between; }
     .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
     .nav-logo svg { width:40px; height:40px; direction:ltr; unicode-bidi:isolate; }
-    .nav-logo-text { font-family:'Rubik',sans-serif; font-size:20px; font-weight:400; color:var(--brown-dark); letter-spacing:0.05em; }
+    .nav-logo-text { font-family:'Rubik',sans-serif; font-size:20px; font-weight:400; color:rgba(245,239,230,0.92); letter-spacing:0.05em; }
+    nav.scrolled .nav-logo-text { color:var(--brown-dark); }
     [lang="en"] .nav-logo-text { font-family:'Rubik',sans-serif; letter-spacing:0.08em; }
     .nav-right { display:flex; align-items:center; gap:28px; }
     .nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
-    .nav-links a { font-size:14px; font-weight:300; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-light); text-decoration:none; transition:color .2s; }
-    .nav-links a:hover { color:var(--copper); }
+    .nav-links a { font-size:14px; font-weight:300; letter-spacing:0.22em; text-transform:uppercase; color:rgba(245,239,230,0.88); text-decoration:none; transition:color .2s; }
+    .nav-links a:hover { color:#ffffff; }
+    nav.scrolled .nav-links a { color:var(--text-light); }
+    nav.scrolled .nav-links a:hover { color:var(--copper); }
     .nav-cta { font-size:14px !important; font-weight:400 !important; color:var(--cream) !important; background:var(--brown-dark); padding:10px 22px; border-radius:1px; transition:background .2s !important; }
     .nav-cta:hover { background:var(--brown-mid) !important; }
     /* HAMBURGER */
@@ -392,9 +395,8 @@
 
     /* WHATSAPP BUTTON */
     .wa-btn { position:fixed; bottom:28px; left:28px; width:54px; height:54px; background:#25D366; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(37,211,102,.35); z-index:200; text-decoration:none; transition:transform .2s,box-shadow .2s; }
-    /* EqualWeb accessibility button — positioned directly above WhatsApp */
-    #INDmenu-btn { bottom:92px !important; left:28px !important; right:auto !important; top:auto !important; }
-    @media(max-width:768px){ #INDmenu-btn { bottom:28px !important; left:auto !important; right:28px !important; top:auto !important; } }
+    /* EqualWeb accessibility button — right side, all screens */
+    #INDmenu-btn { bottom:28px !important; right:28px !important; left:auto !important; top:auto !important; }
     [dir="ltr"] .wa-btn { left:auto; right:28px; }
     .wa-btn:hover { transform:scale(1.1); box-shadow:0 6px 28px rgba(37,211,102,.45); }
 
@@ -1276,18 +1278,16 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && document.getElementById('hamburger').classList.contains('open')) toggleMenu();
 });
 
-// Fix accessibility button position on mobile
+// Fix accessibility button position — right side on all screens
 function fixA11yBtn() {
   const btn = document.getElementById('INDmenu-btn');
   if (btn) {
     btn.style.cssText += ';left:auto!important;right:28px!important;bottom:28px!important;top:auto!important;';
   }
 }
-if (window.innerWidth <= 768) {
-  const observer = new MutationObserver(() => { fixA11yBtn(); });
-  observer.observe(document.body, { childList: true, subtree: true, attributes: true });
-  setInterval(fixA11yBtn, 500);
-}
+const a11yObserver = new MutationObserver(() => { fixA11yBtn(); });
+a11yObserver.observe(document.body, { childList: true, subtree: true, attributes: true });
+setInterval(fixA11yBtn, 500);
 
 // Navbar scroll
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
