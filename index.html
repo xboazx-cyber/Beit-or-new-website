@@ -1282,18 +1282,25 @@ document.addEventListener('keydown', e => {
 // Fix accessibility button position — right side on all screens
 function fixA11yBtn() {
   const btn = document.getElementById('INDmenu-btn');
-  if (btn) {
-    const r = window.innerWidth <= 768 ? '0' : '28px';
-    btn.style.setProperty('position', 'fixed', 'important');
-    btn.style.setProperty('bottom', '28px', 'important');
-    btn.style.setProperty('right', r, 'important');
-    btn.style.setProperty('left', 'auto', 'important');
-    btn.style.setProperty('top', 'auto', 'important');
-  }
+  if (!btn) return;
+  const isMobile = window.innerWidth <= 768;
+  const right = isMobile ? '0px' : '28px';
+  // Override inline style completely for position props
+  btn.style.setProperty('position', 'fixed', 'important');
+  btn.style.setProperty('bottom', '28px', 'important');
+  btn.style.setProperty('right', right, 'important');
+  btn.style.setProperty('left', 'auto', 'important');
+  btn.style.setProperty('top', 'auto', 'important');
 }
+// Run on DOM changes, scroll, resize, and rapidly on load
 const a11yObserver = new MutationObserver(fixA11yBtn);
-a11yObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style'] });
-setInterval(fixA11yBtn, 300);
+a11yObserver.observe(document.body, { childList: true, subtree: true, attributes: true });
+setInterval(fixA11yBtn, 100);
+window.addEventListener('scroll', fixA11yBtn, { passive: true });
+window.addEventListener('resize', fixA11yBtn);
+// Run eagerly on load
+document.addEventListener('DOMContentLoaded', fixA11yBtn);
+window.addEventListener('load', fixA11yBtn);
 
 // Navbar scroll
 document.getElementById('contact-form').addEventListener('submit', async function(e) {
