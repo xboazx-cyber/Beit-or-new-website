@@ -242,6 +242,7 @@
     /* STRIP */
     .intro-strip { background:var(--brown-dark); padding:26px 0; overflow:hidden; }
     .strip-track { display:flex; gap:52px; animation:marquee 14s linear infinite; white-space:nowrap; }
+    @media(max-width:768px){ .strip-track { gap:36px; animation-duration:7s; } }
     .strip-item { display:flex; align-items:center; gap:18px; flex-shrink:0; }
     .strip-item span { font-size:14px; font-weight:300; letter-spacing:0.28em; text-transform:uppercase; color:rgba(255,255,255,.6); }
     .strip-dot { width:4px; height:4px; border-radius:50%; background:var(--copper); flex-shrink:0; }
@@ -439,6 +440,7 @@
     @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
     @keyframes scrollPulse { 0%,100%{opacity:.4} 50%{opacity:1} }
     @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-25%)} }
+    @media(max-width:768px){ @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-12.5%)} } }
     .reveal { opacity:0; transform:translateY(28px); transition:opacity .8s ease,transform .8s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
 
@@ -1074,7 +1076,8 @@ function toggleFAQ(i) {
 }
 
 function buildStrip() {
-  const items = [...T[lang].strip, ...T[lang].strip, ...T[lang].strip, ...T[lang].strip];
+  const copies = window.innerWidth <= 768 ? 8 : 4;
+  const items = Array.from({length: copies}, () => T[lang].strip).flat();
   document.getElementById('strip-track').innerHTML = items.map(s =>
     `<div class="strip-item"><div class="strip-dot"></div><span>${s}</span></div>`
   ).join('');
