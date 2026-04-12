@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:www.mentalherbs.com)"
+      "WebFetch(domain:www.mentalherbs.com)",
+      "Bash(python3:*)",
+      "Bash(ls \"/Users/boazor/New website/\"*.html)"
     ]
   }
 }
