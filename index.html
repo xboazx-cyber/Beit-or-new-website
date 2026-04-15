@@ -429,6 +429,11 @@
       #practitioner .prac-text .divider{margin:12px 0;}
     }
 
+    /* MOTTO BOX */
+    .prac-motto { margin:32px 0 12px; padding:24px 28px; background:rgba(168,212,160,0.18); border-right:4px solid var(--copper); border-radius:3px; box-shadow:0 1px 6px rgba(46,94,68,0.07); }
+    [dir="ltr"] .prac-motto { border-right:none; border-left:4px solid var(--copper); }
+    .prac-motto p { font-family:'Frank Ruhl Libre',serif !important; font-size:18px !important; font-weight:400 !important; font-style:italic !important; line-height:1.9 !important; color:var(--brown-dark) !important; margin:0 !important; }
+
     /* PRACTITIONER ALT (Boaz – photo on left in LTR, right in RTL) */
     .practitioner--alt { background:var(--cream); }
     .practitioner--alt .prac-inner { direction:ltr; }
@@ -620,6 +625,9 @@
         <p data-i18n="prac_bio1"></p>
         <p data-i18n="prac_bio2"></p>
         <p data-i18n="prac_bio3"></p>
+        <div class="prac-motto">
+          <p>אני מאמינה בכוח הריפוי שלנו ומתרגשת כל יום מחדש ללוות אנשים בתהליכי החיים שלהם. דרך השינויים, הלמידה, ההתפתחות, החקירה, התובנות החדשות וההבראה. בעבורי זוהי זכות מופלאה שמהווה חלק משמעותי מהמסע האישי שלי.</p>
+        </div>
         <a href="#contact" class="btn-primary" style="margin-top:32px; display:inline-block;" data-i18n="prac_cta"></a>
       </div>
     </div>
@@ -671,7 +679,6 @@
   <img class="testi-deco" src="brand_assets/illustrations/bird-on-branch.png" alt="" aria-hidden="true">
   <div class="container">
     <div class="section-head reveal">
-      <p class="eyebrow" data-i18n="testi_eyebrow"></p>
       <div class="divider"><span></span><div class="dot"></div><span></span></div>
       <h2 data-i18n="testi_title"></h2>
     </div>
@@ -858,13 +865,13 @@ const T = {
     prac_name:'דריה פורת',
     prac_role:'מטפלת ברפואה סינית, דיקור סיני ושיאצו',
     prac_bio1:'דריה פורת היא מטפלת ברפואה סינית ושיאצו עם הכשרה מעמיקה בישראל ובעולם. את דרכה החלה בלימודי זן-שיאצו בארגנטינה תחת הנחייתו של מאסטר Eiji Mino, ובהמשך השלימה תוכנית ארבע שנתית ברפואה סינית בקמפוס רמת השרון של אוניברסיטת תל אביב — בדיקור סיני, פיטותרפיה ותזונה.',
-    prac_bio2:'דריה מוסמכת על ידי האגודה הישראלית לרפואה סינית מסורתית ומוכרת כמטפלת שיאצו בכירה. לאחרונה השתלמה בשיטת הגזעים והענפים — ענף עמוק ועתיק של הרפואה הסינית הקלאסית — אצל אפרת מורסיאנו. בנוסף, מביאה עמה יותר מעשור של תרגול יוגה ומדיטציה, הסמכת מדריכת יוגה מארגון סיוונאנדה בניו יורק ולימודי Theta Healing.',
+    prac_bio2:'דריה מוסמכת על ידי האגודה הישראלית לרפואה סינית מסורתית ומוכרת כמטפלת שיאצו בכירה. לאחרונה השתלמה בשיטת הגזעים והענפים — ענף עמוק ועתיק של הרפואה הסינית הקלאסית — אצל אפרת מורסיאנו. בנוסף, מביאה עמה יותר מעשור של תרגול יוגה ומדיטציה, הסמכת מדריכת יוגה מארגון שיבננדה בניו יורק ולימודי Theta Healing.',
     prac_bio3:'הגישה של דריה שואפת לאתר את החוט המקשר בין תופעות שונות וליצור פתרון אמיתי מהשורש — תוך חיזוק האזורים שנחלשו. היא מלווה כל מטופל בחמלה, בדיוק ובנוכחות מלאה, תוך ראיית האדם השלם על כל רבדיו.',
     prac_cred1:'🎓 בוגרת תוכנית 4 שנתית ברפואה סינית — אוניברסיטת תל אביב (קמפוס רמת השרון)',
     prac_cred2:'🪡 מומחית דיקור סיני – שיטת גזעים וענפים (בהדרכת אפרת מורסיאנו)',
     prac_cred3:'🤲 מוסמכת זן-שיאצו — תחת מאסטר Eiji Mino, ארגנטינה',
     prac_cred4:'📜 חברה באגודה הישראלית לרפואה סינית מסורתית | מטפלת שיאצו בכירה',
-    prac_cred5:'🧘 מדריכת יוגה מוסמכת — ארגון סיוונאנדה, ניו יורק | Theta Healing',
+    prac_cred5:'🧘 מדריכת יוגה מוסמכת — ארגון שיבננדה, ניו יורק | Theta Healing',
     prac_cta:'לקביעת פגישה עם דריה',
     prac_photo_hint:'הוסף תמונה כאן',
     boaz_eyebrow:'מייסד בית אור',
