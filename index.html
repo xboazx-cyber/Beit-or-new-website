@@ -1250,7 +1250,6 @@ document.getElementById('contact-form').addEventListener('submit', async functio
   error.style.display = 'none';
   try {
     const formData = new FormData(this);
-    formData.delete('g-recaptcha-response');
     const res = await fetch('https://formspree.io/f/maqpgkad', {
       method: 'POST',
       headers: { 'Accept': 'application/json' },
