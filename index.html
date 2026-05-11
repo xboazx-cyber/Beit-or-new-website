@@ -37,14 +37,14 @@
   <meta property="og:url" content="https://boazor.com/">
   <meta property="og:title" content="בועז אור ודריה פורת | בית אור — רפואה סינית, דיקור, שיאצו והרבליזם קליני">
   <meta property="og:description" content="מרכז לרפואה הוליסטית. טיפולי רפואה סינית, דיקור סיני, שיאצו והרבליזם קליני עם דריה פורת ובועז אור.">
-  <meta property="og:image" content="https://boazor.com/new logo.png">
+  <meta property="og:image" content="https://boazor.com/brand_assets/logos/new-logo.png">
   <meta property="og:locale" content="he_IL">
 
   <!-- Twitter/X -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="בועז אור ודריה פורת | בית אור — רפואה סינית, דיקור, שיאצו והרבליזם קליני">
   <meta name="twitter:description" content="מרכז לרפואה הוליסטית. טיפולי רפואה סינית, דיקור סיני, שיאצו והרבליזם קליני.">
-  <meta name="twitter:image" content="https://boazor.com/new logo.png">
+  <meta name="twitter:image" content="https://boazor.com/brand_assets/logos/new-logo.png">
 
   <!-- Structured Data: Local Business -->
   <script type="application/ld+json">
@@ -54,8 +54,8 @@
     "name": "בית אור - Beit Or",
     "description": "מרכז לרפואה הוליסטית – רפואה סינית, דיקור סיני, שיאצו והרבליזם קליני",
     "url": "https://boazor.com",
-    "logo": "https://boazor.com/new logo.png",
-    "image": "https://boazor.com/new logo.png",
+    "logo": "https://boazor.com/brand_assets/logos/new-logo.png",
+    "image": "https://boazor.com/brand_assets/logos/new-logo.png",
     "telephone": "+972-54-5222209",
     "email": "xboazx@gmail.com",
     "address": {
@@ -302,6 +302,9 @@
     .service-card p { font-size:15px; font-weight:400; line-height:1.85; color:var(--text-light); }
     .service-link { display:inline-flex; align-items:center; gap:8px; margin-top:14px; font-size:10px; font-weight:400; letter-spacing:0.24em; text-transform:uppercase; color:var(--copper); text-decoration:none; transition:gap .2s; background:none; border:none; cursor:pointer; padding:0; font-family:inherit; }
     .service-link:hover { gap:14px; }
+    .service-page-link { display:block; margin-top:10px; font-size:10px; font-weight:400; letter-spacing:0.2em; text-transform:uppercase; color:var(--copper); text-decoration:none; opacity:0.7; }
+    .service-page-link:hover { opacity:1; }
+    .service-card.featured .service-page-link { color:var(--copper-light); }
     .service-card.featured .service-link { color:var(--copper-light); }
     .svc-expand { margin-top:16px; padding-top:16px; border-top:0.75px solid var(--cream-dark); }
     .service-card.featured .svc-expand { border-top-color:rgba(255,255,255,0.1); }
@@ -510,7 +513,7 @@
 <nav id="navbar">
   <div class="container">
     <a href="#" class="nav-logo">
-      <img src="brand_assets/logos/new logo.png" alt="Beit Or Logo" style="width:40px;height:40px;"/>
+      <img src="brand_assets/logos/new-logo.png" alt="Beit Or Logo" style="width:40px;height:40px;"/>
       <span class="nav-logo-text">בית אור</span>
     </a>
     <div class="nav-right">
@@ -580,7 +583,7 @@
     </svg>
   </div>
   <div class="hero-content">
-    <img src="brand_assets/logos/new logo.png" class="hero-logo" alt="Beit Or Logo"/>
+    <img src="brand_assets/logos/new-logo.png" class="hero-logo" alt="Beit Or Logo"/>
     <p class="eyebrow hero-eyebrow" data-i18n="hero_eyebrow"></p>
     <h1 data-i18n="hero_title"></h1>
     <span class="hero-sub" data-i18n="hero_sub"></span>
@@ -769,7 +772,7 @@
     <div class="footer-top">
       <div class="footer-brand">
         <div class="footer-logo">
-          <img src="brand_assets/logos/new logo.png" alt="Beit Or Logo" style="width:34px;height:34px;"/>
+          <img src="brand_assets/logos/new-logo.png" alt="Beit Or Logo" style="width:34px;height:34px;"/>
           <span>בית אור</span>
         </div>
         <p data-i18n="footer_desc"></p>
@@ -1089,11 +1092,11 @@ function buildStrip() {
 
 function buildServices() {
   const svcs = [
-    { key:'svc1', featured:true,  icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/><path d="M12 8v4l3 3"/>' },
+    { key:'svc1', featured:true,  url:'family-constellation.html', icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/><path d="M12 8v4l3 3"/>' },
     { key:'svc2', featured:true,  icon:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
-    { key:'svc4', featured:false, icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/>' },
-    { key:'svc9', featured:true,  icon:'<line x1="12" y1="2" x2="12" y2="22"/><line x1="6" y1="6" x2="18" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="6" y1="18" x2="18" y2="18"/>' },
-    { key:'svc10', featured:false, icon:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>' },
+    { key:'svc4', featured:false, url:'herbal-medicine.html', icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/>' },
+    { key:'svc9', featured:true,  url:'acupuncture.html', icon:'<line x1="12" y1="2" x2="12" y2="22"/><line x1="6" y1="6" x2="18" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="6" y1="18" x2="18" y2="18"/>' },
+    { key:'svc10', featured:false, url:'shiatsu.html', icon:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>' },
     { key:'svc11', featured:false, icon:'<path d="M12 22s-8-4-8-10V5l8-3 8 3v7c0 6-8 10-8 10z"/>' },
     { key:'svc12', featured:false, icon:'<path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/>' },
     { key:'svc13', featured:false, icon:'<path d="M12 22V12"/><path d="M5 9l7-7 7 7"/><path d="M9 22V16a3 3 0 016 0v6"/><path d="M3 9h18"/>' },
@@ -1101,11 +1104,12 @@ function buildServices() {
   document.getElementById('services-grid').innerHTML = svcs.map((s, i) => {
     const detail = T[lang][s.key+'_detail'] || '';
     const cardClass = i % 2 === 0 ? ' featured' : ' rose';
+    const pageLink = s.url ? `<a href="${s.url}" class="service-page-link">${lang==='he'?'לעמוד המלא':'Full page'} →</a>` : '';
     return `
     <div class="service-card${cardClass} reveal">
       <span class="service-num">${String(i+1).padStart(2,'0')}</span>
       <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">${s.icon}</svg>
-      <h3>${T[lang][s.key+'_title']}</h3>
+      <h3>${s.url ? `<a href="${s.url}" style="color:inherit;text-decoration:none;">${T[lang][s.key+'_title']}</a>` : T[lang][s.key+'_title']}</h3>
       <p>${T[lang][s.key+'_body']}</p>
       ${detail ? `
       <div class="svc-expand" style="display:none;">
@@ -1114,6 +1118,7 @@ function buildServices() {
       <button class="service-link" onclick="toggleExpand(this)" type="button">
         <span class="svc-link-text">${T[lang].svc_link}</span> <span class="svc-link-arrow">→</span>
       </button>` : `<a href="#contact" class="service-link">${T[lang].svc_link} <span>→</span></a>`}
+      ${pageLink}
     </div>`;
   }).join('');
   observeReveals();

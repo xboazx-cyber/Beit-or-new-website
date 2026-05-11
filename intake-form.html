@@ -28,6 +28,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>שאלון מטופל חדש | בית אור</title>
   <meta name="robots" content="noindex, nofollow">
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500&family=Assistant:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -119,7 +120,7 @@
 <body>
 
 <header>
-  <img src="brand_assets/logos/new logo.png" alt="בית אור">
+  <img src="brand_assets/logos/new-logo.png" alt="בית אור">
   <h1>שאלון — Intake</h1>
   <p>בית אור | כרמי יוסף</p>
 </header>
@@ -745,6 +746,8 @@
 
     <div class="submit-area">
       <p>השאלון ישלח ישירות לצוות בית אור ויישמר בסודיות מלאה.</p>
+      <div class="g-recaptcha" data-sitekey="6Ld1DJUsAAAAAEw1gZ1uaTYTBFd1mxuMgj-Wbn21" style="margin-bottom:16px;display:inline-block;"></div>
+      <br>
       <button type="submit" class="btn-submit">שליחת השאלון</button>
     </div>
 
@@ -773,6 +776,11 @@
     e.preventDefault();
     const form = e.target;
     const btn = form.querySelector('.btn-submit');
+    if (!grecaptcha.getResponse()) {
+      btn.textContent = 'יש לאשר שאינך רובוט';
+      setTimeout(() => { btn.textContent = 'שליחת השאלון'; }, 3000);
+      return;
+    }
     btn.textContent = 'שולח...';
     btn.disabled = true;
     try {
@@ -790,11 +798,13 @@
         const errMsg = data.error || data.errors?.map(e=>e.message).join(', ') || res.status;
         btn.textContent = 'שגיאה: ' + errMsg;
         btn.disabled = false;
+        grecaptcha.reset();
         console.error('Formspree error:', data);
       }
     } catch(err) {
       btn.textContent = 'שגיאת רשת — נסה שוב';
       btn.disabled = false;
+      grecaptcha.reset();
       console.error('Network error:', err);
     }
   });
