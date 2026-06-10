@@ -573,35 +573,41 @@ function calculate() { try {
   const renovVAT = enableRenovVAT ? renovation * 0.10 : 0;
 
   // ── SUMMARY ──
+  // actualLoanPayments = real cash paid to the bank during the holding period
+  // (principal + interest for standard mortgage; interest only for interest-only loan)
+  // Principal repayments are real cash out — they come back indirectly via lower remaining balance at sale
+  const holdMonthsCapped = Math.min(holdMonths, loanTerm > 0 ? loanTerm * 12 : holdMonths);
+  const actualLoanPayments = loanAmount > 0 ? monthly * holdMonthsCapped : 0;
+
   const equity = price - loanAmount;
-  const totalCashIn = equity + totalClosingCosts + renovation + renovVAT + totalInterest + imuTotal + tariTotal;
-  const netProfit = netProceeds + totalRentalIncome - totalCashIn;
-  const roi = totalCashIn > 0 ? (netProfit / totalCashIn) * 100 : 0;
+  const totalCashOut = equity + totalClosingCosts + renovation + renovVAT + actualLoanPayments + imuTotal + tariTotal;
+  const totalMoneyIn = netProceeds + totalRentalIncome;
+  const netProfit = totalMoneyIn - totalCashOut;
+  const roi = totalCashOut > 0 ? (netProfit / totalCashOut) * 100 : 0;
 
   // ── RENDER ──
   document.getElementById('results').style.display = 'block';
 
   // Annualized return
-  const annualizedROI = yearsUntilSale > 0 && totalCashIn > 0
-    ? (Math.pow(1 + netProfit / totalCashIn, 1 / yearsUntilSale) - 1) * 100 : 0;
+  const annualizedROI = yearsUntilSale > 0 && totalCashOut > 0 && netProfit / totalCashOut > -1
+    ? (Math.pow(1 + netProfit / totalCashOut, 1 / yearsUntilSale) - 1) * 100 : 0;
 
   // Deal Result Hero
   const isProfit = netProfit >= 0;
   const heroClass = isProfit ? 'profit' : 'loss';
-  const moneyIn = netProceeds + totalRentalIncome;
   document.getElementById('dealResult').innerHTML = `
     <div class="deal-hero">
       <div class="deal-hero-header ${heroClass}">${isProfit ? '✓ Profitable Deal' : '✗ Loss-making Deal'} — ${yearsUntilSale}-year hold</div>
       <div class="deal-hero-body">
         <div class="deal-col">
           <div class="dlabel">Total Money Out</div>
-          <div class="dval">${fmt(totalCashIn)}</div>
-          <div class="dsub">all costs, taxes & interest</div>
+          <div class="dval">${fmt(totalCashOut)}</div>
+          <div class="dsub">down payment + payments + costs</div>
         </div>
         <div class="deal-col">
           <div class="dlabel">Total Money In</div>
-          <div class="dval">${fmt(moneyIn)}</div>
-          <div class="dsub">sale proceeds${enableRental ? ' + rent' : ''}</div>
+          <div class="dval">${fmt(totalMoneyIn)}</div>
+          <div class="dsub">sale proceeds${enableRental ? ' + rent' : ''}${remainingBalance > 0 ? ' (after loan repayment)' : ''}</div>
         </div>
         <div class="deal-col">
           <div class="dlabel">Net ${isProfit ? 'Profit' : 'Loss'}</div>
@@ -630,7 +636,7 @@ function calculate() { try {
     ${loanAmount > 0 ? `<div class="kpi"><div class="label">Monthly Payment</div><div class="value">${fmt(monthly)}</div><div class="sub">${interestOnly ? 'Interest only' : loanTerm + ' yr loan'} at ${loanRate}%</div></div>` : `<div class="kpi"><div class="label">Annual IMU</div><div class="value">${enableIMU ? fmt(imuAnnual) : '—'}</div><div class="sub">${enableIMU ? 'municipal property tax' : 'enable IMU above'}</div></div>`}
     <div class="kpi"><div class="label">Net Sale Proceeds</div><div class="value">${fmt(netProceeds)}</div><div class="sub">after all selling costs</div></div>
     <div class="kpi"><div class="label">Net Profit / Loss</div><div class="value ${profitColor}">${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}</div><div class="sub">ROI: ${roi.toFixed(1)}%</div></div>
-    <div class="kpi"><div class="label">Break-even Sale Price</div><div class="value">${fmt(totalCashIn / (1 - (agentSellPct/100*1.22) - (yearsUntilSale < 5 ? 0.26*(1-(agentSellPct/100*1.22)) : 0)))}</div><div class="sub">to recover all costs</div></div>
+    <div class="kpi"><div class="label">Break-even Sale Price</div><div class="value">${fmt((totalCashOut + remainingBalance) / (1 - (agentSellPct/100*1.22) - (yearsUntilSale < 5 ? 0.26*(1-(agentSellPct/100*1.22)) : 0)))}</div><div class="sub">to recover all costs</div></div>
   `;
 
   // Buying breakdown
@@ -709,10 +715,15 @@ function calculate() { try {
   const summaryClass = netProfit >= 0 ? 'total-green' : 'total-red';
   document.getElementById('summaryBreakdown').innerHTML = `
     <div class="breakdown-header summary"><span>Full Investment Summary</span><span></span></div>
-    ${row('Total Cash Invested', fmt(totalCashIn), 'equity + closing costs + renovation + attorney + total interest')}
-    ${row('Net Sale Proceeds', fmt(netProceeds))}
+    ${row('Down Payment (Equity)', fmt(equity))}
+    ${actualLoanPayments > 0 ? row('Loan Payments During Hold', fmt(actualLoanPayments), `${Math.round(holdMonthsCapped)} months × ${fmt(monthly)}/mo`) : ''}
+    ${row('Closing Costs + Renovation + Attorney', fmt(totalClosingCosts + renovation + renovVAT))}
+    ${(imuTotal + tariTotal) > 0 ? row('Annual Taxes During Hold', fmt(imuTotal + tariTotal)) : ''}
+    <div class="breakdown-row subtotal"><span>Total Money Out</span><span>${fmt(totalCashOut)}</span></div>
+    ${row('Net Sale Proceeds', fmt(netProceeds), remainingBalance > 0 ? `after repaying ${fmt(remainingBalance)} to bank` : '')}
+    ${totalRentalIncome > 0 ? row('Net Rental Income', '+' + fmt(totalRentalIncome), `over ${yearsUntilSale} years`) : ''}
     <div class="breakdown-row ${summaryClass}">
-      <span class="row-label">Net Profit / Loss<span class="row-note">ROI: ${roi.toFixed(1)}%</span></span>
+      <span class="row-label">Net Profit / Loss<span class="row-note">ROI: ${roi.toFixed(1)}% · ${annualizedROI.toFixed(1)}%/yr</span></span>
       <span>${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}</span>
     </div>
   `;
