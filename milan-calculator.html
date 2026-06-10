@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Milan Apartment Purchase Calculator – Seconda Casa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue: #1a56db; --blue-light: #e8f0fd; --blue-dark: #1240a0;
+      --green: #057a55; --green-light: #def7ec;
+      --red: #c81e1e; --red-light: #fde8e8;
+      --amber: #92400e; --amber-light: #fef3c7;
+      --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+      --gray-300: #d1d5db; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+      --radius: 8px; --shadow: 0 1px 3px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.05);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(--gray-900); font-size: 14px; line-height: 1.5; }
+    .page-header { background: var(--blue); padding: 32px 24px; text-align: center; }
+    .page-header h1 { color: white; font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .page-header p { color: rgba(255,255,255,.8); font-size: 14px; }
+    .container { max-width: 960px; margin: 0 auto; padding: 32px 16px 64px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media(max-width:700px){ .grid-2 { grid-template-columns: 1fr; } }
+
+    .card { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+    .card-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--blue); margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; gap: 8px; }
+    .card-title svg { flex-shrink: 0; }
+
+    .field { margin-bottom: 16px; }
+    .field:last-child { margin-bottom: 0; }
+    label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 5px; }
+    label .note { font-weight: 400; color: var(--gray-500); font-size: 12px; }
+    .input-wrap { position: relative; }
+    .input-wrap .prefix, .input-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--gray-500); font-size: 13px; pointer-events: none; }
+    .input-wrap .prefix { left: 10px; }
+    .input-wrap .suffix { right: 10px; }
+    input[type=number], input[type=text], select {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--gray-300); border-radius: 6px;
+      font-family: inherit; font-size: 14px; color: var(--gray-900); background: white;
+      transition: border-color .15s, box-shadow .15s; -moz-appearance: textfield;
+    }
+    input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input:focus, select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(26,86,219,.12); }
+    .input-wrap.has-prefix input { padding-left: 26px; }
+    .input-wrap.has-suffix input { padding-right: 36px; }
+
+    .loan-type-tabs { display: flex; gap: 0; border: 1px solid var(--gray-300); border-radius: 6px; overflow: hidden; margin-bottom: 18px; }
+    .loan-tab { flex: 1; padding: 8px 6px; text-align: center; font-size: 12px; font-weight: 500; cursor: pointer; background: white; border: none; color: var(--gray-500); transition: all .15s; }
+    .loan-tab.active { background: var(--blue); color: white; }
+    .loan-tab:not(:last-child) { border-right: 1px solid var(--gray-300); }
+    .loan-fields { display: none; }
+    .loan-fields.visible { display: block; }
+
+    .calc-btn { width: 100%; padding: 14px; background: var(--blue); color: white; border: none; border-radius: var(--radius); font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 24px; transition: background .15s; letter-spacing: .01em; }
+    .calc-btn:hover { background: var(--blue-dark); }
+
+    /* Results */
+    #results { display: none; margin-top: 28px; }
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    @media(max-width:700px){ .results-grid { grid-template-columns: 1fr 1fr; } }
+    @media(max-width:480px){ .results-grid { grid-template-columns: 1fr; } }
+
+    .kpi { background: white; border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px 20px; }
+    .kpi .label { font-size: 12px; color: var(--gray-500); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+    .kpi .value { font-size: 22px; font-weight: 700; color: var(--gray-900); }
+    .kpi .value.green { color: var(--green); }
+    .kpi .value.red { color: var(--red); }
+    .kpi .sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+
+    .breakdown { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
+    .breakdown-header { padding: 14px 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; display: flex; justify-content: space-between; align-items: center; }
+    .breakdown-header.buying { background: var(--blue-light); color: var(--blue-dark); }
+    .breakdown-header.selling { background: var(--amber-light); color: var(--amber); }
+    .breakdown-header.loan { background: #f0fdf4; color: #166534; }
+    .breakdown-header.summary { background: var(--gray-100); color: var(--gray-700); }
+    .breakdown-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 20px; border-bottom: 1px solid var(--gray-100); font-size: 14px; }
+    .breakdown-row:last-child { border-bottom: none; }
+    .breakdown-row.subtotal { background: var(--gray-50); font-weight: 600; }
+    .breakdown-row.total { background: var(--gray-900); color: white; font-weight: 700; font-size: 15px; }
+    .breakdown-row.total-green { background: var(--green); color: white; font-weight: 700; font-size: 15px; }
+    .breakdown-row.total-red { background: var(--red); color: white; font-weight: 700; font-size: 15px; }
+    .row-label { color: inherit; }
+    .row-label .row-note { font-size: 11px; color: var(--gray-500); display: block; margin-top: 1px; }
+    .total .row-note, .total-green .row-note, .total-red .row-note { color: rgba(255,255,255,.7); }
+    .row-value { font-weight: 500; white-space: nowrap; }
+
+    .note-box { background: var(--amber-light); border-left: 3px solid #d97706; border-radius: 4px; padding: 10px 14px; font-size: 12px; color: var(--amber); margin-top: 16px; line-height: 1.6; }
+    .note-box strong { font-weight: 600; }
+
+    .section-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin: 32px 0 16px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Milan Apartment Calculator — Seconda Casa</h1>
+  <p>Full cost breakdown for buying, financing and selling a second apartment in Italy</p>
+</div>
+
+<div class="container">
+
+  <!-- INPUTS -->
+  <div class="grid-2">
+
+    <!-- Property Details -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        Property Details
+      </div>
+
+      <div class="field">
+        <label>Purchase Price <span class="note">(agreed price)</span></label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">€</span>
+          <input type="number" id="purchasePrice" value="500000" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Rendita Catastale <span class="note">(optional — found in visura catastale)</span></label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">€</span>
+          <input type="number" id="rendita" placeholder="Leave blank to estimate" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Renovation Budget</label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">€</span>
+          <input type="number" id="renovation" value="0" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Attorney / Legal Fee</label>
+        <div class="input-wrap has-prefix">
+          <span class="prefix">€</span>
+          <input type="number" id="attorney" value="3000" min="0">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Agent Commission <span class="note">(buyer side, excl. VAT)</span></label>
+        <div class="input-wrap has-suffix">
+          <span class="suffix">%</span>
+          <input type="number" id="agentBuy" value="3" min="0" max="10" step="0.5">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Notary Fee <span class="note">(% of purchase price)</span></label>
+        <div class="input-wrap has-suffix">
+          <span class="suffix">%</span>
+          <input type="number" id="notary" value="1.5" min="0" max="5" step="0.1">
+        </div>
+      </div>
+    </div>
+
+    <!-- Financing -->
+    <div class="card">
+      <div class="card-title">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        Financing
+      </div>
+
+      <div class="loan-type-tabs">
+        <button class="loan-tab active" onclick="setLoan('cash')">Cash</button>
+        <button class="loan-tab" onclick="setLoan('mortgage')">Mortgage</button>
+        <button class="loan-tab" onclick="setLoan('other')">Other Loan</button>
+      </div>
+
+      <div class="loan-fields" id="fields-mortgage">
+        <div class="field">
+          <label>Loan Amount</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">€</span>
+            <input type="number" id="loanAmount" value="300000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Annual Interest Rate</label>
+          <div class="input-wrap has-suffix">
+            <span class="suffix">%</span>
+            <input type="number" id="loanRate" value="3.5" min="0" max="20" step="0.1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Loan Term</label>
+          <div class="input-wrap has-suffix">
+            <span class="suffix">yrs</span>
+            <input type="number" id="loanTerm" value="20" min="1" max="40">
+          </div>
+        </div>
+        <div class="note-box" id="mortgage-note" style="margin-top:10px;">
+          <strong>Mortgage tax:</strong> 2% of loan amount applies to seconda casa (Imposta Sostitutiva).
+        </div>
+      </div>
+
+      <div class="loan-fields" id="fields-other">
+        <div class="field">
+          <label>Loan Amount</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">€</span>
+            <input type="number" id="otherLoanAmount" value="300000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Annual Interest Rate</label>
+          <div class="input-wrap has-suffix">
+            <span class="suffix">%</span>
+            <input type="number" id="otherLoanRate" value="5" min="0" max="30" step="0.1">
+          </div>
+        </div>
+        <div class="field">
+          <label>Loan Term</label>
+          <div class="input-wrap has-suffix">
+            <span class="suffix">yrs</span>
+            <input type="number" id="otherLoanTerm" value="10" min="1" max="30">
+          </div>
+        </div>
+        <div class="note-box" style="margin-top:10px;">
+          <strong>No mortgage tax</strong> applies to non-mortgage loans (no Imposta Sostitutiva).
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--gray-200);">
+        <div class="card-title" style="border: none; padding: 0; margin-bottom: 14px;">
+          <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+          Selling Scenario
+        </div>
+
+        <div class="field">
+          <label>Expected Sale Price</label>
+          <div class="input-wrap has-prefix">
+            <span class="prefix">€</span>
+            <input type="number" id="salePrice" value="600000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Years Until Sale <span class="note">(affects capital gains tax)</span></label>
+          <div class="input-wrap has-suffix">
+            <span class="suffix">yrs</span>
+            <input type="number" id="yearsUntilSale" value="7" min="1" max="50">
+          </div>
+        </div>
+        <div class="field">
+          <label>Agent Commission <span class="note">(seller side, excl. VAT)</span></label>
+          <div class="input-wrap has-suffix">
+            <span class="suffix">%</span>
+            <input type="number" id="agentSell" value="3" min="0" max="10" step="0.5">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="calc-btn" onclick="calculate()">Calculate Full Cost Breakdown</button>
+
+  <!-- RESULTS -->
+  <div id="results">
+
+    <div class="section-title">Results</div>
+
+    <!-- KPIs -->
+    <div class="results-grid" id="kpiRow"></div>
+
+    <!-- Buying Costs -->
+    <div class="breakdown" id="buyingBreakdown"></div>
+
+    <!-- Loan Breakdown -->
+    <div class="breakdown" id="loanBreakdown"></div>
+
+    <!-- Selling Breakdown -->
+    <div class="breakdown" id="sellingBreakdown"></div>
+
+    <!-- Summary -->
+    <div class="breakdown" id="summaryBreakdown"></div>
+
+    <div class="note-box" style="margin-top: 8px;">
+      <strong>Disclaimer:</strong> This calculator provides estimates only. Tax calculations depend on the cadastral value, property type, and individual tax circumstances. The registration tax for seconda casa is legally 9% of the cadastral value (rendita × 120) — if no rendita catastale is entered, the calculator uses 30% of the purchase price as an approximation of the cadastral value, which may not reflect your actual cadastral value. Always consult a notaio or commercialista before completing a transaction.
+    </div>
+
+  </div>
+</div>
+
+<script>
+let loanType = 'cash';
+
+function setLoan(type) {
+  loanType = type;
+  document.querySelectorAll('.loan-tab').forEach((t, i) => {
+    t.classList.toggle('active', ['cash','mortgage','other'][i] === type);
+  });
+  document.getElementById('fields-mortgage').classList.toggle('visible', type === 'mortgage');
+  document.getElementById('fields-other').classList.toggle('visible', type === 'other');
+}
+
+function fmt(n) {
+  return '€' + Math.round(n).toLocaleString('en-EU');
+}
+function pct(n) {
+  return (n*100).toFixed(1) + '%';
+}
+
+function monthlyPayment(principal, annualRate, years) {
+  if (annualRate === 0) return principal / (years * 12);
+  const r = annualRate / 100 / 12;
+  const n = years * 12;
+  return principal * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+}
+
+function row(label, value, note='', cls='') {
+  return `<div class="breakdown-row ${cls}">
+    <span class="row-label">${label}${note ? `<span class="row-note">${note}</span>` : ''}</span>
+    <span class="row-value">${value}</span>
+  </div>`;
+}
+
+function calculate() {
+  const price       = parseFloat(document.getElementById('purchasePrice').value) || 0;
+  const rendita     = parseFloat(document.getElementById('rendita').value) || 0;
+  const renovation  = parseFloat(document.getElementById('renovation').value) || 0;
+  const attorney    = parseFloat(document.getElementById('attorney').value) || 0;
+  const agentBuyPct = parseFloat(document.getElementById('agentBuy').value) || 0;
+  const notaryPct   = parseFloat(document.getElementById('notary').value) || 0;
+  const salePrice   = parseFloat(document.getElementById('salePrice').value) || 0;
+  const yearsUntilSale = parseFloat(document.getElementById('yearsUntilSale').value) || 0;
+  const agentSellPct = parseFloat(document.getElementById('agentSell').value) || 0;
+
+  // Loan
+  let loanAmount = 0, loanRate = 0, loanTerm = 0;
+  if (loanType === 'mortgage') {
+    loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+    loanRate   = parseFloat(document.getElementById('loanRate').value) || 0;
+    loanTerm   = parseFloat(document.getElementById('loanTerm').value) || 0;
+  } else if (loanType === 'other') {
+    loanAmount = parseFloat(document.getElementById('otherLoanAmount').value) || 0;
+    loanRate   = parseFloat(document.getElementById('otherLoanRate').value) || 0;
+    loanTerm   = parseFloat(document.getElementById('otherLoanTerm').value) || 0;
+  }
+
+  // ── BUYING COSTS ──
+  // Registration tax: 9% of (rendita × 120), or estimate using 30% of price if no rendita
+  const cadastralBase = rendita > 0 ? rendita * 120 : price * 0.30;
+  const registrationTax = Math.max(cadastralBase * 0.09, 1000);
+  const ipotecaria = 50;
+  const catastale = 50;
+  const notaryFee = price * notaryPct / 100;
+  const agentBuyNet = price * agentBuyPct / 100;
+  const agentBuyVAT = agentBuyNet * 0.22;
+  const agentBuyTotal = agentBuyNet + agentBuyVAT;
+  const mortgageTax = loanType === 'mortgage' ? loanAmount * 0.02 : 0;
+  const bankFee = loanAmount > 0 ? loanAmount * 0.005 : 0;
+
+  const totalBuying = price + registrationTax + ipotecaria + catastale + notaryFee + agentBuyTotal + mortgageTax + bankFee + renovation + attorney;
+  const totalClosingCosts = registrationTax + ipotecaria + catastale + notaryFee + agentBuyTotal + mortgageTax + bankFee + attorney;
+
+  // ── LOAN ──
+  let monthly = 0, totalRepaid = 0, totalInterest = 0;
+  if (loanAmount > 0 && loanTerm > 0) {
+    monthly = monthlyPayment(loanAmount, loanRate, loanTerm);
+    totalRepaid = monthly * loanTerm * 12;
+    totalInterest = totalRepaid - loanAmount;
+  }
+
+  // ── SELLING COSTS ──
+  const agentSellNet = salePrice * agentSellPct / 100;
+  const agentSellVAT = agentSellNet * 0.22;
+  const agentSellTotal = agentSellNet + agentSellVAT;
+  const notarySeller = 500;
+
+  // Capital gains: 26% of profit if <5 years, 0% if ≥5 years
+  const taxableGain = Math.max(salePrice - price - totalClosingCosts, 0);
+  const capitalGains = yearsUntilSale < 5 ? taxableGain * 0.26 : 0;
+
+  const totalSellingCosts = agentSellTotal + notarySeller + capitalGains;
+  const netProceeds = salePrice - totalSellingCosts;
+
+  // ── SUMMARY ──
+  const equity = price - loanAmount; // cash put in at purchase
+  const totalCashIn = equity + totalClosingCosts + renovation + attorney + totalInterest;
+  const netProfit = netProceeds - totalCashIn;
+  const roi = totalCashIn > 0 ? (netProfit / totalCashIn) * 100 : 0;
+
+  // Annual IMU estimate
+  const imu = (rendita > 0 ? rendita * 160 : price * 0.30 * 1.33) * 0.0106;
+
+  // ── RENDER ──
+  document.getElementById('results').style.display = 'block';
+
+  // KPIs
+  const profitColor = netProfit >= 0 ? 'green' : 'red';
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi"><div class="label">Total Buying Cost</div><div class="value">${fmt(totalBuying)}</div><div class="sub">incl. all taxes & fees</div></div>
+    <div class="kpi"><div class="label">Closing Costs Only</div><div class="value">${fmt(totalClosingCosts)}</div><div class="sub">${pct(totalClosingCosts/price)} of purchase price</div></div>
+    ${loanAmount > 0 ? `<div class="kpi"><div class="label">Monthly Payment</div><div class="value">${fmt(monthly)}</div><div class="sub">${loanTerm} yr loan at ${loanRate}%</div></div>` : `<div class="kpi"><div class="label">Annual IMU (est.)</div><div class="value">${fmt(imu)}</div><div class="sub">annual property tax</div></div>`}
+    <div class="kpi"><div class="label">Net Sale Proceeds</div><div class="value">${fmt(netProceeds)}</div><div class="sub">after all selling costs</div></div>
+    <div class="kpi"><div class="label">Net Profit / Loss</div><div class="value ${profitColor}">${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}</div><div class="sub">ROI: ${roi.toFixed(1)}%</div></div>
+    <div class="kpi"><div class="label">Break-even Sale Price</div><div class="value">${fmt(totalCashIn / (1 - (agentSellPct/100*1.22) - (yearsUntilSale < 5 ? 0.26*(1-(agentSellPct/100*1.22)) : 0)))}</div><div class="sub">to recover all costs</div></div>
+  `;
+
+  // Buying breakdown
+  document.getElementById('buyingBreakdown').innerHTML = `
+    <div class="breakdown-header buying"><span>Buying Costs</span><span>${fmt(totalBuying)}</span></div>
+    ${row('Purchase Price', fmt(price))}
+    ${row('Registration Tax (Imposta di Registro)', fmt(registrationTax), rendita > 0 ? `9% of cadastral value (€${Math.round(cadastralBase).toLocaleString('en-EU')})` : '9% of estimated cadastral value (30% of price)')}
+    ${row('Mortgage Tax (Imposta Ipotecaria)', fmt(ipotecaria), 'Fixed — seconda casa')}
+    ${row('Cadastral Tax (Imposta Catastale)', fmt(catastale), 'Fixed — seconda casa')}
+    ${row('Notary Fee', fmt(notaryFee), `${notaryPct}% of purchase price`)}
+    ${row('Agent Commission', fmt(agentBuyTotal), `${agentBuyPct}% + 22% VAT`)}
+    ${mortgageTax > 0 ? row('Mortgage Registration Tax', fmt(mortgageTax), '2% of loan — seconda casa rule') : ''}
+    ${bankFee > 0 ? row('Bank Processing Fee', fmt(bankFee), '0.5% of loan (istruttoria)') : ''}
+    ${row('Attorney / Legal Fee', fmt(attorney))}
+    ${renovation > 0 ? row('Renovation Budget', fmt(renovation)) : ''}
+    <div class="breakdown-row subtotal"><span>Closing Costs Subtotal</span><span>${fmt(totalClosingCosts)}</span></div>
+    <div class="breakdown-row total"><span class="row-label">Total Buying Cost<span class="row-note">${pct(totalClosingCosts/price)} above purchase price</span></span><span>${fmt(totalBuying)}</span></div>
+  `;
+
+  // Loan breakdown
+  if (loanAmount > 0) {
+    document.getElementById('loanBreakdown').innerHTML = `
+      <div class="breakdown-header loan"><span>Loan / Financing</span><span>${loanType === 'mortgage' ? 'Mortgage' : 'Other Loan'}</span></div>
+      ${row('Loan Amount', fmt(loanAmount))}
+      ${row('Your Cash Equity', fmt(equity), `${pct(equity/price)} of purchase price`)}
+      ${row('Interest Rate', loanRate + '%', 'annual')}
+      ${row('Term', loanTerm + ' years', '')}
+      ${row('Monthly Payment', fmt(monthly))}
+      ${row('Total Repaid', fmt(totalRepaid))}
+      <div class="breakdown-row subtotal"><span>Total Interest Cost</span><span>${fmt(totalInterest)}</span></div>
+    `;
+  } else {
+    document.getElementById('loanBreakdown').innerHTML = `
+      <div class="breakdown-header loan"><span>Financing</span><span>Cash Purchase</span></div>
+      ${row('Full Amount Paid in Cash', fmt(price + totalClosingCosts))}
+      ${row('Annual IMU Estimate', fmt(imu), 'municipal property tax — seconda casa')}
+    `;
+  }
+
+  // Selling breakdown
+  const cgtNote = yearsUntilSale < 5
+    ? `26% of gain — sold within 5 years (€${Math.round(taxableGain).toLocaleString('en-EU')} taxable gain)`
+    : 'Exempt — held more than 5 years ✓';
+  document.getElementById('sellingBreakdown').innerHTML = `
+    <div class="breakdown-header selling"><span>Selling Costs (in ${yearsUntilSale} yrs)</span><span>${fmt(salePrice)}</span></div>
+    ${row('Expected Sale Price', fmt(salePrice))}
+    ${row('Agent Commission', fmt(agentSellTotal), `${agentSellPct}% + 22% VAT`)}
+    ${row('Notary (seller contribution)', fmt(notarySeller), 'estimate')}
+    ${row('Capital Gains Tax (Plusvalenza)', fmt(capitalGains), cgtNote)}
+    <div class="breakdown-row total"><span class="row-label">Net Sale Proceeds<span class="row-note">after all selling costs</span></span><span>${fmt(netProceeds)}</span></div>
+  `;
+
+  // Summary
+  const summaryClass = netProfit >= 0 ? 'total-green' : 'total-red';
+  document.getElementById('summaryBreakdown').innerHTML = `
+    <div class="breakdown-header summary"><span>Full Investment Summary</span><span></span></div>
+    ${row('Total Cash Invested', fmt(totalCashIn), 'equity + closing costs + renovation + attorney + total interest')}
+    ${row('Net Sale Proceeds', fmt(netProceeds))}
+    <div class="breakdown-row ${summaryClass}">
+      <span class="row-label">Net Profit / Loss<span class="row-note">ROI: ${roi.toFixed(1)}%</span></span>
+      <span>${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}</span>
+    </div>
+  `;
+
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Init
+setLoan('cash');
+</script>
+</body>
+</html>
