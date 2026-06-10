@@ -242,6 +242,12 @@
             <input type="number" id="otherLoanTerm" value="10" min="1" max="30">
           </div>
         </div>
+        <div class="field" style="margin-top:4px;">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:400;">
+            <input type="checkbox" id="interestOnly" style="width:16px;height:16px;accent-color:var(--blue);cursor:pointer;">
+            <span>Interest-only loan <span class="note">(pay interest only — full principal due at end of term)</span></span>
+          </label>
+        </div>
         <div class="note-box" style="margin-top:10px;">
           <strong>No mortgage tax</strong> applies to non-mortgage loans (no Imposta Sostitutiva).
         </div>
@@ -447,6 +453,7 @@ function calculate() {
 
   // Loan
   let loanAmount = 0, loanRate = 0, loanTerm = 0;
+  const interestOnly = loanType === 'other' && document.getElementById('interestOnly').checked;
   if (loanType === 'mortgage') {
     loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
     loanRate   = parseFloat(document.getElementById('loanRate').value) || 0;
@@ -476,9 +483,15 @@ function calculate() {
   // ── LOAN ──
   let monthly = 0, totalRepaid = 0, totalInterest = 0;
   if (loanAmount > 0 && loanTerm > 0) {
-    monthly = monthlyPayment(loanAmount, loanRate, loanTerm);
-    totalRepaid = monthly * loanTerm * 12;
-    totalInterest = totalRepaid - loanAmount;
+    if (interestOnly) {
+      monthly = loanAmount * (loanRate / 100 / 12);
+      totalInterest = monthly * loanTerm * 12;
+      totalRepaid = totalInterest + loanAmount; // interest payments + principal at end
+    } else {
+      monthly = monthlyPayment(loanAmount, loanRate, loanTerm);
+      totalRepaid = monthly * loanTerm * 12;
+      totalInterest = totalRepaid - loanAmount;
+    }
   }
 
   // ── SELLING COSTS ──
@@ -569,8 +582,9 @@ function calculate() {
       ${row('Your Cash Equity', fmt(equity), `${pct(equity/price)} of purchase price`)}
       ${row('Interest Rate', loanRate + '%', 'annual')}
       ${row('Term', loanTerm + ' years', '')}
-      ${row('Monthly Payment', fmt(monthly))}
-      ${row('Total Repaid', fmt(totalRepaid))}
+      ${row('Monthly Payment', fmt(monthly), interestOnly ? 'Interest only — principal not reducing' : '')}
+      ${interestOnly ? row('Principal Due at End of Term', fmt(loanAmount), 'full amount owed at maturity') : ''}
+      ${row('Total Repaid', fmt(totalRepaid), interestOnly ? 'interest + principal at maturity' : '')}
       <div class="breakdown-row subtotal"><span>Total Interest Cost</span><span>${fmt(totalInterest)}</span></div>
     `;
   } else {
