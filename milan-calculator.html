@@ -91,6 +91,23 @@
     .note-box { background: var(--amber-light); border-left: 3px solid #d97706; border-radius: 4px; padding: 10px 14px; font-size: 12px; color: var(--amber); margin-top: 16px; line-height: 1.6; }
     .note-box strong { font-weight: 600; }
 
+    /* Toggle switch */
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+    .toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .toggle-label { font-size: 13px; font-weight: 500; color: var(--gray-700); }
+    .toggle-label small { display: block; font-size: 11px; font-weight: 400; color: var(--gray-500); margin-top: 2px; }
+    .toggle { position: relative; width: 40px; height: 22px; flex-shrink: 0; }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: var(--gray-300); border-radius: 22px; cursor: pointer; transition: background .2s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 16px; height: 16px; left: 3px; top: 3px; background: white; border-radius: 50%; transition: transform .2s; }
+    .toggle input:checked + .toggle-slider { background: var(--blue); }
+    .toggle input:checked + .toggle-slider::before { transform: translateX(18px); }
+    .optional-fields { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--gray-100); display: none; }
+    .optional-fields.visible { display: block; }
+    .optional-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media(max-width:480px){ .optional-grid { grid-template-columns: 1fr; } }
+    .breakdown-header.annual { background: #f0fdf4; color: #166534; }
+
     .section-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin: 32px 0 16px; display: flex; align-items: center; gap: 8px; }
     .section-title::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
   </style>
@@ -262,6 +279,92 @@
 
   </div>
 
+  <!-- Optional Taxes Card -->
+  <div class="card" style="margin-top: 20px;">
+    <div class="card-title">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/></svg>
+      Optional Additional Taxes
+    </div>
+
+    <!-- IMU -->
+    <div class="toggle-row">
+      <div class="toggle-label">IMU — Annual Property Tax
+        <small>~1.06% of cadastral value/year (Milan rate for seconda casa)</small>
+      </div>
+      <label class="toggle"><input type="checkbox" id="enableIMU" onchange="toggleOptional('imuFields',this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="optional-fields" id="imuFields">
+      <div class="note-box" style="margin-top:0;margin-bottom:10px;">IMU is calculated as: rendita catastale × 160 × 1.06%. Milan applies the maximum municipal rate for seconda casa. If no rendita is entered above, an estimate is used.</div>
+      <div class="field" style="max-width:220px;">
+        <label>Milan IMU Rate <span class="note">(default: max 1.06%)</span></label>
+        <div class="input-wrap has-suffix"><span class="suffix">%</span>
+          <input type="number" id="imuRate" value="1.06" min="0.76" max="1.06" step="0.01">
+        </div>
+      </div>
+    </div>
+
+    <!-- TARI -->
+    <div class="toggle-row">
+      <div class="toggle-label">TARI — Annual Waste Tax
+        <small>~€4/m² per year in Milan (varies by size & occupants)</small>
+      </div>
+      <label class="toggle"><input type="checkbox" id="enableTARI" onchange="toggleOptional('tariFields',this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="optional-fields" id="tariFields">
+      <div class="optional-grid">
+        <div class="field">
+          <label>Apartment Size</label>
+          <div class="input-wrap has-suffix"><span class="suffix">m²</span>
+            <input type="number" id="apartmentSqm" value="80" min="10" max="500">
+          </div>
+        </div>
+        <div class="field">
+          <label>TARI Rate <span class="note">(€/m²/year)</span></label>
+          <div class="input-wrap has-prefix"><span class="prefix">€</span>
+            <input type="number" id="tariRate" value="4" min="1" max="15" step="0.5">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cedolare Secca -->
+    <div class="toggle-row">
+      <div class="toggle-label">Cedolare Secca — Rental Income Tax
+        <small>Flat tax on rental income: 21% standard / 26% short-term</small>
+      </div>
+      <label class="toggle"><input type="checkbox" id="enableRental" onchange="toggleOptional('rentalFields',this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="optional-fields" id="rentalFields">
+      <div class="optional-grid">
+        <div class="field">
+          <label>Monthly Rent</label>
+          <div class="input-wrap has-prefix"><span class="prefix">€</span>
+            <input type="number" id="monthlyRent" value="2000" min="0">
+          </div>
+        </div>
+        <div class="field">
+          <label>Rental Type</label>
+          <select id="rentalType">
+            <option value="21">Standard (21%)</option>
+            <option value="26">Short-term / Airbnb (26%)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- VAT on Renovation -->
+    <div class="toggle-row">
+      <div class="toggle-label">VAT on Renovation Works
+        <small>10% reduced VAT applies to residential renovation in Italy</small>
+      </div>
+      <label class="toggle"><input type="checkbox" id="enableRenovVAT" onchange="toggleOptional('renovVATFields',this)"><span class="toggle-slider"></span></label>
+    </div>
+    <div class="optional-fields" id="renovVATFields">
+      <div class="note-box" style="margin-top:0;">Italy applies a reduced <strong>10% VAT</strong> rate to residential renovation works (instead of standard 22%). This is added on top of your renovation budget.</div>
+    </div>
+
+  </div>
+
   <button class="calc-btn" onclick="calculate()">Calculate Full Cost Breakdown</button>
 
   <!-- RESULTS -->
@@ -281,6 +384,9 @@
     <!-- Selling Breakdown -->
     <div class="breakdown" id="sellingBreakdown"></div>
 
+    <!-- Annual & Ongoing Costs -->
+    <div class="breakdown" id="annualBreakdown" style="display:none;"></div>
+
     <!-- Summary -->
     <div class="breakdown" id="summaryBreakdown"></div>
 
@@ -293,6 +399,10 @@
 
 <script>
 let loanType = 'cash';
+
+function toggleOptional(id, cb) {
+  document.getElementById(id).classList.toggle('visible', cb.checked);
+}
 
 function setLoan(type) {
   loanType = type;
@@ -384,14 +494,40 @@ function calculate() {
   const totalSellingCosts = agentSellTotal + notarySeller + capitalGains;
   const netProceeds = salePrice - totalSellingCosts;
 
-  // ── SUMMARY ──
-  const equity = price - loanAmount; // cash put in at purchase
-  const totalCashIn = equity + totalClosingCosts + renovation + attorney + totalInterest;
-  const netProfit = netProceeds - totalCashIn;
-  const roi = totalCashIn > 0 ? (netProfit / totalCashIn) * 100 : 0;
+  // ── OPTIONAL TAXES ──
+  const enableIMU      = document.getElementById('enableIMU').checked;
+  const enableTARI     = document.getElementById('enableTARI').checked;
+  const enableRental   = document.getElementById('enableRental').checked;
+  const enableRenovVAT = document.getElementById('enableRenovVAT').checked;
 
-  // Annual IMU estimate
-  const imu = (rendita > 0 ? rendita * 160 : price * 0.30 * 1.33) * 0.0106;
+  // IMU
+  const imuRate = parseFloat(document.getElementById('imuRate').value) / 100 || 0.0106;
+  const cadastralBaseIMU = rendita > 0 ? rendita * 160 : price * 0.30 * 1.33;
+  const imuAnnual = enableIMU ? cadastralBaseIMU * imuRate : 0;
+  const imuTotal  = imuAnnual * yearsUntilSale;
+
+  // TARI
+  const sqm = parseFloat(document.getElementById('apartmentSqm').value) || 80;
+  const tariRatePerSqm = parseFloat(document.getElementById('tariRate').value) || 4;
+  const tariAnnual = enableTARI ? sqm * tariRatePerSqm : 0;
+  const tariTotal  = tariAnnual * yearsUntilSale;
+
+  // Cedolare Secca
+  const monthlyRent    = parseFloat(document.getElementById('monthlyRent').value) || 0;
+  const rentalTaxRate  = parseFloat(document.getElementById('rentalType').value) / 100 || 0.21;
+  const annualRent     = enableRental ? monthlyRent * 12 : 0;
+  const annualRentalTax = annualRent * rentalTaxRate;
+  const netAnnualRent  = annualRent - annualRentalTax;
+  const totalRentalIncome = netAnnualRent * yearsUntilSale;
+
+  // VAT on renovation
+  const renovVAT = enableRenovVAT ? renovation * 0.10 : 0;
+
+  // ── SUMMARY ──
+  const equity = price - loanAmount;
+  const totalCashIn = equity + totalClosingCosts + renovation + renovVAT + attorney + totalInterest + imuTotal + tariTotal;
+  const netProfit = netProceeds + totalRentalIncome - totalCashIn;
+  const roi = totalCashIn > 0 ? (netProfit / totalCashIn) * 100 : 0;
 
   // ── RENDER ──
   document.getElementById('results').style.display = 'block';
@@ -420,8 +556,9 @@ function calculate() {
     ${bankFee > 0 ? row('Bank Processing Fee', fmt(bankFee), '0.5% of loan (istruttoria)') : ''}
     ${row('Attorney / Legal Fee', fmt(attorney))}
     ${renovation > 0 ? row('Renovation Budget', fmt(renovation)) : ''}
-    <div class="breakdown-row subtotal"><span>Closing Costs Subtotal</span><span>${fmt(totalClosingCosts)}</span></div>
-    <div class="breakdown-row total"><span class="row-label">Total Buying Cost<span class="row-note">${pct(totalClosingCosts/price)} above purchase price</span></span><span>${fmt(totalBuying)}</span></div>
+    ${renovVAT > 0 ? row('VAT on Renovation (10%)', fmt(renovVAT), 'Reduced VAT rate for residential works') : ''}
+    <div class="breakdown-row subtotal"><span>Closing Costs Subtotal</span><span>${fmt(totalClosingCosts + renovVAT)}</span></div>
+    <div class="breakdown-row total"><span class="row-label">Total Buying Cost<span class="row-note">${pct((totalClosingCosts + renovVAT)/price)} above purchase price</span></span><span>${fmt(totalBuying + renovVAT)}</span></div>
   `;
 
   // Loan breakdown
@@ -440,8 +577,27 @@ function calculate() {
     document.getElementById('loanBreakdown').innerHTML = `
       <div class="breakdown-header loan"><span>Financing</span><span>Cash Purchase</span></div>
       ${row('Full Amount Paid in Cash', fmt(price + totalClosingCosts))}
-      ${row('Annual IMU Estimate', fmt(imu), 'municipal property tax — seconda casa')}
+      ${enableIMU ? row('Annual IMU', fmt(imuAnnual), 'Enable IMU above for details') : row('Annual IMU', 'Enable above', 'toggle Optional Taxes → IMU')}
     `;
+  }
+
+  // Annual costs breakdown
+  const annualEl = document.getElementById('annualBreakdown');
+  const hasAnnual = enableIMU || enableTARI || enableRental;
+  if (hasAnnual) {
+    const annualCostTotal = imuAnnual + tariAnnual - netAnnualRent;
+    annualEl.style.display = '';
+    annualEl.innerHTML = `
+      <div class="breakdown-header annual"><span>Annual & Ongoing Costs (over ${yearsUntilSale} yrs)</span><span></span></div>
+      ${enableIMU ? row('IMU — Property Tax', fmt(imuAnnual) + '/yr', `Rendita × 160 × ${(imuRate*100).toFixed(2)}% — Total: ${fmt(imuTotal)}`) : ''}
+      ${enableTARI ? row('TARI — Waste Tax', fmt(tariAnnual) + '/yr', `${sqm}m² × €${tariRatePerSqm}/m² — Total: ${fmt(tariTotal)}`) : ''}
+      ${enableRental ? row('Rental Income (gross)', fmt(annualRent) + '/yr', `€${monthlyRent.toLocaleString()}/month`) : ''}
+      ${enableRental ? row(`Cedolare Secca (${(rentalTaxRate*100).toFixed(0)}%)`, '–' + fmt(annualRentalTax) + '/yr', `Total tax over ${yearsUntilSale} yrs: ${fmt(annualRentalTax * yearsUntilSale)}`) : ''}
+      ${enableRental ? row('Net Rental Income', fmt(netAnnualRent) + '/yr', `Total net over ${yearsUntilSale} yrs: ${fmt(totalRentalIncome)}`) : ''}
+      <div class="breakdown-row subtotal"><span>Net Annual Cost (costs minus rent)</span><span>${fmt(annualCostTotal)}/yr</span></div>
+    `;
+  } else {
+    annualEl.style.display = 'none';
   }
 
   // Selling breakdown
