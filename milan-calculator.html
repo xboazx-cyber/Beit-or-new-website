@@ -132,6 +132,29 @@
 
     .section-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin: 32px 0 16px; display: flex; align-items: center; gap: 8px; }
     .section-title::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
+
+    /* Export PDF button */
+    .export-btn { display: inline-flex; align-items: center; gap: 8px; padding: 11px 22px; background: var(--gray-900); color: white; border: none; border-radius: var(--radius); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 20px; transition: background .15s; text-decoration: none; }
+    .export-btn:hover { background: var(--gray-700); }
+
+    /* Print styles */
+    @media print {
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      body::before { display: none; }
+      .page-header, .container > .grid-2, .card, .calc-btn, .export-btn, .section-title { display: none !important; }
+      #results { display: block !important; }
+      .note-box { display: none; }
+      .print-header { display: block !important; }
+      body { background: white; font-size: 12px; }
+      .container { padding: 0; max-width: 100%; }
+      .results-grid { grid-template-columns: repeat(3,1fr); }
+      .kpi { box-shadow: none; border: 1px solid #e5e7eb; }
+      .breakdown { box-shadow: none; border: 1px solid #e5e7eb; margin-bottom: 12px; page-break-inside: avoid; }
+      .deal-hero { page-break-inside: avoid; }
+      .deal-hero-header.profit { background: #057a55 !important; }
+      .deal-hero-header.loss { background: #c81e1e !important; }
+      .breakdown-row.total, .breakdown-row.total-green, .breakdown-row.total-red { -webkit-print-color-adjust: exact; }
+    }
   </style>
 </head>
 <body>
@@ -399,6 +422,12 @@
 
   <button class="calc-btn" onclick="calculate()">Calculate Full Cost Breakdown</button>
 
+  <!-- Print header — hidden on screen, shown when printing -->
+  <div class="print-header" style="display:none; margin-bottom:20px; padding-bottom:16px; border-bottom:2px solid #1a56db;">
+    <div style="font-size:20px;font-weight:700;color:#1a56db;">Milan Apartment Calculator — Seconda Casa</div>
+    <div style="font-size:12px;color:#6b7280;margin-top:4px;" id="print-date"></div>
+  </div>
+
   <!-- RESULTS -->
   <div id="results">
 
@@ -424,6 +453,13 @@
 
     <!-- Summary -->
     <div class="breakdown" id="summaryBreakdown"></div>
+
+    <div style="text-align:right; margin-top:20px;">
+      <button class="export-btn" onclick="exportPDF()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Export PDF
+      </button>
+    </div>
 
     <div class="note-box" style="margin-top: 8px; margin-bottom: 8px; background: var(--green-light); border-color: var(--green); color: #065f46;">
       <strong>Capital Gains Tax Rule (Plusvalenza):</strong><br>
@@ -743,6 +779,12 @@ function calculate() { try {
 
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch(e) { alert('Calculation error: ' + e.message); console.error(e); }
+}
+
+function exportPDF() {
+  document.getElementById('print-date').textContent =
+    'Generated: ' + new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'long', year:'numeric'});
+  window.print();
 }
 
 // Init
