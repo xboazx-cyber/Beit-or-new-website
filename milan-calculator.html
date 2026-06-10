@@ -537,7 +537,7 @@ function calculate() { try {
 
   // Capital gains: 26% of profit if <5 years, 0% if ≥5 years
   const taxableGain = Math.max(salePrice - price - totalClosingCosts, 0);
-  const capitalGains = yearsUntilSale < 5 ? taxableGain * 0.26 : 0;
+  const capitalGains = yearsUntilSale <= 5 ? taxableGain * 0.26 : 0;
 
   const totalSellingCosts = agentSellTotal + notarySeller + capitalGains;
   // Subtract remaining loan balance — must be repaid at sale
@@ -636,7 +636,7 @@ function calculate() { try {
     ${loanAmount > 0 ? `<div class="kpi"><div class="label">Monthly Payment</div><div class="value">${fmt(monthly)}</div><div class="sub">${interestOnly ? 'Interest only' : loanTerm + ' yr loan'} at ${loanRate}%</div></div>` : `<div class="kpi"><div class="label">Annual IMU</div><div class="value">${enableIMU ? fmt(imuAnnual) : '—'}</div><div class="sub">${enableIMU ? 'municipal property tax' : 'enable IMU above'}</div></div>`}
     <div class="kpi"><div class="label">Net Sale Proceeds</div><div class="value">${fmt(netProceeds)}</div><div class="sub">after all selling costs</div></div>
     <div class="kpi"><div class="label">Net Profit / Loss</div><div class="value ${profitColor}">${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}</div><div class="sub">ROI: ${roi.toFixed(1)}%</div></div>
-    <div class="kpi"><div class="label">Break-even Sale Price</div><div class="value">${fmt((totalCashOut + remainingBalance) / (1 - (agentSellPct/100*1.22) - (yearsUntilSale < 5 ? 0.26*(1-(agentSellPct/100*1.22)) : 0)))}</div><div class="sub">to recover all costs</div></div>
+    <div class="kpi"><div class="label">Break-even Sale Price</div><div class="value">${fmt((totalCashOut + remainingBalance) / (1 - (agentSellPct/100*1.22) - (yearsUntilSale <= 5 ? 0.26*(1-(agentSellPct/100*1.22)) : 0)))}</div><div class="sub">to recover all costs</div></div>
   `;
 
   // Buying breakdown
@@ -698,7 +698,7 @@ function calculate() { try {
   }
 
   // Selling breakdown
-  const cgtNote = yearsUntilSale < 5
+  const cgtNote = yearsUntilSale <= 5
     ? `26% of gain — sold within 5 years (€${Math.round(taxableGain).toLocaleString('en-EU')} taxable gain)`
     : 'Exempt — held more than 5 years ✓';
   document.getElementById('sellingBreakdown').innerHTML = `
