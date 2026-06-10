@@ -108,6 +108,25 @@
     @media(max-width:480px){ .optional-grid { grid-template-columns: 1fr; } }
     .breakdown-header.annual { background: #f0fdf4; color: #166534; }
 
+    /* Deal result hero */
+    .deal-hero { border-radius: var(--radius); overflow: hidden; margin-bottom: 24px; box-shadow: var(--shadow-md); }
+    .deal-hero-header { padding: 16px 24px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: white; }
+    .deal-hero-header.profit { background: var(--green); }
+    .deal-hero-header.loss { background: var(--red); }
+    .deal-hero-body { background: white; padding: 24px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+    @media(max-width:600px){ .deal-hero-body { grid-template-columns: 1fr; } }
+    .deal-col { padding: 12px 20px; }
+    .deal-col:not(:last-child) { border-left: 1px solid var(--gray-100); }
+    [dir=ltr] .deal-col:first-child { border-left: none; }
+    .deal-col .dlabel { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--gray-500); margin-bottom: 6px; }
+    .deal-col .dval { font-size: 26px; font-weight: 700; color: var(--gray-900); line-height: 1.1; }
+    .deal-col .dval.profit { color: var(--green); }
+    .deal-col .dval.loss { color: var(--red); }
+    .deal-col .dsub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+    .deal-flows { background: var(--gray-50); border-top: 1px solid var(--gray-100); padding: 16px 24px; display: flex; gap: 32px; flex-wrap: wrap; }
+    .deal-flow-item { font-size: 13px; color: var(--gray-700); }
+    .deal-flow-item span { font-weight: 600; }
+
     .section-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin: 32px 0 16px; display: flex; align-items: center; gap: 8px; }
     .section-title::after { content: ''; flex: 1; height: 1px; background: var(--gray-200); }
   </style>
@@ -378,6 +397,9 @@
 
     <div class="section-title">Results</div>
 
+    <!-- Deal Result Hero -->
+    <div id="dealResult"></div>
+
     <!-- KPIs -->
     <div class="results-grid" id="kpiRow"></div>
 
@@ -544,6 +566,47 @@ function calculate() { try {
 
   // ── RENDER ──
   document.getElementById('results').style.display = 'block';
+
+  // Annualized return
+  const annualizedROI = yearsUntilSale > 0 && totalCashIn > 0
+    ? (Math.pow(1 + netProfit / totalCashIn, 1 / yearsUntilSale) - 1) * 100 : 0;
+
+  // Deal Result Hero
+  const isProfit = netProfit >= 0;
+  const heroClass = isProfit ? 'profit' : 'loss';
+  const moneyIn = netProceeds + totalRentalIncome;
+  document.getElementById('dealResult').innerHTML = `
+    <div class="deal-hero">
+      <div class="deal-hero-header ${heroClass}">${isProfit ? '✓ Profitable Deal' : '✗ Loss-making Deal'} — ${yearsUntilSale}-year hold</div>
+      <div class="deal-hero-body">
+        <div class="deal-col">
+          <div class="dlabel">Total Money Out</div>
+          <div class="dval">${fmt(totalCashIn)}</div>
+          <div class="dsub">all costs, taxes & interest</div>
+        </div>
+        <div class="deal-col">
+          <div class="dlabel">Total Money In</div>
+          <div class="dval">${fmt(moneyIn)}</div>
+          <div class="dsub">sale proceeds${enableRental ? ' + rent' : ''}</div>
+        </div>
+        <div class="deal-col">
+          <div class="dlabel">Net ${isProfit ? 'Profit' : 'Loss'}</div>
+          <div class="dval ${heroClass}">${isProfit ? '+' : ''}${fmt(netProfit)}</div>
+          <div class="dsub">ROI ${roi.toFixed(1)}% · ${annualizedROI.toFixed(1)}%/yr</div>
+        </div>
+      </div>
+      <div class="deal-flows">
+        <div class="deal-flow-item">Purchase: <span>${fmt(price)}</span></div>
+        <div class="deal-flow-item">All Costs: <span>${fmt(totalClosingCosts + renovVAT)}</span></div>
+        ${renovation > 0 ? `<div class="deal-flow-item">Renovation: <span>${fmt(renovation + renovVAT)}</span></div>` : ''}
+        ${totalInterest > 0 ? `<div class="deal-flow-item">Loan Interest: <span>${fmt(totalInterest)}</span></div>` : ''}
+        ${imuTotal > 0 ? `<div class="deal-flow-item">IMU (${yearsUntilSale} yrs): <span>${fmt(imuTotal)}</span></div>` : ''}
+        ${tariTotal > 0 ? `<div class="deal-flow-item">TARI (${yearsUntilSale} yrs): <span>${fmt(tariTotal)}</span></div>` : ''}
+        ${enableRental ? `<div class="deal-flow-item">Net Rent Income: <span>+${fmt(totalRentalIncome)}</span></div>` : ''}
+        <div class="deal-flow-item">Sale Proceeds: <span>+${fmt(netProceeds)}</span></div>
+      </div>
+    </div>
+  `;
 
   // KPIs
   const profitColor = netProfit >= 0 ? 'green' : 'red';
