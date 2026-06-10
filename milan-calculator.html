@@ -503,16 +503,29 @@ function calculate() { try {
   const totalClosingCosts = registrationTax + ipotecaria + catastale + notaryFee + agentBuyTotal + mortgageTax + bankFee + attorney;
 
   // ── LOAN ──
-  let monthly = 0, totalRepaid = 0, totalInterest = 0;
+  let monthly = 0, totalInterest = 0, remainingBalance = 0;
+  const holdMonths = yearsUntilSale * 12;
   if (loanAmount > 0 && loanTerm > 0) {
+    const r = loanRate / 100 / 12;
+    const n = loanTerm * 12;
     if (interestOnly) {
-      monthly = loanAmount * (loanRate / 100 / 12);
-      totalInterest = monthly * loanTerm * 12;
-      totalRepaid = totalInterest + loanAmount; // interest payments + principal at end
+      // Interest-only: monthly = interest only, principal never reduces
+      monthly = r > 0 ? loanAmount * r : 0;
+      const payMonths = Math.min(holdMonths, n);
+      totalInterest = monthly * payMonths;
+      remainingBalance = loanAmount; // full principal still owed at sale
     } else {
-      monthly = monthlyPayment(loanAmount, loanRate, loanTerm);
-      totalRepaid = monthly * loanTerm * 12;
-      totalInterest = totalRepaid - loanAmount;
+      // Standard amortizing mortgage
+      monthly = r > 0
+        ? loanAmount * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1)
+        : loanAmount / n;
+      // Only count payments during holding period
+      const payMonths = Math.min(holdMonths, n);
+      remainingBalance = r > 0
+        ? Math.max(0, loanAmount * (Math.pow(1+r,n) - Math.pow(1+r,payMonths)) / (Math.pow(1+r,n) - 1))
+        : Math.max(0, loanAmount - monthly * payMonths);
+      const principalRepaid = loanAmount - remainingBalance;
+      totalInterest = Math.max(0, monthly * payMonths - principalRepaid);
     }
   }
 
@@ -527,7 +540,8 @@ function calculate() { try {
   const capitalGains = yearsUntilSale < 5 ? taxableGain * 0.26 : 0;
 
   const totalSellingCosts = agentSellTotal + notarySeller + capitalGains;
-  const netProceeds = salePrice - totalSellingCosts;
+  // Subtract remaining loan balance — must be repaid at sale
+  const netProceeds = salePrice - totalSellingCosts - remainingBalance;
 
   // ── OPTIONAL TAXES ──
   const enableIMU      = document.getElementById('enableIMU').checked;
@@ -646,9 +660,9 @@ function calculate() { try {
       ${row('Interest Rate', loanRate + '%', 'annual')}
       ${row('Term', loanTerm + ' years', '')}
       ${row('Monthly Payment', fmt(monthly), interestOnly ? 'Interest only — principal not reducing' : '')}
-      ${interestOnly ? row('Principal Due at End of Term', fmt(loanAmount), 'full amount owed at maturity') : ''}
-      ${row('Total Repaid', fmt(totalRepaid), interestOnly ? 'interest + principal at maturity' : '')}
-      <div class="breakdown-row subtotal"><span>Total Interest Cost</span><span>${fmt(totalInterest)}</span></div>
+      ${row('Interest Paid During Hold', fmt(totalInterest), `over ${Math.min(yearsUntilSale, loanTerm)} years`)}
+      ${remainingBalance > 0 ? row('Remaining Balance at Sale', fmt(remainingBalance), 'repaid from sale proceeds') : row('Loan Fully Repaid', '✓', `before year ${yearsUntilSale}`)}
+      <div class="breakdown-row subtotal"><span>Total Cost of Borrowing</span><span>${fmt(totalInterest)}</span></div>
     `;
   } else {
     document.getElementById('loanBreakdown').innerHTML = `
@@ -687,7 +701,8 @@ function calculate() { try {
     ${row('Agent Commission', fmt(agentSellTotal), `${agentSellPct}% + 22% VAT`)}
     ${row('Notary (seller contribution)', fmt(notarySeller), 'estimate')}
     ${row('Capital Gains Tax (Plusvalenza)', fmt(capitalGains), cgtNote)}
-    <div class="breakdown-row total"><span class="row-label">Net Sale Proceeds<span class="row-note">after all selling costs</span></span><span>${fmt(netProceeds)}</span></div>
+    ${remainingBalance > 0 ? row('Loan Repayment at Sale', fmt(remainingBalance), 'outstanding principal returned to bank') : ''}
+    <div class="breakdown-row total"><span class="row-label">Net Sale Proceeds<span class="row-note">after all selling costs & loan repayment</span></span><span>${fmt(netProceeds)}</span></div>
   `;
 
   // Summary
