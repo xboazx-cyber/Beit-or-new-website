@@ -440,7 +440,7 @@ function row(label, value, note='', cls='') {
   </div>`;
 }
 
-function calculate() {
+function calculate() { try {
   const price       = parseFloat(document.getElementById('purchasePrice').value) || 0;
   const rendita     = parseFloat(document.getElementById('rendita').value) || 0;
   const renovation  = parseFloat(document.getElementById('renovation').value) || 0;
@@ -538,7 +538,7 @@ function calculate() {
 
   // ── SUMMARY ──
   const equity = price - loanAmount;
-  const totalCashIn = equity + totalClosingCosts + renovation + renovVAT + attorney + totalInterest + imuTotal + tariTotal;
+  const totalCashIn = equity + totalClosingCosts + renovation + renovVAT + totalInterest + imuTotal + tariTotal;
   const netProfit = netProceeds + totalRentalIncome - totalCashIn;
   const roi = totalCashIn > 0 ? (netProfit / totalCashIn) * 100 : 0;
 
@@ -548,9 +548,9 @@ function calculate() {
   // KPIs
   const profitColor = netProfit >= 0 ? 'green' : 'red';
   document.getElementById('kpiRow').innerHTML = `
-    <div class="kpi"><div class="label">Total Buying Cost</div><div class="value">${fmt(totalBuying)}</div><div class="sub">incl. all taxes & fees</div></div>
+    <div class="kpi"><div class="label">Total Buying Cost</div><div class="value">${fmt(totalBuying + renovVAT)}</div><div class="sub">incl. all taxes & fees</div></div>
     <div class="kpi"><div class="label">Closing Costs Only</div><div class="value">${fmt(totalClosingCosts)}</div><div class="sub">${pct(totalClosingCosts/price)} of purchase price</div></div>
-    ${loanAmount > 0 ? `<div class="kpi"><div class="label">Monthly Payment</div><div class="value">${fmt(monthly)}</div><div class="sub">${loanTerm} yr loan at ${loanRate}%</div></div>` : `<div class="kpi"><div class="label">Annual IMU (est.)</div><div class="value">${fmt(imu)}</div><div class="sub">annual property tax</div></div>`}
+    ${loanAmount > 0 ? `<div class="kpi"><div class="label">Monthly Payment</div><div class="value">${fmt(monthly)}</div><div class="sub">${interestOnly ? 'Interest only' : loanTerm + ' yr loan'} at ${loanRate}%</div></div>` : `<div class="kpi"><div class="label">Annual IMU</div><div class="value">${enableIMU ? fmt(imuAnnual) : '—'}</div><div class="sub">${enableIMU ? 'municipal property tax' : 'enable IMU above'}</div></div>`}
     <div class="kpi"><div class="label">Net Sale Proceeds</div><div class="value">${fmt(netProceeds)}</div><div class="sub">after all selling costs</div></div>
     <div class="kpi"><div class="label">Net Profit / Loss</div><div class="value ${profitColor}">${netProfit >= 0 ? '+' : ''}${fmt(netProfit)}</div><div class="sub">ROI: ${roi.toFixed(1)}%</div></div>
     <div class="kpi"><div class="label">Break-even Sale Price</div><div class="value">${fmt(totalCashIn / (1 - (agentSellPct/100*1.22) - (yearsUntilSale < 5 ? 0.26*(1-(agentSellPct/100*1.22)) : 0)))}</div><div class="sub">to recover all costs</div></div>
@@ -558,7 +558,7 @@ function calculate() {
 
   // Buying breakdown
   document.getElementById('buyingBreakdown').innerHTML = `
-    <div class="breakdown-header buying"><span>Buying Costs</span><span>${fmt(totalBuying)}</span></div>
+    <div class="breakdown-header buying"><span>Buying Costs</span><span>${fmt(totalBuying + renovVAT)}</span></div>
     ${row('Purchase Price', fmt(price))}
     ${row('Registration Tax (Imposta di Registro)', fmt(registrationTax), rendita > 0 ? `9% of cadastral value (€${Math.round(cadastralBase).toLocaleString('en-EU')})` : '9% of estimated cadastral value (30% of price)')}
     ${row('Mortgage Tax (Imposta Ipotecaria)', fmt(ipotecaria), 'Fixed — seconda casa')}
@@ -640,6 +640,7 @@ function calculate() {
   `;
 
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch(e) { alert('Calculation error: ' + e.message); console.error(e); }
 }
 
 // Init
