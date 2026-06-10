@@ -141,10 +141,11 @@
     @media print {
       * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       body::before { display: none; }
-      .page-header, .container > .grid-2, .card, .calc-btn, .export-btn, .section-title { display: none !important; }
+      .page-header, .container > .grid-2, .card, .calc-btn, .export-btn, .section-title, #results > div:first-child { display: none !important; }
       #results { display: block !important; }
       .note-box { display: none; }
       .print-header { display: block !important; }
+      #print-inputs { display: block !important; }
       body { background: white; font-size: 12px; }
       .container { padding: 0; max-width: 100%; }
       .results-grid { grid-template-columns: repeat(3,1fr); }
@@ -154,6 +155,12 @@
       .deal-hero-header.profit { background: #057a55 !important; }
       .deal-hero-header.loss { background: #c81e1e !important; }
       .breakdown-row.total, .breakdown-row.total-green, .breakdown-row.total-red { -webkit-print-color-adjust: exact; }
+      .print-inputs-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+      .print-section { border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px 16px; page-break-inside: avoid; }
+      .print-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #1a56db; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
+      .print-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+      .print-row .pl { color: #6b7280; }
+      .print-row .pv { font-weight: 600; color: #111827; }
     }
   </style>
 </head>
@@ -423,10 +430,12 @@
   <button class="calc-btn" onclick="calculate()">Calculate Full Cost Breakdown</button>
 
   <!-- Print header — hidden on screen, shown when printing -->
-  <div class="print-header" style="display:none; margin-bottom:20px; padding-bottom:16px; border-bottom:2px solid #1a56db;">
-    <div style="font-size:20px;font-weight:700;color:#1a56db;">Milan Apartment Calculator — Seconda Casa</div>
+  <div class="print-header" style="display:none; margin-bottom:16px; padding-bottom:12px; border-bottom:2px solid #1a56db;">
+    <div style="font-size:20px;font-weight:700;color:#1a56db;">🤑 Milan Apartment Calculator — Seconda Casa</div>
     <div style="font-size:12px;color:#6b7280;margin-top:4px;" id="print-date"></div>
   </div>
+  <!-- Print inputs summary — hidden on screen, shown when printing -->
+  <div id="print-inputs" style="display:none;"></div>
 
   <!-- RESULTS -->
   <div id="results">
@@ -784,6 +793,56 @@ function calculate() { try {
 function exportPDF() {
   document.getElementById('print-date').textContent =
     'Generated: ' + new Date().toLocaleDateString('en-GB', {day:'2-digit', month:'long', year:'numeric'});
+
+  // Build inputs summary
+  const v = id => document.getElementById(id).value;
+  const chk = id => document.getElementById(id).checked;
+  const loanLabel = {'cash':'Cash','mortgage':'Mortgage','other':'Other Loan'}[loanType];
+  const loanAmt = loanType==='mortgage' ? v('loanAmount') : loanType==='other' ? v('otherLoanAmount') : 0;
+  const loanRate = loanType==='mortgage' ? v('loanRate') : loanType==='other' ? v('otherLoanRate') : 0;
+  const loanTerm = loanType==='mortgage' ? v('loanTerm') : loanType==='other' ? v('otherLoanTerm') : 0;
+  const iOnly = loanType==='other' && chk('interestOnly');
+
+  const pr = (label, val) => `<div class="print-row"><span class="pl">${label}</span><span class="pv">${val}</span></div>`;
+
+  document.getElementById('print-inputs').innerHTML = `
+    <div class="print-inputs-grid">
+      <div class="print-section">
+        <div class="print-section-title">Property</div>
+        ${pr('Purchase Price', '€' + Number(v('purchasePrice')).toLocaleString())}
+        ${v('rendita') ? pr('Rendita Catastale', '€' + Number(v('rendita')).toLocaleString()) : pr('Rendita Catastale', 'Not entered (estimated)')}
+        ${pr('Renovation', '€' + Number(v('renovation')).toLocaleString())}
+        ${pr('Attorney Fee', '€' + Number(v('attorney')).toLocaleString())}
+        ${pr('Agent (buy)', v('agentBuy') + '% + 22% VAT')}
+        ${pr('Notary', v('notary') + '%')}
+      </div>
+      <div class="print-section">
+        <div class="print-section-title">Financing — ${loanLabel}</div>
+        ${loanType !== 'cash' ? pr('Loan Amount', '€' + Number(loanAmt).toLocaleString()) : pr('Payment', 'Full cash')}
+        ${loanType !== 'cash' ? pr('Interest Rate', loanRate + '%') : ''}
+        ${loanType !== 'cash' ? pr('Term', loanTerm + ' years') : ''}
+        ${iOnly ? pr('Structure', 'Interest-only') : loanType !== 'cash' ? pr('Structure', 'Amortizing') : ''}
+      </div>
+      <div class="print-section">
+        <div class="print-section-title">Selling Scenario</div>
+        ${pr('Expected Sale Price', '€' + Number(v('salePrice')).toLocaleString())}
+        ${pr('Years Until Sale', v('yearsUntilSale') + ' yrs')}
+        ${pr('Agent (sell)', v('agentSell') + '% + 22% VAT')}
+        ${pr('Capital Gains', Number(v('yearsUntilSale')) <= 5 ? '26% (held ≤ 5 yrs)' : '0% (held > 5 yrs)')}
+      </div>
+    </div>
+    ${(chk('enableIMU')||chk('enableTARI')||chk('enableRental')||chk('enableRenovVAT')) ? `
+    <div class="print-section" style="margin-bottom:16px;">
+      <div class="print-section-title">Optional Taxes Enabled</div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;">
+        ${chk('enableIMU') ? `<div class="print-row"><span class="pl">IMU Rate</span><span class="pv">${v('imuRate')}%/yr</span></div>` : ''}
+        ${chk('enableTARI') ? `<div class="print-row"><span class="pl">TARI</span><span class="pv">${v('apartmentSqm')}m² × €${v('tariRate')}/m²</span></div>` : ''}
+        ${chk('enableRental') ? `<div class="print-row"><span class="pl">Cedolare Secca</span><span class="pv">€${v('monthlyRent')}/mo at ${v('rentalType')}%</span></div>` : ''}
+        ${chk('enableRenovVAT') ? `<div class="print-row"><span class="pl">Renovation VAT</span><span class="pv">10% applied</span></div>` : ''}
+      </div>
+    </div>` : ''}
+  `;
+
   window.print();
 }
 
