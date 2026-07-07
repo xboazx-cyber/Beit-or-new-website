@@ -150,23 +150,13 @@
         <div class="field"><label>טלפון / ווצאפ</label><input type="tel" name="טלפון" required></div>
         <div class="field"><label>אימייל</label><input type="email" name="אימייל"></div>
       </div>
-      <div class="row2">
-        <div class="field">
-          <label>מצב משפחתי</label>
-          <select name="מצב משפחתי">
-            <option value="">בחר...</option>
-            <option>רווק/ה</option><option>נשוי/אה</option><option>גרוש/ה</option>
-            <option>אלמן/ה</option><option>בזוגיות</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>מגדר</label>
-          <div class="radio-group">
-            <label><input type="radio" name="מגדר" value="זכר"> זכר</label>
-            <label><input type="radio" name="מגדר" value="נקבה"> נקבה</label>
-            <label><input type="radio" name="מגדר" value="אחר"> אחר</label>
-          </div>
-        </div>
+      <div class="field">
+        <label>מצב משפחתי</label>
+        <select name="מצב משפחתי">
+          <option value="">בחר...</option>
+          <option>רווק/ה</option><option>נשוי/אה</option><option>גרוש/ה</option>
+          <option>אלמן/ה</option><option>בזוגיות</option>
+        </select>
       </div>
       <div class="row3">
         <div class="field"><label>עיסוק / מקצוע</label><input type="text" name="עיסוק"></div>
@@ -237,17 +227,6 @@
         <label>תרופות קבועות שאת/ה נוטל/ת כיום</label>
         <textarea name="תרופות" style="min-height:60px;" placeholder="שם התרופה, מינון, כמה זמן — אם נוטל תרופה לבעיה מסוימת נשמח שתביא את העלון"></textarea>
       </div>
-      <div class="field">
-        <label>הטיפול שמעניין אותך בבית אור</label>
-        <div class="check-group">
-          <label><input type="checkbox" name="טיפול מבוקש" value="דיקור סיני"> דיקור סיני</label>
-          <label><input type="checkbox" name="טיפול מבוקש" value="שיאצו"> שיאצו</label>
-          <label><input type="checkbox" name="טיפול מבוקש" value="רפואת צמחים"> רפואת צמחים</label>
-          <label><input type="checkbox" name="טיפול מבוקש" value="רפואה סינית"> רפואה סינית</label>
-          <label><input type="checkbox" name="טיפול מבוקש" value="קונסטלציה משפחתית"> קונסטלציה משפחתית</label>
-          <label><input type="checkbox" name="טיפול מבוקש" value="לא בטוח"> לא בטוח — צריך ייעוץ</label>
-        </div>
-      </div>
     </div>
 
     <!-- 3. NUTRITION -->
@@ -255,24 +234,24 @@
       <div class="section-title"><span class="num">3</span> תזונה</div>
       <div class="subsection">
         <h4>בוקר</h4>
-        <div class="row3">
-          <div class="field"><label>מה אוכל/ת?</label><input type="text" name="בוקר - מזון"></div>
+        <div class="field"><label>מה אוכל/ת?</label><textarea name="בוקר - מזון" style="min-height:70px;"></textarea></div>
+        <div class="row2">
           <div class="field"><label>הרגשה לאחר הארוחה</label><input type="text" name="בוקר - הרגשה"></div>
           <div class="field"><label>הרגלי שתייה</label><input type="text" name="בוקר - שתייה"></div>
         </div>
       </div>
       <div class="subsection">
         <h4>צהריים</h4>
-        <div class="row3">
-          <div class="field"><label>מה אוכל/ת?</label><input type="text" name="צהריים - מזון"></div>
+        <div class="field"><label>מה אוכל/ת?</label><textarea name="צהריים - מזון" style="min-height:70px;"></textarea></div>
+        <div class="row2">
           <div class="field"><label>הרגשה לאחר הארוחה</label><input type="text" name="צהריים - הרגשה"></div>
           <div class="field"><label>הרגלי שתייה</label><input type="text" name="צהריים - שתייה"></div>
         </div>
       </div>
       <div class="subsection">
         <h4>ערב</h4>
-        <div class="row3">
-          <div class="field"><label>מה אוכל/ת?</label><input type="text" name="ערב - מזון"></div>
+        <div class="field"><label>מה אוכל/ת?</label><textarea name="ערב - מזון" style="min-height:70px;"></textarea></div>
+        <div class="row2">
           <div class="field"><label>הרגשה לאחר הארוחה</label><input type="text" name="ערב - הרגשה"></div>
           <div class="field"><label>הרגלי שתייה</label><input type="text" name="ערב - שתייה"></div>
         </div>
