@@ -814,6 +814,7 @@
           <li><a href="#services" data-i18n="svc2_title"></a></li>
           <li><a href="#services" data-i18n="svc4_title"></a></li>
           <li><a href="#services" data-i18n="svc6_title"></a></li>
+          <li><a href="#services" data-i18n="svc_tcm_title"></a></li>
           <li><a href="#services" data-i18n="svc9_title"></a></li>
           <li><a href="#services" data-i18n="svc10_title"></a></li>
           <li><a href="#services" data-i18n="svc11_title"></a></li>
@@ -861,6 +862,7 @@ const T = {
     svc6_title:'פגישות אישיות', svc6_body:'פגישות ריפוי אישיות עמוקות המתקיימות במרחב בטוח ומקודש — מותאמות בדיוק למקום שבו אתה נמצא כרגע.',
     svc7_title:'מעגלי קבוצה', svc7_body:'מפגשים חודשיים וקבוצות ריפוי, האורגים קהילה, צליל וכוונה משותפת במרחב מחזיק ומזין לכל המשתתפים.',
     svc8_title:'ריטריטים', svc8_body:'ריטריטים מרובי ימים בטבע — הפסקה מלאה מהשגרה, המציעים מנוחה עמוקה, שיקום וחיבור מחודש לחיים.',
+    svc_tcm_title:'רפואה סינית מסורתית', svc_tcm_body:'רפואה סינית מסורתית עם דריה פורת, מוסמכת רפואה סינית ממכללת ברושים — דיקור, צמחי מרפא ושיאצו במסגרת גישה הוליסטית שלמה.',
     svc9_title:'דיקור סיני – גזעים וענפים', svc9_body:'דיקור סיני בשיטת הגזעים והענפים הוא ענף עתיק ועמוק של הרפואה הסינית הקלאסית. השיטה עובדת עם מערכת קוסמית של עשרה גזעים שמיימיים ושנים עשר ענפים ארציים — הכלים שדרכם הטבע מבטא את עצמו. הטיפול מותאם לאדם הספציפי, לשעה, לעונה ולתזמון הקוסמי, ומאפשר ריפוי עמוק של גוף, נפש ורוח. בניגוד לדיקור קונבנציונלי, שיטה זו רואה כל אדם כיצור קוסמי ייחודי ומתייחסת לשורש הבעיה — לא רק לסימפטום.',
     svc10_title:'שיאצו', svc10_body:'שיאצו היא אמנות ריפוי יפנית עתיקה המשלבת לחץ אצבעות על נקודות מרידיאן עם מתיחות ועבודה עם אנרגיית הקי. הטיפול מקדם זרימת אנרגיה חופשית לאורך ערוצי הגוף, מפיג מתחים עמוקים, מחזק את מערכת החיסון ומחזיר תחושת איזון ושלמות.',
     svc11_title:'ליווי הפחתת תרופות פסיכיאטריות', svc11_body:'ליווי תהליכי הפחתה של תרופות פסיכיאטריות באמצעות גישה הוליסטית, תומכת ומקצועית — תוך שיתוף עם הרופא המטפל.',
@@ -969,6 +971,7 @@ const T = {
     svc6_title:'One-on-One Sessions', svc6_body:'Deeply personalized healing sessions held in a safe, sacred space — tailored precisely to where you are right now and where you wish to be.',
     svc7_title:'Group Circles', svc7_body:'Monthly gatherings and healing circles weaving together community, sound, and shared intention in a held and nourishing space.',
     svc8_title:'Retreats', svc8_body:'Immersive multi-day retreats in nature — a full pause from the ordinary, offering deep rest, restoration, and renewed connection to life.',
+    svc_tcm_title:'Traditional Chinese Medicine', svc_tcm_body:'Traditional Chinese Medicine with Daria Porat, certified by Broshim College — acupuncture, herbal medicine, and shiatsu within one holistic approach.',
     svc9_title:'Acupuncture – Stems & Branches', svc9_body:'Acupuncture using the Stems and Branches system is an ancient and profound branch of Classical Chinese Medicine. It works with a cosmic framework of Ten Heavenly Stems and Twelve Earthly Branches — the vessels through which nature expresses itself in cycles of time and energy. Treatment is precisely calibrated to the individual, the hour, the season, and cosmic timing, enabling deep healing of body, mind, and spirit at the root — not merely the symptom.',
     svc10_title:'Shiatsu', svc10_body:'Shiatsu is an ancient Japanese healing art that combines finger pressure on meridian points with stretches and work with Ki energy. Treatment promotes free energy flow along the body\'s channels, relieves deep tension, strengthens the immune system, and restores a profound sense of balance and wholeness.',
     svc11_title:'Psychiatric Medication Tapering Support', svc11_body:'Compassionate, holistic support for those reducing psychiatric medications — combining Chinese medicine, plant medicine, and emotional accompaniment, in coordination with your physician.',
@@ -1111,6 +1114,7 @@ function buildServices() {
     { key:'svc1', featured:true,  url:'family-constellation.html', icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/><path d="M12 8v4l3 3"/>' },
     { key:'svc2', featured:true,  icon:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>' },
     { key:'svc4', featured:false, url:'herbal-medicine.html', icon:'<path d="M12 2C8 6 4 8 4 13c0 4.5 3.5 8 8 8s8-3.5 8-8c0-5-4-7-8-11z"/>' },
+    { key:'svc_tcm', featured:true, url:'chinese-medicine.html', icon:'<circle cx="12" cy="12" r="9"/><path d="M12 3a4.5 4.5 0 000 9 4.5 4.5 0 010 9"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor" stroke="none"/>' },
     { key:'svc9', featured:true,  url:'acupuncture.html', icon:'<line x1="12" y1="2" x2="12" y2="22"/><line x1="6" y1="6" x2="18" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="6" y1="18" x2="18" y2="18"/>' },
     { key:'svc10', featured:false, url:'shiatsu.html', icon:'<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>' },
     { key:'svc11', featured:false, icon:'<path d="M12 22s-8-4-8-10V5l8-3 8 3v7c0 6-8 10-8 10z"/>' },
