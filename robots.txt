@@ -3,6 +3,7 @@ Allow: /
 Disallow: /intake-form.html
 Disallow: /brand-guidelines.html
 Disallow: /milan-calculator.html
+Disallow: /ev-charging.html
 Disallow: /_page_template.html
 
 Sitemap: https://boazor.com/sitemap.xml

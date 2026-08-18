@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>מחשבון עלות טעינת רכב חשמלי</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Assistant:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #eef6f1; --card: #ffffff;
+      --ink: #0f2419; --ink-light: #5b6f64;
+      --accent: #0ea968; --accent-dark: #087a4c; --accent-light: #d7f5e6;
+      --blue: #2563eb; --blue-light: #e0ecff;
+      --border: #e3ede8; --danger: #dc2626; --danger-light: #fde8e8;
+    }
+    body {
+      font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--ink);
+      -webkit-font-smoothing: antialiased; min-height: 100vh;
+      padding: 28px 16px 60px;
+    }
+    .wrap { max-width: 460px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 24px; }
+    .bolt {
+      width: 52px; height: 52px; border-radius: 50%; background: var(--accent);
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 14px;
+      box-shadow: 0 8px 20px -6px rgba(14,169,104,.5);
+    }
+    .bolt svg { width: 26px; height: 26px; }
+    header h1 { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 22px; margin-bottom: 6px; }
+    header p { font-size: 13px; color: var(--ink-light); font-weight: 300; line-height: 1.6; }
+    header p .rate { color: var(--accent-dark); font-weight: 600; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px -4px rgba(15,36,25,.06);
+    }
+    .card h2, .card h3 {
+      font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 15px; margin-bottom: 14px;
+    }
+
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+    .field input {
+      width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'Assistant', sans-serif; font-size: 16px; color: var(--ink); background: #fbfdfc;
+      outline: none; transition: border-color .15s;
+    }
+    .field input:focus { border-color: var(--accent); background: white; }
+
+    .preview {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--accent-light); border-radius: 10px; padding: 10px 14px;
+      font-size: 13px; color: var(--accent-dark); font-weight: 500; margin-bottom: 14px;
+    }
+    .preview strong { font-family: 'Rubik', sans-serif; font-size: 16px; }
+
+    .btn {
+      width: 100%; background: var(--accent); color: white; border: none; border-radius: 10px;
+      padding: 13px; font-size: 15px; font-weight: 600; font-family: 'Assistant', sans-serif;
+      cursor: pointer; transition: opacity .15s;
+    }
+    .btn:hover { opacity: .9; }
+    .btn:disabled { opacity: .5; cursor: default; }
+
+    .month-nav { display: flex; align-items: center; gap: 10px; }
+    .month-nav select {
+      flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+      font-family: 'Assistant', sans-serif; font-size: 15px; font-weight: 500; color: var(--ink);
+      background: #fbfdfc; text-align-last: center;
+    }
+
+    .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-box {
+      background: var(--accent-light); border-radius: 12px; padding: 14px; text-align: center;
+    }
+    .stat-box.blue { background: var(--blue-light); }
+    .stat-box span { display: block; font-size: 12px; color: var(--ink-light); margin-bottom: 4px; }
+    .stat-box strong {
+      font-family: 'Rubik', sans-serif; font-size: 20px; color: var(--accent-dark); font-weight: 600;
+    }
+    .stat-box.blue strong { color: var(--blue); }
+
+    .entries-list ul { list-style: none; }
+    .entry-row {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 11px 0; border-bottom: 1px solid var(--border);
+    }
+    .entry-row:last-child { border-bottom: none; }
+    .entry-date { font-size: 14px; font-weight: 500; min-width: 60px; }
+    .entry-hours { font-size: 13px; color: var(--ink-light); flex: 1; }
+    .entry-cost { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 14px; }
+    .entry-del {
+      width: 26px; height: 26px; border-radius: 50%; border: none; background: var(--danger-light);
+      color: var(--danger); font-size: 14px; cursor: pointer; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .empty-msg { text-align: center; color: var(--ink-light); font-size: 13px; padding: 10px 0; }
+
+    .overall-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .overall-stats .mini { text-align: center; }
+    .overall-stats .mini span { display: block; font-size: 11px; color: var(--ink-light); margin-bottom: 3px; }
+    .overall-stats .mini strong { font-family: 'Rubik', sans-serif; font-size: 16px; font-weight: 600; }
+
+    footer { text-align: center; margin-top: 20px; font-size: 11px; color: var(--ink-light); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="bolt">
+      <svg viewBox="0 0 24 24" fill="white" stroke="none"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+    </div>
+    <h1>מחשבון עלות טעינת רכב חשמלי</h1>
+    <p>לפי עמדת הטעינה הפרטית · <span class="rate">7.5 קילוואט</span> × <span class="rate">0.64 ₪ לקוט"ש</span></p>
+  </header>
+
+  <div class="card">
+    <h2>הוספת טעינה</h2>
+    <div class="field">
+      <label for="in-date">תאריך</label>
+      <input type="date" id="in-date">
+    </div>
+    <div class="field">
+      <label for="in-hours">שעות טעינה</label>
+      <input type="number" id="in-hours" step="0.25" min="0" placeholder="לדוגמה: 3.5">
+    </div>
+    <div class="preview">
+      <span>עלות משוערת</span>
+      <strong id="preview-cost">₪0.00</strong>
+    </div>
+    <button class="btn" id="add-btn">הוספת טעינה +</button>
+  </div>
+
+  <div class="card">
+    <div class="month-nav">
+      <select id="month-select"></select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stats-row">
+      <div class="stat-box">
+        <span>סה"כ שעות החודש</span>
+        <strong id="month-hours">0</strong>
+      </div>
+      <div class="stat-box blue">
+        <span>עלות החודש</span>
+        <strong id="month-cost">₪0</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="card entries-list">
+    <h3>טעינות החודש</h3>
+    <ul id="entries"></ul>
+    <p class="empty-msg" id="empty-msg" style="display:none;">אין טעינות מתועדות בחודש זה</p>
+  </div>
+
+  <div class="card">
+    <h3>סיכום כללי (כל ההיסטוריה)</h3>
+    <div class="overall-stats">
+      <div class="mini"><span>טעינות</span><strong id="all-count">0</strong></div>
+      <div class="mini"><span>שעות</span><strong id="all-hours">0</strong></div>
+      <div class="mini"><span>עלות</span><strong id="all-cost">₪0</strong></div>
+    </div>
+  </div>
+
+  <footer>הנתונים נשמרים בדפדפן הזה בלבד</footer>
+</div>
+
+<script>
+  const STORAGE_KEY = 'evChargingSessions';
+  const KW = 7.5;
+  const PRICE_PER_KWH = 0.64;
+  const RATE_PER_HOUR = KW * PRICE_PER_KWH;
+
+  const $ = id => document.getElementById(id);
+  const dateInput = $('in-date');
+  const hoursInput = $('in-hours');
+  const previewCost = $('preview-cost');
+  const monthSelect = $('month-select');
+
+  let selectedMonth = null;
+
+  function loadSessions() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+  function saveSessions(sessions) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+  }
+  function costFor(hours) { return hours * RATE_PER_HOUR; }
+  function monthKeyOf(dateStr) { return dateStr.slice(0, 7); }
+  function todayStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+  function formatMonthLabel(key) {
+    const [y, m] = key.split('-').map(Number);
+    return new Date(y, m-1, 1).toLocaleDateString('he-IL', { month: 'long', year: 'numeric' });
+  }
+  function formatDay(dateStr) {
+    const [, m, d] = dateStr.split('-');
+    return `${d}/${m}`;
+  }
+  function formatCurrency(n) {
+    return '₪' + n.toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function allMonthKeys(sessions) {
+    const keys = new Set(sessions.map(s => monthKeyOf(s.date)));
+    keys.add(monthKeyOf(todayStr()));
+    return Array.from(keys).sort().reverse();
+  }
+
+  function renderMonthSelect(sessions) {
+    const keys = allMonthKeys(sessions);
+    if (!selectedMonth || !keys.includes(selectedMonth)) selectedMonth = keys[0];
+    monthSelect.innerHTML = keys.map(k =>
+      `<option value="${k}" ${k === selectedMonth ? 'selected' : ''}>${formatMonthLabel(k)}</option>`
+    ).join('');
+  }
+
+  function renderEntries(sessions) {
+    const monthSessions = sessions
+      .filter(s => monthKeyOf(s.date) === selectedMonth)
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    const list = $('entries');
+    const emptyMsg = $('empty-msg');
+
+    if (monthSessions.length === 0) {
+      list.innerHTML = '';
+      emptyMsg.style.display = 'block';
+    } else {
+      emptyMsg.style.display = 'none';
+      list.innerHTML = monthSessions.map(s => `
+        <li class="entry-row">
+          <span class="entry-date">${formatDay(s.date)}</span>
+          <span class="entry-hours">${s.hours} שעות</span>
+          <span class="entry-cost">${formatCurrency(costFor(s.hours))}</span>
+          <button class="entry-del" data-id="${s.id}" aria-label="מחיקה">✕</button>
+        </li>`).join('');
+    }
+
+    const totalHours = monthSessions.reduce((sum, s) => sum + s.hours, 0);
+    const totalCost = monthSessions.reduce((sum, s) => sum + costFor(s.hours), 0);
+    $('month-hours').textContent = totalHours.toLocaleString('he-IL');
+    $('month-cost').textContent = formatCurrency(totalCost);
+  }
+
+  function renderOverall(sessions) {
+    const totalHours = sessions.reduce((sum, s) => sum + s.hours, 0);
+    const totalCost = sessions.reduce((sum, s) => sum + costFor(s.hours), 0);
+    $('all-count').textContent = sessions.length;
+    $('all-hours').textContent = totalHours.toLocaleString('he-IL');
+    $('all-cost').textContent = formatCurrency(totalCost);
+  }
+
+  function renderAll() {
+    const sessions = loadSessions();
+    renderMonthSelect(sessions);
+    renderEntries(sessions);
+    renderOverall(sessions);
+  }
+
+  function updatePreview() {
+    const hours = parseFloat(hoursInput.value) || 0;
+    previewCost.textContent = formatCurrency(costFor(hours));
+  }
+
+  hoursInput.addEventListener('input', updatePreview);
+
+  monthSelect.addEventListener('change', () => {
+    selectedMonth = monthSelect.value;
+    renderAll();
+  });
+
+  $('entries').addEventListener('click', e => {
+    const btn = e.target.closest('.entry-del');
+    if (!btn) return;
+    if (!confirm('למחוק את הטעינה הזו?')) return;
+    const sessions = loadSessions().filter(s => s.id !== btn.dataset.id);
+    saveSessions(sessions);
+    renderAll();
+  });
+
+  $('add-btn').addEventListener('click', () => {
+    const date = dateInput.value;
+    const hours = parseFloat(hoursInput.value);
+    if (!date) { alert('נא לבחור תאריך'); return; }
+    if (!hours || hours <= 0) { alert('נא להזין מספר שעות תקין'); return; }
+
+    const sessions = loadSessions();
+    sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2), date, hours });
+    saveSessions(sessions);
+
+    selectedMonth = monthKeyOf(date);
+    hoursInput.value = '';
+    updatePreview();
+    renderAll();
+  });
+
+  dateInput.value = todayStr();
+  renderAll();
+</script>
+</body>
+</html>
