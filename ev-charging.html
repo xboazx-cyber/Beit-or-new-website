@@ -43,6 +43,8 @@
 
     .field { margin-bottom: 12px; }
     .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+    .field label .opt { font-weight: 300; font-size: 11px; }
+    .pct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .field input {
       width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 10px;
       font-family: 'Assistant', sans-serif; font-size: 16px; color: var(--ink); background: #fbfdfc;
@@ -91,6 +93,7 @@
     .entry-row:last-child { border-bottom: none; }
     .entry-date { font-size: 14px; font-weight: 500; min-width: 60px; }
     .entry-hours { font-size: 13px; color: var(--ink-light); flex: 1; }
+    .entry-pct { font-size: 12px; color: var(--accent-dark); background: var(--accent-light); border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
     .entry-cost { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 14px; }
     .entry-del {
       width: 26px; height: 26px; border-radius: 50%; border: none; background: var(--danger-light);
@@ -128,6 +131,16 @@
       <label for="in-hours">שעות טעינה</label>
       <input type="number" id="in-hours" step="0.25" min="0" placeholder="לדוגמה: 3.5">
     </div>
+    <div class="pct-row">
+      <div class="field">
+        <label for="in-pct-from">מאחוז <span class="opt">(לא חובה)</span></label>
+        <input type="number" id="in-pct-from" min="0" max="100" placeholder="לדוגמה: 20">
+      </div>
+      <div class="field">
+        <label for="in-pct-to">עד אחוז <span class="opt">(לא חובה)</span></label>
+        <input type="number" id="in-pct-to" min="0" max="100" placeholder="לדוגמה: 80">
+      </div>
+    </div>
     <div class="preview">
       <span>עלות משוערת</span>
       <strong id="preview-cost">₪0.00</strong>
@@ -144,18 +157,18 @@
   <div class="card">
     <div class="stats-row">
       <div class="stat-box">
-        <span>סה"כ שעות החודש</span>
+        <span id="hours-label">סה"כ שעות החודש</span>
         <strong id="month-hours">0</strong>
       </div>
       <div class="stat-box blue">
-        <span>עלות החודש</span>
+        <span id="cost-label">עלות החודש</span>
         <strong id="month-cost">₪0</strong>
       </div>
     </div>
   </div>
 
   <div class="card entries-list">
-    <h3>טעינות החודש</h3>
+    <h3 id="entries-title">טעינות החודש</h3>
     <ul id="entries"></ul>
     <p class="empty-msg" id="empty-msg" style="display:none;">אין טעינות מתועדות בחודש זה</p>
   </div>
@@ -181,6 +194,8 @@
   const $ = id => document.getElementById(id);
   const dateInput = $('in-date');
   const hoursInput = $('in-hours');
+  const pctFromInput = $('in-pct-from');
+  const pctToInput = $('in-pct-to');
   const previewCost = $('preview-cost');
   const monthSelect = $('month-select');
 
@@ -203,52 +218,68 @@
     const [y, m] = key.split('-').map(Number);
     return new Date(y, m-1, 1).toLocaleDateString('he-IL', { month: 'long', year: 'numeric' });
   }
-  function formatDay(dateStr) {
-    const [, m, d] = dateStr.split('-');
-    return `${d}/${m}`;
+  function formatDay(dateStr, withYear) {
+    const [y, m, d] = dateStr.split('-');
+    return withYear ? `${d}/${m}/${y.slice(2)}` : `${d}/${m}`;
+  }
+  function shiftMonthKey(key, n) {
+    const [y, m] = key.split('-').map(Number);
+    const d = new Date(y, m - 1 + n, 1);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
   }
   function formatCurrency(n) {
     return '₪' + n.toLocaleString('he-IL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  const MONTHS_BACK = 6;
+  const MONTHS_FORWARD = 6;
+
   function allMonthKeys(sessions) {
     const keys = new Set(sessions.map(s => monthKeyOf(s.date)));
-    keys.add(monthKeyOf(todayStr()));
+    const current = monthKeyOf(todayStr());
+    for (let i = -MONTHS_BACK; i <= MONTHS_FORWARD; i++) keys.add(shiftMonthKey(current, i));
     return Array.from(keys).sort().reverse();
   }
 
   function renderMonthSelect(sessions) {
     const keys = allMonthKeys(sessions);
-    if (!selectedMonth || !keys.includes(selectedMonth)) selectedMonth = keys[0];
-    monthSelect.innerHTML = keys.map(k =>
-      `<option value="${k}" ${k === selectedMonth ? 'selected' : ''}>${formatMonthLabel(k)}</option>`
+    const validValues = ['all', ...keys];
+    if (!selectedMonth || !validValues.includes(selectedMonth)) selectedMonth = monthKeyOf(todayStr());
+    monthSelect.innerHTML = validValues.map(k =>
+      `<option value="${k}" ${k === selectedMonth ? 'selected' : ''}>${k === 'all' ? 'כל הנתונים' : formatMonthLabel(k)}</option>`
     ).join('');
   }
 
   function renderEntries(sessions) {
-    const monthSessions = sessions
-      .filter(s => monthKeyOf(s.date) === selectedMonth)
-      .sort((a, b) => a.date.localeCompare(b.date));
+    const isAll = selectedMonth === 'all';
+    const filtered = (isAll ? sessions.slice() : sessions.filter(s => monthKeyOf(s.date) === selectedMonth))
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    $('entries-title').textContent = isAll ? 'כל הטעינות' : 'טעינות החודש';
+    $('hours-label').textContent = isAll ? 'סה"כ שעות' : 'סה"כ שעות החודש';
+    $('cost-label').textContent = isAll ? 'סה"כ עלות' : 'עלות החודש';
+    $('empty-msg').textContent = isAll ? 'אין טעינות מתועדות עדיין' : 'אין טעינות מתועדות בחודש זה';
 
     const list = $('entries');
     const emptyMsg = $('empty-msg');
 
-    if (monthSessions.length === 0) {
+    if (filtered.length === 0) {
       list.innerHTML = '';
       emptyMsg.style.display = 'block';
     } else {
       emptyMsg.style.display = 'none';
-      list.innerHTML = monthSessions.map(s => `
+      list.innerHTML = filtered.map(s => `
         <li class="entry-row">
-          <span class="entry-date">${formatDay(s.date)}</span>
+          <span class="entry-date">${formatDay(s.date, isAll)}</span>
           <span class="entry-hours">${s.hours} שעות</span>
+          ${s.pctFrom != null && s.pctTo != null ? `<span class="entry-pct">${s.pctFrom}%→${s.pctTo}%</span>` : ''}
           <span class="entry-cost">${formatCurrency(costFor(s.hours))}</span>
           <button class="entry-del" data-id="${s.id}" aria-label="מחיקה">✕</button>
         </li>`).join('');
     }
 
-    const totalHours = monthSessions.reduce((sum, s) => sum + s.hours, 0);
-    const totalCost = monthSessions.reduce((sum, s) => sum + costFor(s.hours), 0);
+    const totalHours = filtered.reduce((sum, s) => sum + s.hours, 0);
+    const totalCost = filtered.reduce((sum, s) => sum + costFor(s.hours), 0);
     $('month-hours').textContent = totalHours.toLocaleString('he-IL');
     $('month-cost').textContent = formatCurrency(totalCost);
   }
@@ -295,12 +326,26 @@
     if (!date) { alert('נא לבחור תאריך'); return; }
     if (!hours || hours <= 0) { alert('נא להזין מספר שעות תקין'); return; }
 
+    const pctFromRaw = pctFromInput.value;
+    const pctToRaw = pctToInput.value;
+    let pctFrom = null, pctTo = null;
+    if (pctFromRaw !== '' || pctToRaw !== '') {
+      pctFrom = parseFloat(pctFromRaw);
+      pctTo = parseFloat(pctToRaw);
+      if (isNaN(pctFrom) || isNaN(pctTo) || pctFrom < 0 || pctTo > 100 || pctFrom >= pctTo) {
+        alert('אחוזי הסוללה צריכים להיות בין 0 ל-100, כאשר "מאחוז" קטן מ"עד אחוז" (או שיש להשאיר את שניהם ריקים)');
+        return;
+      }
+    }
+
     const sessions = loadSessions();
-    sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2), date, hours });
+    sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2), date, hours, pctFrom, pctTo });
     saveSessions(sessions);
 
     selectedMonth = monthKeyOf(date);
     hoursInput.value = '';
+    pctFromInput.value = '';
+    pctToInput.value = '';
     updatePreview();
     renderAll();
   });
