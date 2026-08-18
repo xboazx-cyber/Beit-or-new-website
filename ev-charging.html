@@ -29,8 +29,8 @@
       box-shadow: 0 8px 20px -6px rgba(14,169,104,.5);
     }
     .bolt svg { width: 26px; height: 26px; }
-    header h1 { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 22px; margin-bottom: 6px; }
-    header p { font-size: 13px; color: var(--ink-light); font-weight: 300; line-height: 1.6; }
+    header h1 { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 27px; margin-bottom: 6px; }
+    header p { font-size: 16px; color: var(--ink-light); font-weight: 300; line-height: 1.6; }
     header p .rate { color: var(--accent-dark); font-weight: 600; }
 
     .card {
@@ -38,16 +38,16 @@
       padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px -4px rgba(15,36,25,.06);
     }
     .card h2, .card h3 {
-      font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 15px; margin-bottom: 14px;
+      font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 19px; margin-bottom: 14px;
     }
 
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
-    .field label .opt { font-weight: 300; font-size: 11px; }
+    .field label { display: block; font-size: 16px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+    .field label .opt { font-weight: 300; font-size: 14px; }
     .pct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .field input {
       width: 100%; padding: 11px 13px; border: 1px solid var(--border); border-radius: 10px;
-      font-family: 'Assistant', sans-serif; font-size: 16px; color: var(--ink); background: #fbfdfc;
+      font-family: 'Assistant', sans-serif; font-size: 19px; color: var(--ink); background: #fbfdfc;
       outline: none; transition: border-color .15s;
     }
     .field input:focus { border-color: var(--accent); background: white; }
@@ -55,13 +55,13 @@
     .preview {
       display: flex; align-items: center; justify-content: space-between;
       background: var(--accent-light); border-radius: 10px; padding: 10px 14px;
-      font-size: 13px; color: var(--accent-dark); font-weight: 500; margin-bottom: 14px;
+      font-size: 16px; color: var(--accent-dark); font-weight: 500; margin-bottom: 14px;
     }
-    .preview strong { font-family: 'Rubik', sans-serif; font-size: 16px; }
+    .preview strong { font-family: 'Rubik', sans-serif; font-size: 19px; }
 
     .btn {
       width: 100%; background: var(--accent); color: white; border: none; border-radius: 10px;
-      padding: 13px; font-size: 15px; font-weight: 600; font-family: 'Assistant', sans-serif;
+      padding: 13px; font-size: 18px; font-weight: 600; font-family: 'Assistant', sans-serif;
       cursor: pointer; transition: opacity .15s;
     }
     .btn:hover { opacity: .9; }
@@ -70,18 +70,25 @@
     .month-nav { display: flex; align-items: center; gap: 10px; }
     .month-nav select {
       flex: 1; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
-      font-family: 'Assistant', sans-serif; font-size: 15px; font-weight: 500; color: var(--ink);
+      font-family: 'Assistant', sans-serif; font-size: 18px; font-weight: 500; color: var(--ink);
       background: #fbfdfc; text-align-last: center;
     }
+    .btn-print {
+      flex-shrink: 0; width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--border);
+      background: #fbfdfc; font-size: 18px; cursor: pointer;
+    }
+    .btn-print:hover { background: var(--accent-light); border-color: var(--accent); }
+
+    .print-only { display: none; }
 
     .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .stat-box {
       background: var(--accent-light); border-radius: 12px; padding: 14px; text-align: center;
     }
     .stat-box.blue { background: var(--blue-light); }
-    .stat-box span { display: block; font-size: 12px; color: var(--ink-light); margin-bottom: 4px; }
+    .stat-box span { display: block; font-size: 15px; color: var(--ink-light); margin-bottom: 4px; }
     .stat-box strong {
-      font-family: 'Rubik', sans-serif; font-size: 20px; color: var(--accent-dark); font-weight: 600;
+      font-family: 'Rubik', sans-serif; font-size: 24px; color: var(--accent-dark); font-weight: 600;
     }
     .stat-box.blue strong { color: var(--blue); }
 
@@ -91,23 +98,32 @@
       padding: 11px 0; border-bottom: 1px solid var(--border);
     }
     .entry-row:last-child { border-bottom: none; }
-    .entry-date { font-size: 14px; font-weight: 500; min-width: 60px; }
-    .entry-hours { font-size: 13px; color: var(--ink-light); flex: 1; }
-    .entry-pct { font-size: 12px; color: var(--accent-dark); background: var(--accent-light); border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
-    .entry-cost { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 14px; }
+    .entry-date { font-size: 17px; font-weight: 500; min-width: 60px; }
+    .entry-hours { font-size: 16px; color: var(--ink-light); flex: 1; }
+    .entry-pct { font-size: 15px; color: var(--accent-dark); background: var(--accent-light); border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
+    .entry-cost { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 17px; }
     .entry-del {
       width: 26px; height: 26px; border-radius: 50%; border: none; background: var(--danger-light);
       color: var(--danger); font-size: 14px; cursor: pointer; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
     }
-    .empty-msg { text-align: center; color: var(--ink-light); font-size: 13px; padding: 10px 0; }
+    .empty-msg { text-align: center; color: var(--ink-light); font-size: 16px; padding: 10px 0; }
 
     .overall-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
     .overall-stats .mini { text-align: center; }
-    .overall-stats .mini span { display: block; font-size: 11px; color: var(--ink-light); margin-bottom: 3px; }
-    .overall-stats .mini strong { font-family: 'Rubik', sans-serif; font-size: 16px; font-weight: 600; }
+    .overall-stats .mini span { display: block; font-size: 14px; color: var(--ink-light); margin-bottom: 3px; }
+    .overall-stats .mini strong { font-family: 'Rubik', sans-serif; font-size: 19px; font-weight: 600; }
 
-    footer { text-align: center; margin-top: 20px; font-size: 11px; color: var(--ink-light); }
+    footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--ink-light); }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .no-print { display: none !important; }
+      .print-only { display: block; font-family: 'Rubik', sans-serif; font-size: 18px; font-weight: 600; text-align: center; margin: -8px 0 16px; }
+      .bolt { display: none; }
+      .card { box-shadow: none; border: 1px solid #ddd; }
+      .entry-del { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -121,7 +137,7 @@
     <p>לפי עמדת הטעינה הפרטית · <span class="rate">7.5 קילוואט</span> × <span class="rate">0.64 ₪ לקוט"ש</span></p>
   </header>
 
-  <div class="card">
+  <div class="card no-print">
     <h2>הוספת טעינה</h2>
     <div class="field">
       <label for="in-date">תאריך</label>
@@ -148,11 +164,15 @@
     <button class="btn" id="add-btn">הוספת טעינה +</button>
   </div>
 
-  <div class="card">
+  <div class="card no-print">
     <div class="month-nav">
       <select id="month-select"></select>
+      <button class="btn-print" id="print-btn" type="button" aria-label="הדפסת החודש">🖨️</button>
+      <button class="btn-print" id="download-btn" type="button" aria-label="הורדת קובץ">⬇️</button>
     </div>
   </div>
+
+  <p id="print-month-label" class="print-only"></p>
 
   <div class="card">
     <div class="stats-row">
@@ -173,7 +193,7 @@
     <p class="empty-msg" id="empty-msg" style="display:none;">אין טעינות מתועדות בחודש זה</p>
   </div>
 
-  <div class="card">
+  <div class="card no-print">
     <h3>סיכום כללי (כל ההיסטוריה)</h3>
     <div class="overall-stats">
       <div class="mini"><span>טעינות</span><strong id="all-count">0</strong></div>
@@ -182,7 +202,7 @@
     </div>
   </div>
 
-  <footer>הנתונים נשמרים בדפדפן הזה בלבד</footer>
+  <footer class="no-print">הנתונים נשמרים בדפדפן הזה בלבד</footer>
 </div>
 
 <script>
@@ -259,6 +279,7 @@
     $('hours-label').textContent = isAll ? 'סה"כ שעות' : 'סה"כ שעות החודש';
     $('cost-label').textContent = isAll ? 'סה"כ עלות' : 'עלות החודש';
     $('empty-msg').textContent = isAll ? 'אין טעינות מתועדות עדיין' : 'אין טעינות מתועדות בחודש זה';
+    $('print-month-label').textContent = 'עלויות טעינת רכב חשמלי — ' + (isAll ? 'כל הנתונים' : formatMonthLabel(selectedMonth));
 
     const list = $('entries');
     const emptyMsg = $('empty-msg');
@@ -309,6 +330,39 @@
   monthSelect.addEventListener('change', () => {
     selectedMonth = monthSelect.value;
     renderAll();
+  });
+
+  $('print-btn').addEventListener('click', () => window.print());
+
+  $('download-btn').addEventListener('click', () => {
+    const sessions = loadSessions();
+    const isAll = selectedMonth === 'all';
+    const rows = (isAll ? sessions.slice() : sessions.filter(s => monthKeyOf(s.date) === selectedMonth))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (rows.length === 0) { alert('אין טעינות להורדה'); return; }
+
+    const header = ['תאריך', 'שעות טעינה', 'מאחוז', 'עד אחוז', 'עלות (₪)'];
+    const lines = rows.map(s => [
+      s.date,
+      s.hours,
+      s.pctFrom != null ? s.pctFrom : '',
+      s.pctTo != null ? s.pctTo : '',
+      costFor(s.hours).toFixed(2)
+    ].join(','));
+    const totalCost = rows.reduce((sum, s) => sum + costFor(s.hours), 0);
+    lines.push(['סה"כ', rows.reduce((sum, s) => sum + s.hours, 0), '', '', totalCost.toFixed(2)].join(','));
+
+    const csv = '﻿' + [header.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'טעינות-רכב-' + (isAll ? 'כל-הנתונים' : selectedMonth) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   });
 
   $('entries').addEventListener('click', e => {
