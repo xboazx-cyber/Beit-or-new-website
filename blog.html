@@ -418,11 +418,6 @@ function setLang(l) {
   }
   document.getElementById('btn-he').classList.toggle('active', l==='he');
   document.getElementById('btn-en').classList.toggle('active', l==='en');
-  const toggle7 = document.getElementById('toggle7');
-  const wrap7b = document.getElementById('wrap7b');
-  if (toggle7) toggle7.textContent = wrap7b.style.display === 'block'
-    ? (l === 'he' ? 'סגור ↑' : 'Close ↑')
-    : (l === 'he' ? 'לקריאה נוספת ←' : 'Read more ←');
 }
 
 setLang('he');
