@@ -293,7 +293,7 @@
         <li class="entry-row">
           <span class="entry-date">${formatDay(s.date, isAll)}</span>
           <span class="entry-hours">${s.hours} שעות</span>
-          ${s.pctFrom != null && s.pctTo != null ? `<span class="entry-pct">${s.pctFrom}%→${s.pctTo}%</span>` : ''}
+          ${s.pctFrom != null && s.pctTo != null ? `<span class="entry-pct" dir="ltr">${s.pctFrom}%→${s.pctTo}%</span>` : ''}
           <span class="entry-cost">${formatCurrency(costFor(s.hours))}</span>
           <button class="entry-del" data-id="${s.id}" aria-label="מחיקה">✕</button>
         </li>`).join('');
@@ -346,8 +346,8 @@
     const lines = rows.map(s => [
       s.date,
       s.hours,
-      s.pctFrom != null ? s.pctFrom : '',
-      s.pctTo != null ? s.pctTo : '',
+      s.pctFrom != null ? s.pctFrom + '%' : '',
+      s.pctTo != null ? s.pctTo + '%' : '',
       costFor(s.hours).toFixed(2)
     ].join(','));
     const totalCost = rows.reduce((sum, s) => sum + costFor(s.hours), 0);
