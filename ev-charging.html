@@ -92,6 +92,25 @@
     }
     .stat-box.blue strong { color: var(--blue); }
 
+    .payment-status {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+    }
+    .btn-paid {
+      border: none; border-radius: 10px; padding: 10px 18px; font-size: 15px; font-weight: 600;
+      font-family: 'Assistant', sans-serif; cursor: pointer; transition: opacity .15s;
+      background: var(--danger-light); color: var(--danger);
+    }
+    .btn-paid.is-paid { background: var(--accent-light); color: var(--accent-dark); }
+    .btn-paid:hover { opacity: .85; }
+    .payment-date-wrap { display: flex; align-items: center; gap: 8px; }
+    .payment-date-wrap label { font-size: 13px; color: var(--ink-light); }
+    .payment-date-wrap input {
+      padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Assistant', sans-serif; font-size: 14px; color: var(--ink); background: #fbfdfc;
+    }
+    .payment-hint { font-size: 13px; color: var(--ink-light); margin-top: 12px; }
+
     .entries-list ul { list-style: none; }
     .entry-row {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
@@ -185,6 +204,14 @@
         <strong id="month-cost">₪0</strong>
       </div>
     </div>
+    <div class="payment-status" id="payment-status">
+      <button class="btn-paid" id="payment-toggle" type="button"></button>
+      <div class="payment-date-wrap" id="payment-date-wrap">
+        <label for="payment-date">תאריך תשלום</label>
+        <input type="date" id="payment-date">
+      </div>
+    </div>
+    <p class="payment-hint no-print" id="payment-hint" style="display:none;">בחר/י חודש ספציפי כדי לסמן תשלום</p>
   </div>
 
   <div class="card entries-list">
@@ -207,6 +234,7 @@
 
 <script>
   const STORAGE_KEY = 'evChargingSessions';
+  const PAYMENTS_KEY = 'evChargingPayments';
   const KW = 7.5;
   const PRICE_PER_KWH = 0.64;
   const RATE_PER_HOUR = KW * PRICE_PER_KWH;
@@ -218,12 +246,23 @@
   const pctToInput = $('in-pct-to');
   const previewCost = $('preview-cost');
   const monthSelect = $('month-select');
+  const paymentToggle = $('payment-toggle');
+  const paymentDateWrap = $('payment-date-wrap');
+  const paymentDateInput = $('payment-date');
+  const paymentHint = $('payment-hint');
 
   let selectedMonth = null;
 
   function loadSessions() {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
     catch { return []; }
+  }
+  function loadPayments() {
+    try { return JSON.parse(localStorage.getItem(PAYMENTS_KEY)) || {}; }
+    catch { return {}; }
+  }
+  function savePayments(payments) {
+    localStorage.setItem(PAYMENTS_KEY, JSON.stringify(payments));
   }
   function saveSessions(sessions) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
@@ -313,11 +352,32 @@
     $('all-cost').textContent = formatCurrency(totalCost);
   }
 
+  function renderPaymentStatus() {
+    const isAll = selectedMonth === 'all';
+    paymentHint.style.display = isAll ? 'block' : 'none';
+    paymentToggle.style.display = isAll ? 'none' : 'inline-block';
+
+    if (isAll) {
+      paymentDateWrap.style.display = 'none';
+      return;
+    }
+
+    const payments = loadPayments();
+    const record = payments[selectedMonth];
+    const isPaid = !!(record && record.paid);
+
+    paymentToggle.textContent = isPaid ? 'שולם ✓' : 'לא שולם';
+    paymentToggle.classList.toggle('is-paid', isPaid);
+    paymentDateWrap.style.display = isPaid ? 'flex' : 'none';
+    paymentDateInput.value = (record && record.paidDate) || '';
+  }
+
   function renderAll() {
     const sessions = loadSessions();
     renderMonthSelect(sessions);
     renderEntries(sessions);
     renderOverall(sessions);
+    renderPaymentStatus();
   }
 
   function updatePreview() {
@@ -333,6 +393,26 @@
   });
 
   $('print-btn').addEventListener('click', () => window.print());
+
+  paymentToggle.addEventListener('click', () => {
+    if (selectedMonth === 'all') return;
+    const payments = loadPayments();
+    const record = payments[selectedMonth] || { paid: false, paidDate: null };
+    record.paid = !record.paid;
+    if (record.paid && !record.paidDate) record.paidDate = todayStr();
+    payments[selectedMonth] = record;
+    savePayments(payments);
+    renderPaymentStatus();
+  });
+
+  paymentDateInput.addEventListener('change', () => {
+    if (selectedMonth === 'all') return;
+    const payments = loadPayments();
+    const record = payments[selectedMonth] || { paid: true, paidDate: null };
+    record.paidDate = paymentDateInput.value;
+    payments[selectedMonth] = record;
+    savePayments(payments);
+  });
 
   $('download-btn').addEventListener('click', () => {
     const sessions = loadSessions();
