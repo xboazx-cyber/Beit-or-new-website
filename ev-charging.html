@@ -135,8 +135,37 @@
 
     footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--ink-light); }
 
+    .col-left, .col-right { display: none; }
+
+    @media (min-width: 860px) {
+      body { padding: 20px 24px; }
+      .wrap {
+        max-width: 1100px;
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+      header {
+        grid-column: 1 / -1; margin-bottom: 0; padding: 10px 4px;
+        display: grid; grid-template-columns: auto 1fr; column-gap: 14px;
+        align-items: center; text-align: start;
+      }
+      .bolt { grid-column: 1; grid-row: 1 / 3; width: 44px; height: 44px; margin: 0; }
+      .bolt svg { width: 22px; height: 22px; }
+      header h1 { grid-column: 2; grid-row: 1; font-size: 21px; margin-bottom: 2px; }
+      header p { grid-column: 2; grid-row: 2; font-size: 14px; }
+      footer { grid-column: 1 / -1; margin-top: 0; }
+      .col-left, .col-right { display: block; }
+      .col-left > .card, .col-right > .card { margin-bottom: 14px; }
+      .area-entries #entries { max-height: 55vh; overflow-y: auto; padding-inline-end: 4px; }
+    }
+
     @media print {
       body { background: white; padding: 0; }
+      .wrap { display: block !important; max-width: 100% !important; }
+      .col-left, .col-right { display: contents !important; }
+      #entries { max-height: none !important; overflow: visible !important; }
       .no-print { display: none !important; }
       .print-only { display: block; font-family: 'Rubik', sans-serif; font-size: 22px; font-weight: 600; text-align: center; margin: -8px 0 16px; }
       .bolt { display: none; }
@@ -164,7 +193,10 @@
     <p>לפי עמדת הטעינה הפרטית · <span class="rate">7.5 קילוואט</span> × <span class="rate">0.64 ₪ לקוט"ש</span></p>
   </header>
 
-  <div class="card no-print">
+  <div class="col-left" id="col-left"></div>
+  <div class="col-right" id="col-right"></div>
+
+  <div class="card no-print area-addform">
     <h2>הוספת טעינה</h2>
     <div class="field">
       <label for="in-date">תאריך</label>
@@ -191,7 +223,7 @@
     <button class="btn" id="add-btn">הוספת טעינה +</button>
   </div>
 
-  <div class="card no-print">
+  <div class="card no-print area-nav">
     <div class="month-nav">
       <select id="month-select"></select>
       <button class="btn-print" id="print-btn" type="button" aria-label="הדפסת החודש">🖨️</button>
@@ -201,7 +233,7 @@
 
   <p id="print-month-label" class="print-only"></p>
 
-  <div class="card">
+  <div class="card area-stats">
     <div class="stats-row">
       <div class="stat-box">
         <span id="hours-label">סה"כ שעות החודש</span>
@@ -222,13 +254,13 @@
     <p class="payment-hint no-print" id="payment-hint" style="display:none;">בחר/י חודש ספציפי כדי לסמן תשלום</p>
   </div>
 
-  <div class="card entries-list">
+  <div class="card entries-list area-entries">
     <h3 id="entries-title">טעינות החודש</h3>
     <ul id="entries"></ul>
     <p class="empty-msg" id="empty-msg" style="display:none;">אין טעינות מתועדות בחודש זה</p>
   </div>
 
-  <div class="card no-print">
+  <div class="card no-print area-overall">
     <h3>סיכום כללי (כל ההיסטוריה)</h3>
     <div class="overall-stats">
       <div class="mini"><span>טעינות</span><strong id="all-count">0</strong></div>
@@ -491,6 +523,46 @@
     updatePreview();
     renderAll();
   });
+
+  function applyDesktopLayout() {
+    const wrap = document.querySelector('.wrap');
+    const colLeft = $('col-left');
+    const colRight = $('col-right');
+    const footer = document.querySelector('footer');
+    const addformEl = document.querySelector('.area-addform');
+    const navEl = document.querySelector('.area-nav');
+    const printLabelEl = $('print-month-label');
+    const statsEl = document.querySelector('.area-stats');
+    const entriesEl = document.querySelector('.area-entries');
+    const overallEl = document.querySelector('.area-overall');
+
+    if (window.innerWidth >= 860) {
+      colLeft.appendChild(addformEl);
+      colLeft.appendChild(statsEl);
+      colRight.appendChild(navEl);
+      colRight.appendChild(printLabelEl);
+      colRight.appendChild(entriesEl);
+      colRight.appendChild(overallEl);
+    } else {
+      wrap.insertBefore(addformEl, footer);
+      wrap.insertBefore(navEl, footer);
+      wrap.insertBefore(printLabelEl, footer);
+      wrap.insertBefore(statsEl, footer);
+      wrap.insertBefore(entriesEl, footer);
+      wrap.insertBefore(overallEl, footer);
+    }
+  }
+
+  let lastLayoutIsDesktop = null;
+  function maybeReflow() {
+    const isDesktop = window.innerWidth >= 860;
+    if (isDesktop !== lastLayoutIsDesktop) {
+      lastLayoutIsDesktop = isDesktop;
+      applyDesktopLayout();
+    }
+  }
+  window.addEventListener('resize', maybeReflow);
+  maybeReflow();
 
   dateInput.value = todayStr();
   renderAll();
