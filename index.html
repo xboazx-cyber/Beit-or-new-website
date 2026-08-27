@@ -1201,7 +1201,14 @@ function buildServices() {
       </button>` : `<a href="#contact" class="service-link">${T[lang].svc_link} <span>→</span></a>`}
       ${pageLink}
     </div>`;
-  }).join('');
+  }).join('') + `
+    <a href="blog.html" class="service-card featured reveal" style="display:block;text-decoration:none;">
+      <span class="service-num">📖</span>
+      <svg class="service-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A2.5 2.5 0 016.5 2H20v15H6.5A2.5 2.5 0 004 19.5v-15z"/><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/></svg>
+      <h3>${lang==='he'?'בלוג — הכולל תכנים, הרצאות ומאמרים':'Blog — Articles, Talks & Resources'}</h3>
+      <p>${lang==='he'?'רוצים להעמיק? כל התכנים על רפואה סינית, צמחי מרפא, שיאצו ותזונה — במקום אחד.':'Want to go deeper? Everything on Chinese medicine, herbalism, shiatsu and nutrition — in one place.'}</p>
+      <span class="service-link">${lang==='he'?'לכל המאמרים':'All Articles'} <span>→</span></span>
+    </a>`;
   observeReveals();
 
   // Staggered entrance animation for service cards
