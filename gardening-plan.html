@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>תוכנית עבודה - גינון כרמי יוסף</title>
+  <link rel="icon" type="image/png" href="karmey_yosef_favicon.png">
+  <meta property="og:title" content="תוכנית עבודה - גינון כרמי יוסף">
+  <meta property="og:description" content="ניהול אזורים, משימות, לוחות זמנים ומעקב עובדים לגינון הישוב">
+  <meta property="og:image" content="https://boazor.com/karmey_yosef_og_image.png">
+  <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Assistant:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -16,7 +21,7 @@
       --accent: #4a7c2f; --accent-dark: #386022; --accent-light: #dcecd2;
       --amber: #b8860b; --amber-light: #fbeecb;
       --border: #e0e8da; --danger: #dc2626; --danger-light: #fde8e8;
-      --pink: #c2185b; --pink-light: #fbe1ec;
+      --pink: #c2185b; --pink-light: #f9cee0;
     }
     body {
       font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--ink);
@@ -91,6 +96,12 @@
     .attendance-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 12px; }
     .attendance-row select { flex: 1; font-size: 12px; padding: 3px 4px; }
     .card[contenteditable="true"] { outline: 2px dashed var(--accent); outline-offset: 6px; background: #fffdf3; cursor: text; }
+    .wwstatus { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; font-size: 13px; }
+    .wwstatus input, .wwstatus-inline input { width: auto; }
+    .wwstatus-inline { display: inline-flex; align-items: flex-start; gap: 8px; cursor: pointer; width: 100%; }
+    tr.ww-done td:first-child { color: var(--accent-dark); }
+    tr.ww-done span, li.ww-done .wwstatus-inline span { text-decoration: line-through; color: var(--ink-light); }
+    tr.ww-done { background: var(--accent-light); }
 
     /* filters */
     .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
@@ -110,17 +121,22 @@
     th { font-size: 14px; color: var(--ink-light); font-weight: 500; }
     td.num { font-family: 'Rubik', sans-serif; font-weight: 500; white-space: nowrap; }
     tr.missing-data { background: var(--amber-light); }
-    .outsourced-row { background: var(--pink-light); }
-    tr.outsourced-row.missing-data { background: linear-gradient(90deg, var(--pink-light), var(--amber-light)); }
+    .outsourced-row { background: var(--pink-light) !important; }
+    tr.outsourced-row { border-right: 5px solid var(--pink); }
+    tr.outsourced-row .task-name { color: var(--pink); font-weight: 700; }
+    tr.outsourced-row.missing-data { background: linear-gradient(90deg, var(--pink-light), var(--amber-light)) !important; }
     .task-name { font-weight: 500; }
     .task-notes { font-size: 14px; color: var(--ink-light); margin-top: 2px; }
-    .schedule-summary-line { font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-    .schedule-summary-line:last-child { margin-bottom: 0; }
+    .schedule-summary-line-wrap { margin-bottom: 10px; }
+    .schedule-summary-line-wrap:last-child { margin-bottom: 0; }
+    .schedule-summary-line { font-size: 14px; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .sched-badge { background: var(--accent-light); color: var(--accent-dark); padding: 1px 6px; border-radius: 5px; font-weight: 600; }
     .sched-months { color: var(--ink-light); }
-    .months-mini { display: inline-flex; gap: 2px; }
-    .month-sq { width: 17px; height: 17px; border-radius: 4px; background: var(--border); color: var(--ink-light); font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .months-mini, .months-legend { display: grid; grid-template-columns: repeat(12, 18px); gap: 2px; margin-top: 4px; }
+    .month-sq { width: 18px; height: 18px; border-radius: 4px; background: var(--border); color: var(--ink-light); font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; line-height: 1; }
     .month-sq.active { background: var(--accent); color: white; }
+    .months-legend { margin-top: 0; margin-bottom: 4px; }
+    .months-legend span { font-size: 8px; color: var(--ink-light); text-align: center; white-space: nowrap; overflow: hidden; }
     .weekday-tag { background: var(--amber-light); color: var(--amber); font-size: 13px; padding: 1px 6px; border-radius: 5px; }
     .no-schedules { color: var(--ink-light); font-size: 14px; }
     .row-actions { display: flex; gap: 6px; }
@@ -205,7 +221,7 @@
     <div class="card" style="display:flex;gap:10px;align-items:center;">
       <button class="btn-secondary" id="appendix-edit-toggle" type="button">✏️ עריכת נספחים</button>
       <button class="btn" id="appendix-save-btn" type="button" style="display:none;">💾 שמירת שינויים</button>
-      <span style="font-size:13px;color:var(--ink-light);">בעריכה — לוחצים ישירות בתוך הטקסט ומקלידים, ואז שומרים</span>
+      <span id="appendix-edit-desc" style="font-size:13px;color:var(--ink-light);">בעריכה — לוחצים ישירות בתוך הטקסט ומקלידים, ואז שומרים</span>
     </div>
 
     <div class="card" id="appendix-plants" data-editable>
@@ -236,67 +252,67 @@
       <h4 style="margin-bottom:8px;">רחובות ללא מדרכות</h4>
       <div style="overflow-x:auto;margin-bottom:16px;">
         <table>
-          <thead><tr><th>רחוב</th><th>סטטוס</th><th>הערות</th></tr></thead>
+          <thead><tr><th>רחוב</th><th>בוצע?</th><th>הערות</th></tr></thead>
           <tbody>
-            <tr><td>תאנה</td><td>—</td><td>—</td></tr>
-            <tr><td>ברוש</td><td>לעבור באנדרטה, לסיים</td><td>—</td></tr>
-            <tr><td>אלון</td><td>—</td><td>—</td></tr>
-            <tr><td>ארז</td><td>מול האנדרטה — לסיים תעלות</td><td>—</td></tr>
-            <tr><td>ורד</td><td>—</td><td>—</td></tr>
-            <tr><td>סמדר</td><td>לסיים</td><td>כולל מדרכות</td></tr>
-            <tr><td>רקפת</td><td>—</td><td>—</td></tr>
-            <tr><td>כלנית</td><td>—</td><td>—</td></tr>
-            <tr><td>רחוב הגפן</td><td>סוף הגפן</td><td>—</td></tr>
-            <tr><td>פארק האורן</td><td>—</td><td>—</td></tr>
-            <tr><td>פארק הרימון</td><td>—</td><td>—</td></tr>
-            <tr><td>אנדרטת הברוש</td><td>—</td><td>—</td></tr>
-            <tr><td>אזור הפאמפ-טראק ומכבי</td><td>—</td><td>—</td></tr>
-            <tr><td>כביש גישה לישוב</td><td>—</td><td>—</td></tr>
-            <tr><td>גינה קהילתית</td><td>—</td><td>—</td></tr>
-            <tr><td>שביל מרחוב הוורד לבית הספר</td><td>—</td><td>—</td></tr>
-            <tr><td>גנים רחוב הגפן</td><td>—</td><td>—</td></tr>
-            <tr><td>גני מועצה ומעונות חדשים (מאחור)</td><td>—</td><td>—</td></tr>
+            <tr><td>תאנה</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:תאנה"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>ברוש</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:ברוש"><span>בוצע</span></label></td><td>לעבור באנדרטה, לסיים</td></tr>
+            <tr><td>אלון</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:אלון"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>ארז</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:ארז"><span>בוצע</span></label></td><td>מול האנדרטה — לסיים תעלות</td></tr>
+            <tr><td>ורד</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:ורד"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>סמדר</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:סמדר"><span>בוצע</span></label></td><td>כולל מדרכות</td></tr>
+            <tr><td>רקפת</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:רקפת"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>כלנית</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:כלנית"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>רחוב הגפן</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:רחוב הגפן"><span>בוצע</span></label></td><td>סוף הגפן</td></tr>
+            <tr><td>פארק האורן</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:פארק האורן"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>פארק הרימון</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:פארק הרימון"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>אנדרטת הברוש</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:אנדרטת הברוש"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>אזור הפאמפ-טראק ומכבי</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:אזור הפאמפ-טראק ומכבי"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>כביש גישה לישוב</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:כביש גישה לישוב"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>גינה קהילתית</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:גינה קהילתית"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>שביל מרחוב הוורד לבית הספר</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:שביל מרחוב הוורד לבית הספר"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>גנים רחוב הגפן</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:גנים רחוב הגפן"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>גני מועצה ומעונות חדשים (מאחור)</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:גני מועצה ומעונות חדשים"><span>בוצע</span></label></td><td>—</td></tr>
           </tbody>
         </table>
       </div>
       <h4 style="margin-bottom:8px;">סמטאות ודרכי שירות</h4>
       <div style="overflow-x:auto;margin-bottom:16px;">
         <table>
-          <thead><tr><th>סמטה</th><th>סטטוס</th><th>הערות</th></tr></thead>
+          <thead><tr><th>סמטה</th><th>בוצע?</th><th>הערות</th></tr></thead>
           <tbody>
-            <tr><td>חצב</td><td>—</td><td>—</td></tr>
-            <tr><td>כרכום</td><td>—</td><td>—</td></tr>
-            <tr><td>מרווה</td><td>לסיים</td><td>—</td></tr>
-            <tr><td>קורנית</td><td>לסיים</td><td>—</td></tr>
-            <tr><td>שיפון</td><td>—</td><td>🛠️ כלים הנדסיים</td></tr>
-            <tr><td>"שער תל גזר"</td><td>—</td><td>🛠️ כלים הנדסיים</td></tr>
-            <tr><td>אירוס</td><td>—</td><td>—</td></tr>
-            <tr><td>חיטה</td><td>—</td><td>—</td></tr>
+            <tr><td>חצב</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:חצב"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>כרכום</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:כרכום"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>מרווה</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:מרווה"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>קורנית</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:קורנית"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>שיפון</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:שיפון"><span>בוצע</span></label></td><td>🛠️ כלים הנדסיים</td></tr>
+            <tr><td>"שער תל גזר"</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:שער תל גזר"><span>בוצע</span></label></td><td>🛠️ כלים הנדסיים</td></tr>
+            <tr><td>אירוס</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:אירוס"><span>בוצע</span></label></td><td>—</td></tr>
+            <tr><td>חיטה</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:חיטה"><span>בוצע</span></label></td><td>—</td></tr>
           </tbody>
         </table>
       </div>
       <h4 style="margin-bottom:8px;">גנים ואזורים ציבוריים</h4>
       <ol style="padding-inline-start:20px;line-height:1.9;">
-        <li>גן אלטשולר</li>
-        <li>שבילים המוליכים מהמצפה לגן אלטשולר</li>
-        <li>גן הרימון</li>
-        <li>גן האורן — <strong>להשלים</strong></li>
-        <li>מצפה בריכת המים</li>
-        <li>אזור הפאמפ-טראק</li>
-        <li>גינה קהילתית</li>
-        <li>גנים רחוב הגפן</li>
-        <li>גני מועצה</li>
-        <li>מגרש כדורגל וטניס — 🛠️ כלים הנדסיים</li>
-        <li>פתחת "בלגה" — 🛠️ כלים הנדסיים</li>
-        <li>מגרש כדורסל, ואדי העולה לכיוון רחוב הוורד — 🛠️ כלים הנדסיים</li>
-        <li>שביל גישה מרחוב הוורד לבית הספר</li>
-        <li>אנדרטת הברוש</li>
-        <li>מערה - רקפת — <strong>⚠️ לשים לב לקינון ציפורים דורסות</strong></li>
-        <li>מורד יסמין/רקפת לכיוון פארק השיטה — 🛠️ כלים הנדסיים</li>
-        <li>תאנה 30 (בערך), מורד לכיוון היער — 🛠️ כלים הנדסיים</li>
-        <li>דרך ביטחון היקפית של הישוב — 🛠️ כלים הנדסיים</li>
-        <li>פארק השיטה — 🛠️ כלים הנדסיים</li>
-        <li>פתחת בלגה — אזורים קטנים עם גדילנים, לחרמוש מוקדם</li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גן אלטשולר"><span>גן אלטשולר</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:שבילים למצפה"><span>שבילים המוליכים מהמצפה לגן אלטשולר</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גן הרימון"><span>גן הרימון</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גן האורן"><span>גן האורן — <strong>להשלים</strong></span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מצפה בריכת המים"><span>מצפה בריכת המים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:אזור הפאמפ-טראק"><span>אזור הפאמפ-טראק</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גינה קהילתית2"><span>גינה קהילתית</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גנים רחוב הגפן2"><span>גנים רחוב הגפן</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גני מועצה"><span>גני מועצה</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מגרש כדורגל וטניס"><span>מגרש כדורגל וטניס — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:פתחת בלגה"><span>פתחת "בלגה" — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מגרש כדורסל"><span>מגרש כדורסל, ואדי העולה לכיוון רחוב הוורד — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:שביל גישה"><span>שביל גישה מרחוב הוורד לבית הספר</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:אנדרטת הברוש2"><span>אנדרטת הברוש</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מערה רקפת"><span>מערה - רקפת — <strong>⚠️ לשים לב לקינון ציפורים דורסות</strong></span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מורד יסמין"><span>מורד יסמין/רקפת לכיוון פארק השיטה — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:תאנה 30"><span>תאנה 30 (בערך), מורד לכיוון היער — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:דרך ביטחון"><span>דרך ביטחון היקפית של הישוב — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:פארק השיטה"><span>פארק השיטה — 🛠️ כלים הנדסיים</span></label></li>
+        <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:פתחת בלגה2"><span>פתחת בלגה — אזורים קטנים עם גדילנים, לחרמוש מוקדם</span></label></li>
       </ol>
     </div>
 
@@ -304,18 +320,18 @@
       <h3>💧 אזורי ריסוס מוצעים 2025-2026</h3>
       <div style="overflow-x:auto;margin-bottom:16px;">
         <table>
-          <thead><tr><th>אזור</th><th>המלצת הגנן</th><th>סטטוס קו נוכחי</th></tr></thead>
+          <thead><tr><th>אזור</th><th>סטטוס קו נוכחי</th></tr></thead>
           <tbody>
-            <tr><td>בריכה — אקרשטיין ומעטפת הגדר הפנימית</td><td>ריסוס</td><td>ריסוס</td></tr>
-            <tr><td>מדרכות ומפגשי כבישים</td><td>ריסוס</td><td>ריסוס</td></tr>
-            <tr><td>משטחי חצץ</td><td>—</td><td>ריסוס</td></tr>
-            <tr><td>מכוני ביוב</td><td>—</td><td>ריסוס</td></tr>
-            <tr><td>שוחות ביוב</td><td>—</td><td>ריסוס</td></tr>
-            <tr><td>מסביב למגרש הכדורגל</td><td>ריסוס</td><td>חרמוש</td></tr>
-            <tr><td>ערוגות</td><td>ריסוס בערוגות קיימות לפי הנחיות זהבה אבן-פז והדס צוק (בדגש על זהבה)</td><td>בשאיפה להימנע — רק במקרים קיצוניים</td></tr>
-            <tr><td>מסביב לערוגה ממול למגרש הכדורגל (לא ברור לאיזה שטח בדיוק)</td><td>ריסוס</td><td>חרמוש ע"י "הנערים"</td></tr>
-            <tr><td>בית עלמין</td><td>ריסוס</td><td>חרמוש ע"י "הנערים"</td></tr>
-            <tr><td>רחוב הכלנית</td><td>—</td><td>רוסס בשנה שעברה (הגנן ממליץ לחרמש)</td></tr>
+            <tr><td>בריכה — אקרשטיין ומעטפת הגדר הפנימית</td><td>ריסוס</td></tr>
+            <tr><td>מדרכות ומפגשי כבישים</td><td>ריסוס</td></tr>
+            <tr><td>משטחי חצץ</td><td>ריסוס</td></tr>
+            <tr><td>מכוני ביוב</td><td>ריסוס</td></tr>
+            <tr><td>שוחות ביוב</td><td>ריסוס</td></tr>
+            <tr><td>מסביב למגרש הכדורגל</td><td>חרמוש</td></tr>
+            <tr><td>ערוגות</td><td>בשאיפה להימנע — רק במקרים קיצוניים</td></tr>
+            <tr><td>מסביב לערוגה ממול למגרש הכדורגל (לא ברור לאיזה שטח בדיוק)</td><td>חרמוש ע"י "הנערים"</td></tr>
+            <tr><td>בית עלמין</td><td>חרמוש ע"י "הנערים"</td></tr>
+            <tr><td>רחוב הכלנית</td><td>רוסס בשנה שעברה (הגנן ממליץ לחרמש)</td></tr>
           </tbody>
         </table>
       </div>
@@ -332,31 +348,26 @@
     </div>
 
     <div class="card" id="appendix-tubishvat" data-editable>
-      <h3>🌳 טו בשבט 2026 — תוכנית אירוע</h3>
-      <div style="background:var(--amber-light);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:14px;">
-        ⚠️ במסמך המקורי כתוב תאריך <strong>30.1.2025</strong> — נראה כמו שריד מהמסמך של השנה שעברה (התאריך גם עבר וגם לא תואם לטו בשבט 2026 בפועל). כדאי לעדכן לתאריך הנכון.
-      </div>
-      <p style="margin-bottom:14px;"><strong>מיקום:</strong> כניסה לישוב, מול הכניסה למגרש הכדורגל — העיגול משמאל לאחר השער הצהוב.<br>
-      <strong>הרעיון:</strong> פחות עצים, יותר שתילים — יצירת מרחב "יער" של עצי תות וצמחי תבלין, תחזוקה נמוכה, אטרקציה לילדים בעונת התותים. לשקול בולי עץ/ספסלים לישיבה (אולי כתחנת יצירה).</p>
+      <h3>🌳 טו בשבט — תוכנית אירוע</h3>
+
+      <h4 style="margin-bottom:8px;">מיקום ורעיון</h4>
+      <p style="margin-bottom:14px;color:var(--ink-light);">(למלא)</p>
 
       <h4 style="margin-bottom:8px;">שתילות מתוכננות</h4>
-      <p style="margin-bottom:14px;">עצי תות — כ-10-12 עצים. שיחי תבלין: זעתר, לבנדר, מרווה, צתרה, זוטא לבנה.</p>
+      <p style="margin-bottom:14px;color:var(--ink-light);">(למלא)</p>
 
       <h4 style="margin-bottom:8px;">השקיה</h4>
-      <p style="margin-bottom:14px;">חיבור למערכת המים של כביש הגישה לבית הספר — קו אחד לעצים (צינור דרג עבה), קו אחד לשיחים. רצוי לכסות את הצינורות באדמה או להטמין בתעלה קטנה.</p>
+      <p style="margin-bottom:14px;color:var(--ink-light);">(למלא)</p>
 
       <h4 style="margin-bottom:8px;">תחנות פעילות מוצעות</h4>
       <p style="margin-bottom:14px;">מנדלה · בניית ספסלים · שתילות · פיתות (מכבי צעיר?) · לימונדה (מכבי צעיר?) · ארוחה משותפת</p>
 
-      <h4 style="margin-bottom:8px;">הערכת עלויות (סה"כ מקסימום 15,000 ₪)</h4>
+      <h4 style="margin-bottom:8px;">הערכת עלויות</h4>
       <div style="overflow-x:auto;margin-bottom:14px;">
         <table>
           <thead><tr><th>סעיף</th><th>הערכה</th></tr></thead>
           <tbody>
-            <tr><td>יום עבודה — חפירת בורות ותעלות לצנרת</td><td class="num">₪1,800</td></tr>
-            <tr><td>שתילים</td><td class="num">₪8,000</td></tr>
-            <tr><td>תומכות לעצים</td><td class="num">₪2,000</td></tr>
-            <tr><td>אדמה וקומפוסט</td><td class="num">₪2,500</td></tr>
+            <tr><td>(למלא)</td><td class="num">—</td></tr>
           </tbody>
         </table>
       </div>
@@ -379,7 +390,6 @@
         <li>כלים לעמדת פיתות</li>
         <li>מטף (כיבוי אש)</li>
       </ol>
-      <p style="font-size:13px;color:var(--ink-light);">שיווק: פלייר "save the date", הפצה במדיות, צילומים. מזג אוויר: אם תחזית לגשם — לשקול דחייה ביום או שבוע.</p>
     </div>
 
   </div>
@@ -390,30 +400,30 @@
   <div id="form-modal">
     <h2 id="modal-title">הוספת משימה</h2>
     <div class="field">
-      <label for="f-zone">אזור ראשי</label>
+      <label for="f-zone" id="f-zone-label">אזור ראשי</label>
       <select id="f-zone"></select>
     </div>
     <div class="field">
-      <label for="f-zone-new">או הזן אזור חדש</label>
+      <label for="f-zone-new" id="f-zone-new-label">או הזן אזור חדש</label>
       <input type="text" id="f-zone-new" placeholder="השאר ריק אם בחרת אזור קיים למעלה">
     </div>
     <div class="field">
-      <label for="f-name">שם המשימה / תת-אזור</label>
+      <label for="f-name" id="f-name-label">שם המשימה / תת-אזור</label>
       <input type="text" id="f-name" placeholder="לדוגמה: תפעול בריכה">
     </div>
     <div class="field">
-      <label for="f-notes">הערות</label>
+      <label for="f-notes" id="f-notes-label">הערות</label>
       <textarea id="f-notes" placeholder="לדוגמה: לפני פתיחת שנת הלימודים"></textarea>
     </div>
     <div class="field">
       <label class="month-chip" style="display:inline-flex;width:auto;padding:8px 14px;">
-        <input type="checkbox" id="f-outsourced" style="width:auto;"> מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)
+        <input type="checkbox" id="f-outsourced" style="width:auto;"> <span id="f-outsourced-label">מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)</span>
       </label>
     </div>
 
     <div class="field">
-      <label><span>לוחות זמנים</span></label>
-      <p style="font-size:12px;color:var(--ink-light);margin-bottom:10px;">משימה יכולה להתנהל בכמה קצבים שונים — למשל שבועי בקיץ, וכל 3 שבועות בשאר השנה. הוסף לוח זמנים נפרד לכל קצב.</p>
+      <label><span id="f-schedules-title">לוחות זמנים</span></label>
+      <p id="f-schedules-desc" style="font-size:12px;color:var(--ink-light);margin-bottom:10px;">משימה יכולה להתנהל בכמה קצבים שונים — למשל שבועי בקיץ, וכל 3 שבועות בשאר השנה. הוסף לוח זמנים נפרד לכל קצב.</p>
       <button type="button" id="add-schedule-btn" class="btn" style="width:100%;margin-bottom:14px;font-size:16px;">+ הוספת לוח זמנים</button>
       <div id="f-schedules"></div>
       <p id="f-schedules-empty">אין לוחות זמנים עדיין — לחץ "הוספת לוח זמנים"</p>
@@ -474,6 +484,7 @@
   const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   const WEEKDAY_NAMES = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'];
   const INTERVAL_LABELS = { week:'כל שבוע', '2xweek':'פעמיים בשבוע', '3xweek':'שלוש פעמים בשבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', asneeded:'לפי צורך' };
+  const INTERVAL_LABELS_AR = { week:'كل أسبوع', '2xweek':'مرتين في الأسبوع', '3xweek':'ثلاث مرات في الأسبوع', '2weeks':'كل أسبوعين', '3weeks':'كل 3 أسابيع', '4weeks':'مرة في الشهر', year:'مرة في السنة', asneeded:'حسب الحاجة' };
   const INTERVAL_WEEKS = { week:1, '2weeks':2, '3weeks':3, '4weeks':4 };
   const TIMES_PER_WEEK = { '2xweek':2, '3xweek':3 };
 
@@ -557,6 +568,7 @@
 
   function wd(i) { return lang === 'ar' ? WEEKDAY_NAMES_AR[i] : WEEKDAY_NAMES[i]; }
   function mo(i) { return lang === 'ar' ? MONTH_NAMES_AR[i] : MONTH_NAMES[i]; }
+  function il(key) { return lang === 'ar' ? (INTERVAL_LABELS_AR[key] || key) : (INTERVAL_LABELS[key] || key); }
 
   const UI = {
     he: {
@@ -566,12 +578,31 @@
       statCount: 'סה"כ משימות', statHours: 'שעות בשנה', statMissing: 'חסרים נתונים',
       filterZoneAll: 'כל האזורים', filterMonthAll: 'כל החודשים',
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
-      attendanceLabel: 'הגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער',
+      attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
       hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
       emptyMsg: 'אין משימות כאלה',
       workHoursFull: '06:30–14:30 (הפסקה 11:00–11:30)', workHoursFri: '06:30–09:30',
+      noSchedules: 'אין לוחות זמנים', colTask: 'משימה', colSchedules: 'לוחות זמנים', colHoursYear: 'שעות/שנה',
+      editTitle: 'עריכה', deleteTitle: 'מחיקה', addToZoneTitle: 'הוספת משימה לאזור זה', addToZoneBtn: '+ משימה', hoursPerYear: 'שעות/שנה',
+      noFixedMonths: 'ללא חודשים קבועים',
+      modalAddTitle: 'הוספת משימה', modalEditTitle: 'עריכת משימה: ', zoneLabel: 'אזור ראשי', zoneNewLabel: 'או הזן אזור חדש',
+      zoneNewPh: 'השאר ריק אם בחרת אזור קיים למעלה', nameLabel: 'שם המשימה / תת-אזור', namePh: 'לדוגמה: תפעול בריכה',
+      notesLabel: 'הערות', notesPh: 'לדוגמה: לפני פתיחת שנת הלימודים', outsourcedLabel: 'מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)',
+      schedulesTitle: 'לוחות זמנים', schedulesDesc: 'משימה יכולה להתנהל בכמה קצבים שונים — למשל שבועי בקיץ, וכל 3 שבועות בשאר השנה. הוסף לוח זמנים נפרד לכל קצב.',
+      addScheduleBtn: '+ הוספת לוח זמנים', noSchedulesYet: 'אין לוחות זמנים עדיין — לחץ "הוספת לוח זמנים"',
+      saveBtn: 'שמירה', cancelBtn: 'ביטול', deleteTaskBtn: 'מחיקת משימה', zonePick: '— בחר —', weekdayNone: '— ללא —',
+      fillZoneNameAlert: 'נא למלא אזור ושם משימה', confirmDeleteTask: 'למחוק את המשימה הזו?',
+      newExpenseBtn: '+ הוצאה חדשה', totalExpense: 'סה"כ כולל', monthlySummary: 'סיכום חודשי', noExpensesYet: 'אין הוצאות עדיין',
+      allExpenses: 'כל ההוצאות', colDate: 'תאריך', colItem: 'פריט', colJobType: 'סוג עבודה', colSupplier: 'ספק', colContractor: 'קבלן מבצע', colCost: 'עלות',
+      expenseModalNewTitle: 'הוצאה חדשה', expenseModalEditTitle: 'עריכת הוצאה', dateLabel: 'תאריך', itemLabel: 'פריט', jobTypeLabel: 'סוג עבודה',
+      supplierLabel: 'ספק', contractorLabel: 'קבלן מבצע', costLabel: 'עלות (₪)', fillDateItemAlert: 'נא למלא לפחות תאריך ופריט', confirmDeleteExpense: 'למחוק את ההוצאה הזו?',
+      editAppendixBtn: '✏️ עריכת נספחים', finishEditBtn: '👁️ סיום עריכה (ללא שמירה)', saveChangesBtn: '💾 שמירת שינויים',
+      editAppendixDesc: 'בעריכה — לוחצים ישירות בתוך הטקסט ומקלידים, ואז שומרים', appendixSavedAlert: 'הנספחים נשמרו',
+      backupExportBtn: '📤 גיבוי נתונים (JSON)', backupImportBtn: '📥 ייבוא גיבוי', confirmImportAlert: 'פעולה זו תחליף את כל הנתונים הנוכחיים בדפדפן זה בנתונים מהגיבוי. להמשיך?',
+      importSuccessAlert: 'הגיבוי יובא בהצלחה. הדף ייטען מחדש.', invalidBackupAlert: 'קובץ הגיבוי לא תקין: ',
+      wwDone: 'בוצע',
     },
     ar: {
       headerTitle: '🌿 خطة العمل - بستنة كرمي يوسف', headerSubtitle: 'إدارة المناطق والمهام وجداول العمل ومتابعة العمال',
@@ -580,12 +611,31 @@
       statCount: 'إجمالي المهام', statHours: 'ساعات في السنة', statMissing: 'بيانات ناقصة',
       filterZoneAll: 'كل المناطق', filterMonthAll: 'كل الأشهر',
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
-      attendanceLabel: 'الحضور الفعلي:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري',
+      attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
       hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
       emptyMsg: 'لا توجد مهام كهذه',
       workHoursFull: '06:30–14:30 (استراحة 11:00–11:30)', workHoursFri: '06:30–09:30',
+      noSchedules: 'لا توجد جداول زمنية', colTask: 'المهمة', colSchedules: 'الجداول الزمنية', colHoursYear: 'ساعات/سنة',
+      editTitle: 'تعديل', deleteTitle: 'حذف', addToZoneTitle: 'إضافة مهمة لهذه المنطقة', addToZoneBtn: '+ مهمة', hoursPerYear: 'ساعات/سنة',
+      noFixedMonths: 'بدون أشهر ثابتة',
+      modalAddTitle: 'إضافة مهمة', modalEditTitle: 'تعديل مهمة: ', zoneLabel: 'المنطقة الرئيسية', zoneNewLabel: 'أو أدخل منطقة جديدة',
+      zoneNewPh: 'اترك فارغًا إذا اخترت منطقة قائمة أعلاه', nameLabel: 'اسم المهمة / المنطقة الفرعية', namePh: 'مثال: تشغيل المسبح',
+      notesLabel: 'ملاحظات', notesPh: 'مثال: قبل بدء العام الدراسي', outsourcedLabel: 'يُنفَّذ بواسطة مقاول خارجي (سيظهر في الجدول باللون الوردي)',
+      schedulesTitle: 'الجداول الزمنية', schedulesDesc: 'يمكن أن تسير المهمة بعدة وتيرات مختلفة — مثلاً أسبوعيًا في الصيف، وكل 3 أسابيع في باقي السنة. أضف جدولًا زمنيًا منفصلًا لكل وتيرة.',
+      addScheduleBtn: '+ إضافة جدول زمني', noSchedulesYet: 'لا توجد جداول زمنية بعد — اضغط "إضافة جدول زمني"',
+      saveBtn: 'حفظ', cancelBtn: 'إلغاء', deleteTaskBtn: 'حذف المهمة', zonePick: '— اختر —', weekdayNone: '— بدون —',
+      fillZoneNameAlert: 'الرجاء ملء المنطقة واسم المهمة', confirmDeleteTask: 'هل تريد حذف هذه المهمة؟',
+      newExpenseBtn: '+ مصروف جديد', totalExpense: 'الإجمالي الكلي', monthlySummary: 'ملخص شهري', noExpensesYet: 'لا توجد مصاريف بعد',
+      allExpenses: 'كل المصاريف', colDate: 'تاريخ', colItem: 'بند', colJobType: 'نوع العمل', colSupplier: 'المورّد', colContractor: 'المقاول المنفّذ', colCost: 'التكلفة',
+      expenseModalNewTitle: 'مصروف جديد', expenseModalEditTitle: 'تعديل مصروف', dateLabel: 'تاريخ', itemLabel: 'بند', jobTypeLabel: 'نوع العمل',
+      supplierLabel: 'المورّد', contractorLabel: 'المقاول المنفّذ', costLabel: 'التكلفة (₪)', fillDateItemAlert: 'الرجاء ملء التاريخ والبند على الأقل', confirmDeleteExpense: 'هل تريد حذف هذا المصروف؟',
+      editAppendixBtn: '✏️ تعديل الملاحق', finishEditBtn: '👁️ إنهاء التعديل (بدون حفظ)', saveChangesBtn: '💾 حفظ التغييرات',
+      editAppendixDesc: 'في وضع التعديل — اضغط داخل النص مباشرة واكتب، ثم احفظ', appendixSavedAlert: 'تم حفظ الملاحق',
+      backupExportBtn: '📤 نسخة احتياطية (JSON)', backupImportBtn: '📥 استيراد نسخة احتياطية', confirmImportAlert: 'هذا الإجراء سيستبدل كل البيانات الحالية في هذا المتصفح بالبيانات من النسخة الاحتياطية. متابعة؟',
+      importSuccessAlert: 'تم استيراد النسخة الاحتياطية بنجاح. سيُعاد تحميل الصفحة.', invalidBackupAlert: 'ملف النسخة الاحتياطية غير صالح: ',
+      wwDone: 'تم',
     },
   };
   function t(key) { return UI[lang][key]; }
@@ -665,6 +715,13 @@
     'פיתוח אזור הפאמפ-טראק': 'تطوير منطقة مضمار الدراجات',
     'פיתוח אזור מגרשי הספורט': 'تطوير منطقة الملاعب الرياضية',
     'ניקוי פארק השיטה משיטה מכחילה + הרחבת פרויקט השתילה': 'تنظيف حديقة السنط من السنط الأزرق الغازي + توسيع مشروع الغراسة',
+
+    // task notes
+    'גיזום שנתי לאחר המסיק': 'تقليم سنوي بعد قطف الزيتون',
+    'אזור דצמבר / ינואר, בהתאם לגשמים': 'حوالي ديسمبر / يناير، حسب الأمطار',
+    'אזור אפריל / יוני, על פי הגשמים': 'حوالي أبريل / يونيو، حسب الأمطار',
+    'משימה שוטפת/ריאקטיבית, לא מתוכננת מראש': 'مهمة جارية/تفاعلية، غير مخطط لها مسبقًا',
+    'לתכנן מראש לפני עונת הגשמים': 'التخطيط لها مسبقًا قبل موسم الأمطار',
   };
   function trText(s) { return (lang === 'ar' && AR_DICT[s]) ? AR_DICT[s] : s; }
 
@@ -716,6 +773,43 @@
     $('stat-missing-label').textContent = t('statMissing');
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
     applyAppendixLang();
+
+    // add/edit task modal
+    $('f-zone-label').textContent = t('zoneLabel');
+    $('f-zone-new-label').textContent = t('zoneNewLabel');
+    $('f-zone-new').placeholder = t('zoneNewPh');
+    $('f-name-label').textContent = t('nameLabel');
+    $('f-name').placeholder = t('namePh');
+    $('f-notes-label').textContent = t('notesLabel');
+    $('f-notes').placeholder = t('notesPh');
+    $('f-outsourced-label').textContent = t('outsourcedLabel');
+    $('f-schedules-title').textContent = t('schedulesTitle');
+    $('f-schedules-desc').textContent = t('schedulesDesc');
+    $('add-schedule-btn').textContent = t('addScheduleBtn');
+    $('f-schedules-empty').textContent = t('noSchedulesYet');
+    $('save-btn').textContent = t('saveBtn');
+    $('cancel-btn').textContent = t('cancelBtn');
+    $('delete-btn').textContent = t('deleteTaskBtn');
+
+    // expense modal
+    $('e-date').previousElementSibling.textContent = t('dateLabel');
+    $('e-item').previousElementSibling.textContent = t('itemLabel');
+    $('e-jobtype').previousElementSibling.textContent = t('jobTypeLabel');
+    $('e-supplier').previousElementSibling.textContent = t('supplierLabel');
+    $('e-contractor').previousElementSibling.textContent = t('contractorLabel');
+    $('e-cost').previousElementSibling.textContent = t('costLabel');
+    $('expense-save-btn').textContent = t('saveBtn');
+    $('expense-cancel-btn').textContent = t('cancelBtn');
+    $('expense-delete-btn').textContent = t('deleteTaskBtn');
+
+    // appendix edit toolbar
+    $('appendix-edit-toggle').textContent = appendixEditMode ? t('finishEditBtn') : t('editAppendixBtn');
+    $('appendix-save-btn').textContent = t('saveChangesBtn');
+    $('appendix-edit-desc').textContent = t('editAppendixDesc');
+
+    // backup buttons
+    $('backup-export-btn').textContent = t('backupExportBtn');
+    $('backup-import-btn').textContent = t('backupImportBtn');
   }
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -867,20 +961,25 @@
   }
 
   function monthsMiniHtml(months) {
-    return `<span class="months-mini">${MONTH_NAMES.map((m,i) => `<span class="month-sq${(months||[]).includes(i)?' active':''}" title="${m}">${i+1}</span>`).join('')}</span>`;
+    return `<div class="months-mini" dir="ltr">${MONTH_NAMES.map((m,i) => `<span class="month-sq${(months||[]).includes(i)?' active':''}" title="${mo(i)}">${i+1}</span>`).join('')}</div>`;
+  }
+  function monthsLegendHtml() {
+    return `<div class="months-legend" dir="ltr">${MONTH_NAMES.map((m,i) => `<span>${mo(i).slice(0,3)}${lang==='ar'?'':'׳'}</span>`).join('')}</div>`;
   }
 
   function scheduleSummaryHtml(s) {
     const monthsHtml = (s.months && s.months.length)
       ? monthsMiniHtml(s.months)
-      : (s.interval === 'asneeded' ? `<span class="sched-months">ללא חודשים קבועים</span>` : `<span class="sched-months">—</span>`);
-    const weekdayHtml = (s.weekday !== '' && s.weekday != null) ? `<span class="weekday-tag">${WEEKDAY_NAMES[s.weekday]}</span>` : '';
-    const hoursTxt = s.hours != null ? `${s.hours} ש'` : '—';
+      : (s.interval === 'asneeded' ? `<div class="sched-months">${t('noFixedMonths')}</div>` : `<div class="sched-months">—</div>`);
+    const weekdayHtml = (s.weekday !== '' && s.weekday != null) ? `<span class="weekday-tag">${wd(s.weekday)}</span>` : '';
+    const hoursTxt = s.hours != null ? `${s.hours} ${t('hoursShort')}` : '—';
     const workersTxt = s.workers != null ? `${workersIcon(s.workers)}${s.workers}` : '';
-    return `<div class="schedule-summary-line">
-      <span class="sched-badge">${INTERVAL_LABELS[s.interval] || s.interval}</span>
-      <span>${hoursTxt}</span><span>${workersTxt}</span>
-      ${weekdayHtml}
+    return `<div class="schedule-summary-line-wrap">
+      <div class="schedule-summary-line">
+        <span class="sched-badge">${il(s.interval)}</span>
+        <span>${hoursTxt}</span><span>${workersTxt}</span>
+        ${weekdayHtml}
+      </div>
       ${monthsHtml}
     </div>`;
   }
@@ -888,19 +987,19 @@
   function taskRowHtml(t) {
     const schedulesHtml = (t.schedules && t.schedules.length)
       ? t.schedules.map(scheduleSummaryHtml).join('')
-      : '<span class="no-schedules">אין לוחות זמנים</span>';
+      : `<span class="no-schedules">${UI[lang].noSchedules}</span>`;
     return `
       <tr class="${isMissingData(t) ? 'missing-data' : ''} ${t.outsourced ? 'outsourced-row' : ''}" data-id="${t.id}">
         <td>
           <div class="task-name">${trText(t.name)} ${t.outsourced ? `<span class="weekday-tag">${UI[lang].outsourcedTag}</span>` : ''}</div>
-          ${t.notes ? `<div class="task-notes">${t.notes}</div>` : ''}
+          ${t.notes ? `<div class="task-notes">${trText(t.notes)}</div>` : ''}
         </td>
         <td>${schedulesHtml}</td>
         <td class="num">${Math.round(taskAnnualHours(t))}</td>
         <td>
           <div class="row-actions">
-            <button class="icon-btn edit-btn" data-id="${t.id}" title="עריכה">✏️</button>
-            <button class="icon-btn danger delete-row-btn" data-id="${t.id}" title="מחיקה">🗑️</button>
+            <button class="icon-btn edit-btn" data-id="${t.id}" title="${UI[lang].editTitle}">✏️</button>
+            <button class="icon-btn danger delete-row-btn" data-id="${t.id}" title="${UI[lang].deleteTitle}">🗑️</button>
           </div>
         </td>
       </tr>`;
@@ -932,14 +1031,14 @@
         <div class="zone-group-title">
           <span>${trText(zone)} (${zoneTasks.length})</span>
           <span style="display:flex;align-items:center;gap:10px;">
-            <span class="zone-stats">${Math.round(zoneHours)} שעות/שנה</span>
-            <button type="button" class="icon-btn add-to-zone-btn" data-zone="${zone}" title="הוספת משימה לאזור זה" style="background:rgba(255,255,255,.25);color:white;">+ משימה</button>
+            <span class="zone-stats">${Math.round(zoneHours)} ${t('hoursPerYear')}</span>
+            <button type="button" class="icon-btn add-to-zone-btn" data-zone="${zone}" title="${t('addToZoneTitle')}" style="background:rgba(255,255,255,.25);color:white;">${t('addToZoneBtn')}</button>
           </span>
         </div>
         <div class="card" style="padding:0;overflow-x:auto;">
           <table>
             <thead><tr>
-              <th style="min-width:160px;">משימה</th><th style="min-width:220px;">לוחות זמנים</th><th>שעות/שנה</th><th></th>
+              <th style="min-width:160px;">${t('colTask')}</th><th style="min-width:220px;">${t('colSchedules')}${monthsLegendHtml()}</th><th>${t('colHoursYear')}</th><th></th>
             </tr></thead>
             <tbody>${zoneTasks.map(taskRowHtml).join('')}</tbody>
           </table>
@@ -949,6 +1048,7 @@
   }
 
   function renderAll() {
+    invalidateAutoAssignments();
     renderFilters();
     renderZones();
     renderMonthlyGantt();
@@ -972,43 +1072,79 @@
   });
 
   // ---- Shared day-placement engine (used by both weekly and monthly calendar views) ----
-  function hashToWeekday(str) {
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
-    return h % 5; // 0-4 => Sunday..Thursday (never lands on Fri/Sat)
+  // Schedules without a fixed weekday are auto-placed on Sun-Thu using a capacity-aware greedy balancer:
+  // it seeds each day with the load already committed by FIXED-weekday schedules (e.g. a fixed "Sunday = pool"
+  // schedule counts as existing load), then places the remaining schedules — largest first — on whichever
+  // eligible day currently has the least load, so auto-placement steers away from already-busy days instead
+  // of piling on top of them. Outsourced schedules are placed the same way but contribute zero load, since
+  // they're done by an external contractor and don't compete for the in-house crew's capacity.
+  let autoAssignmentsCache = null;
+  function invalidateAutoAssignments() { autoAssignmentsCache = null; }
+  function computeAutoAssignments() {
+    const loadByMonthDay = Array.from({length:12}, () => [0,0,0,0,0]); // [month][0..4 = Sun..Thu]
+    const candidates = [];
+    tasks.forEach(t => {
+      (t.schedules || []).forEach(s => {
+        if (s.interval === 'asneeded' || s.interval === 'year') return;
+        const hasFixedDay = s.weekday !== '' && s.weekday != null;
+        const rawLoad = (s.hours != null ? s.hours : 0) * (s.workers != null ? s.workers : 1);
+        const load = t.outsourced ? 0 : rawLoad; // outsourced work doesn't count against in-house capacity
+        const months = s.months || [];
+        const key = t.id + '_' + s.id;
+        const totalDays = TIMES_PER_WEEK[s.interval] || 1;
+        if (hasFixedDay) {
+          const fixedDay = Number(s.weekday);
+          if (fixedDay >= 0 && fixedDay <= 4) months.forEach(m => { loadByMonthDay[m][fixedDay] += load; });
+          if (totalDays > 1) candidates.push({ key, load, months, need: totalDays - 1, exclude: fixedDay });
+          return;
+        }
+        candidates.push({ key, load, months, need: totalDays, exclude: null });
+      });
+    });
+    // biggest overall impact first, so the greedy packing is tighter; stable tie-break for determinism
+    candidates.sort((a, b) => (b.load * b.months.length * b.need) - (a.load * a.months.length * a.need) || a.key.localeCompare(b.key));
+
+    const assignments = {};
+    candidates.forEach(c => {
+      const used = new Set(c.exclude != null ? [c.exclude] : []);
+      const chosen = [];
+      for (let pick = 0; pick < c.need; pick++) {
+        let best = null, bestScore = Infinity;
+        for (let d = 0; d <= 4; d++) {
+          if (used.has(d)) continue;
+          const worst = c.months.length ? Math.max(...c.months.map(m => loadByMonthDay[m][d])) : 0;
+          if (worst < bestScore) { bestScore = worst; best = d; }
+        }
+        if (best == null) break;
+        chosen.push(best);
+        used.add(best);
+        c.months.forEach(m => { loadByMonthDay[m][best] += c.load; });
+      }
+      assignments[c.key] = chosen;
+    });
+    return assignments;
+  }
+  function getAutoAssignments() {
+    if (!autoAssignmentsCache) autoAssignmentsCache = computeAutoAssignments();
+    return autoAssignmentsCache;
   }
 
-  // for a "N times a week" schedule, derive N distinct weekdays: the fixed day (if set) plus
-  // deterministically-hashed others, so the task actually spreads across the week rather than piling on one day
-  function multiWeekdaysFor(t, s, n) {
-    const hasFixedDay = s.weekday !== '' && s.weekday != null;
-    const days = new Set();
-    if (hasFixedDay) days.add(Number(s.weekday));
-    let seed = 0;
-    while (days.size < n && seed < 30) { days.add(hashToWeekday(t.id + '_' + s.id + '_' + seed)); seed++; }
-    return days;
-  }
-
-  // returns tasks placed on a specific date, using fixed weekday if set, or a deterministic guess otherwise
+  // returns tasks placed on a specific date: fixed weekday(s) if set, plus any auto-balanced day(s)
   function getTasksForDay(d) {
     const monthIdx = d.getMonth();
     const weekdayIdx = d.getDay();
     const items = [];
+    const auto = getAutoAssignments();
     tasks.forEach(t => {
       (t.schedules || []).forEach(s => {
         if (s.interval === 'asneeded' || s.interval === 'year') return;
         if (!(s.months || []).includes(monthIdx)) return;
         const hasFixedDay = s.weekday !== '' && s.weekday != null;
-        if (TIMES_PER_WEEK[s.interval]) {
-          const days = multiWeekdaysFor(t, s, TIMES_PER_WEEK[s.interval]);
-          if (days.has(weekdayIdx)) {
-            items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced });
-          }
-          return;
-        }
-        const assignedWeekday = hasFixedDay ? Number(s.weekday) : hashToWeekday(t.id + '_' + s.id);
-        if (assignedWeekday === weekdayIdx) {
-          items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !hasFixedDay, outsourced: t.outsourced });
+        const key = t.id + '_' + s.id;
+        const placedDays = new Set(auto[key] || []);
+        if (hasFixedDay) placedDays.add(Number(s.weekday));
+        if (placedDays.has(weekdayIdx)) {
+          items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced });
         }
       });
     });
@@ -1117,29 +1253,37 @@
     return html;
   }
 
-  // ---- Weekly Gantt: next Sunday–Saturday ----
-  function getNextWeekDates() {
+  // ---- Weekly Gantt: any Sunday–Saturday week, selected by offset from the current week ----
+  let selectedWeekOffset = 0; // 0 = current week, 1 = next week, -1 = previous week, etc.
+  function getWeekDates(offsetWeeks) {
     const today = new Date();
     today.setHours(0,0,0,0);
     const thisWeekSunday = new Date(today);
     thisWeekSunday.setDate(today.getDate() - today.getDay());
-    const nextSunday = new Date(thisWeekSunday);
-    nextSunday.setDate(thisWeekSunday.getDate() + 7);
+    const targetSunday = new Date(thisWeekSunday);
+    targetSunday.setDate(thisWeekSunday.getDate() + offsetWeeks * 7);
     return Array.from({length:7}, (_, i) => {
-      const d = new Date(nextSunday);
-      d.setDate(nextSunday.getDate() + i);
+      const d = new Date(targetSunday);
+      d.setDate(targetSunday.getDate() + i);
       return d;
     });
   }
 
-  // the weekly Gantt is always shown in Hebrew + Arabic together, regardless of the lang toggle —
   // language follows the He/Ar toggle, same as every other view
   function renderWeeklyGantt() {
     const container = $('view-weekly');
-    const days = getNextWeekDates();
+    const days = getWeekDates(selectedWeekOffset);
     const dateFmt = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric' });
 
-    let html = `<div class="card"><h3>${t('nextWeek')}: ${dateFmt(days[0])} – ${dateFmt(days[6])}</h3>
+    let html = `<div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <h3 style="margin-bottom:0;">${dateFmt(days[0])} – ${dateFmt(days[6])}</h3>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-secondary" id="week-prev-btn" type="button">◀</button>
+        <button class="btn-secondary" id="week-today-btn" type="button">${t('thisWeekBtn')}</button>
+        <button class="btn-secondary" id="week-next-btn" type="button">▶</button>
+      </div>
+    </div>
+    <div class="card">
       <div class="week-days-grid">`;
     days.forEach(d => {
       const dow = d.getDay();
@@ -1170,6 +1314,10 @@
     html += `</div></div>`;
     html += referenceListsHtml(days);
     container.innerHTML = html;
+
+    $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
+    $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
+    $('week-today-btn').addEventListener('click', () => { selectedWeekOffset = 0; renderWeeklyGantt(); });
   }
 
   // ---- Monthly Gantt: full calendar for a selected month, same placement engine as the weekly view ----
@@ -1238,9 +1386,17 @@
   function monthsPickerHtml(selectedMonths, rowIdx) {
     return MONTH_NAMES.map((m, i) => `
       <label class="month-chip ${selectedMonths.includes(i) ? 'checked' : ''}">
-        <input type="checkbox" data-row="${rowIdx}" value="${i}" ${selectedMonths.includes(i) ? 'checked' : ''}> ${m.slice(0,3)}
+        <input type="checkbox" data-row="${rowIdx}" value="${i}" ${selectedMonths.includes(i) ? 'checked' : ''}> ${mo(i).slice(0,3)}
       </label>`).join('');
   }
+
+  const SCHEDULE_UI = {
+    he: { scheduleN: 'לוח זמנים ', remove: 'הסרה', frequency: 'תדירות', hoursPerTime: 'שעות לפעם', numWorkers: "מס' עובדים",
+      fixedWeekday: 'יום קבוע בשבוע (אופציונלי)', monthsInSchedule: 'חודשים בלוח זמנים זה', selectAllYear: '✓ כל השנה' },
+    ar: { scheduleN: 'جدول زمني ', remove: 'إزالة', frequency: 'التردد', hoursPerTime: 'ساعات في المرة', numWorkers: 'عدد العمال',
+      fixedWeekday: 'يوم ثابت في الأسبوع (اختياري)', monthsInSchedule: 'أشهر هذا الجدول الزمني', selectAllYear: '✓ كل السنة' },
+  };
+  function su(key) { return SCHEDULE_UI[lang][key]; }
 
   function renderScheduleRows() {
     const container = $('f-schedules');
@@ -1248,36 +1404,36 @@
     container.innerHTML = modalSchedules.map((s, idx) => `
       <div class="schedule-row" data-row="${idx}">
         <div class="schedule-row-header">
-          <span>לוח זמנים ${idx + 1}</span>
-          <button type="button" class="icon-btn danger remove-schedule-btn" data-row="${idx}" title="הסרה">🗑️</button>
+          <span>${su('scheduleN')}${idx + 1}</span>
+          <button type="button" class="icon-btn danger remove-schedule-btn" data-row="${idx}" title="${su('remove')}">🗑️</button>
         </div>
         <div class="row3">
           <div class="field">
-            <label>תדירות</label>
+            <label>${su('frequency')}</label>
             <select class="sch-interval" data-row="${idx}">
-              ${Object.keys(INTERVAL_LABELS).map(k => `<option value="${k}" ${s.interval===k?'selected':''}>${INTERVAL_LABELS[k]}</option>`).join('')}
+              ${Object.keys(INTERVAL_LABELS).map(k => `<option value="${k}" ${s.interval===k?'selected':''}>${il(k)}</option>`).join('')}
             </select>
           </div>
           <div class="field">
-            <label>שעות לפעם</label>
+            <label>${su('hoursPerTime')}</label>
             <input type="number" class="sch-hours" data-row="${idx}" min="0" step="0.5" value="${s.hours != null ? s.hours : ''}">
           </div>
           <div class="field">
-            <label>מס' עובדים</label>
+            <label>${su('numWorkers')}</label>
             <input type="number" class="sch-workers" data-row="${idx}" min="0" step="1" value="${s.workers != null ? s.workers : ''}">
           </div>
         </div>
         <div class="field">
-          <label>יום קבוע בשבוע (אופציונלי)</label>
+          <label>${su('fixedWeekday')}</label>
           <select class="sch-weekday" data-row="${idx}">
-            <option value="">— ללא —</option>
-            ${WEEKDAY_NAMES.map((w,i) => `<option value="${i}" ${s.weekday===i?'selected':''}>${w}</option>`).join('')}
+            <option value="">${t('weekdayNone')}</option>
+            ${WEEKDAY_NAMES.map((w,i) => `<option value="${i}" ${s.weekday===i?'selected':''}>${wd(i)}</option>`).join('')}
           </select>
         </div>
         <div class="field" style="margin-bottom:0;">
           <label style="display:flex;justify-content:space-between;align-items:center;">
-            <span>חודשים בלוח זמנים זה</span>
-            <button type="button" class="btn-secondary btn-small select-all-months-btn" data-row="${idx}">✓ כל השנה</button>
+            <span>${su('monthsInSchedule')}</span>
+            <button type="button" class="btn-secondary btn-small select-all-months-btn" data-row="${idx}">${su('selectAllYear')}</button>
           </label>
           <div class="months-grid">${monthsPickerHtml(s.months || [], idx)}</div>
         </div>
@@ -1328,9 +1484,9 @@
 
   function openModal(task, presetZone) {
     editingId = task ? task.id : null;
-    $('modal-title').textContent = task ? ('עריכת משימה: ' + task.name) : 'הוספת משימה';
+    $('modal-title').textContent = task ? (t('modalEditTitle') + trText(task.name)) : t('modalAddTitle');
     const zoneSel = $('f-zone');
-    zoneSel.innerHTML = '<option value="">— בחר —</option>' + uniqueZones().map(z => `<option value="${z}">${z}</option>`).join('');
+    zoneSel.innerHTML = `<option value="">${t('zonePick')}</option>` + uniqueZones().map(z => `<option value="${z}">${trText(z)}</option>`).join('');
     zoneSel.value = task ? task.zone : (presetZone || '');
     $('f-zone-new').value = '';
     $('f-name').value = task ? task.name : '';
@@ -1358,7 +1514,7 @@
     const zoneNew = $('f-zone-new').value.trim();
     const zone = zoneNew || zoneExisting;
     const name = $('f-name').value.trim();
-    if (!zone || !name) { alert('נא למלא אזור ושם משימה'); return; }
+    if (!zone || !name) { alert(t('fillZoneNameAlert')); return; }
 
     const data = {
       zone, name,
@@ -1380,7 +1536,7 @@
 
   $('delete-btn').addEventListener('click', () => {
     if (!editingId) return;
-    if (!confirm('למחוק את המשימה הזו?')) return;
+    if (!confirm(t('confirmDeleteTask'))) return;
     tasks = tasks.filter(t => t.id !== editingId);
     saveTasks(tasks);
     closeModal();
@@ -1395,7 +1551,7 @@
       const t = tasks.find(x => x.id === editBtn.dataset.id);
       if (t) openModal(t);
     } else if (delBtn) {
-      if (!confirm('למחוק את המשימה הזו?')) return;
+      if (!confirm(t('confirmDeleteTask'))) return;
       tasks = tasks.filter(t => t.id !== delBtn.dataset.id);
       saveTasks(tasks);
       renderAll();
@@ -1409,18 +1565,20 @@
   $('filter-search').addEventListener('input', renderZones);
 
   $('export-btn').addEventListener('click', () => {
-    const header = ['אזור','משימה','הערות','תדירות','שעות לפעם','עובדים','יום קבוע','חודשים'];
+    const header = lang === 'ar'
+      ? ['المنطقة','المهمة','ملاحظات','التردد','ساعات في المرة','العمال','يوم ثابت','الأشهر']
+      : ['אזור','משימה','הערות','תדירות','שעות לפעם','עובדים','יום קבוע','חודשים'];
     const lines = [];
-    tasks.forEach(t => {
-      const rows = (t.schedules && t.schedules.length) ? t.schedules : [null];
+    tasks.forEach(task => {
+      const rows = (task.schedules && task.schedules.length) ? task.schedules : [null];
       rows.forEach(s => {
         lines.push([
-          t.zone, t.name, (t.notes||'').replace(/,/g, ';'),
-          s ? (INTERVAL_LABELS[s.interval] || s.interval) : '',
+          trText(task.zone), trText(task.name), trText(task.notes||'').replace(/,/g, ';'),
+          s ? il(s.interval) : '',
           s && s.hours != null ? s.hours : '',
           s && s.workers != null ? s.workers : '',
-          s && s.weekday !== '' && s.weekday != null ? WEEKDAY_NAMES[s.weekday] : '',
-          s ? (s.months||[]).map(m => MONTH_NAMES[m]).join(' ') : ''
+          s && s.weekday !== '' && s.weekday != null ? wd(s.weekday) : '',
+          s ? (s.months||[]).map(m => mo(m)).join(' ') : ''
         ].join(','));
       });
     });
@@ -1439,7 +1597,7 @@
   // ---- Full data backup / restore (JSON) — the only way to move data between two different
   // browser origins (e.g. a locally-opened file vs. the live boazor.com page), since
   // localStorage never crosses origins on its own ----
-  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY]; }
+  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY, WEEDWHACK_KEY]; }
   $('backup-export-btn').addEventListener('click', () => {
     const data = {};
     backupKeys().forEach(k => { const v = localStorage.getItem(k); if (v != null) data[k] = v; });
@@ -1461,12 +1619,12 @@
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result);
-        if (!confirm('פעולה זו תחליף את כל הנתונים הנוכחיים בדפדפן זה בנתונים מהגיבוי. להמשיך?')) return;
+        if (!confirm(t('confirmImportAlert'))) return;
         backupKeys().forEach(k => { if (data[k] != null) localStorage.setItem(k, data[k]); });
-        alert('הגיבוי יובא בהצלחה. הדף ייטען מחדש.');
+        alert(t('importSuccessAlert'));
         location.reload();
       } catch (err) {
-        alert('קובץ הגיבוי לא תקין: ' + err.message);
+        alert(t('invalidBackupAlert') + err.message);
       }
     };
     reader.readAsText(file);
@@ -1484,7 +1642,7 @@
   let editingExpenseId = null;
   function openExpenseModal(exp) {
     editingExpenseId = exp ? exp.id : null;
-    $('expense-modal-title').textContent = exp ? 'עריכת הוצאה' : 'הוצאה חדשה';
+    $('expense-modal-title').textContent = exp ? t('expenseModalEditTitle') : t('expenseModalNewTitle');
     $('e-date').value = exp ? exp.date : new Date().toISOString().slice(0,10);
     $('e-item').value = exp ? exp.item : '';
     $('e-jobtype').value = exp ? (exp.jobType || '') : '';
@@ -1502,7 +1660,7 @@
   $('expense-save-btn').addEventListener('click', () => {
     const item = $('e-item').value.trim();
     const date = $('e-date').value;
-    if (!item || !date) { alert('נא למלא לפחות תאריך ופריט'); return; }
+    if (!item || !date) { alert(t('fillDateItemAlert')); return; }
     const data = {
       date, item,
       jobType: $('e-jobtype').value.trim(),
@@ -1523,7 +1681,7 @@
 
   $('expense-delete-btn').addEventListener('click', () => {
     if (!editingExpenseId) return;
-    if (!confirm('למחוק את ההוצאה הזו?')) return;
+    if (!confirm(t('confirmDeleteExpense'))) return;
     expenses = expenses.filter(x => x.id !== editingExpenseId);
     saveExpenses();
     closeExpenseModal();
@@ -1543,30 +1701,30 @@
     const monthKeys = Object.keys(byMonth).sort().reverse();
 
     let html = `<div class="card" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button class="btn" id="expense-add-btn" type="button">+ הוצאה חדשה</button>
-      <button class="btn-secondary" id="expense-export-btn" type="button">⬇️ ייצוא CSV</button>
-      <div class="stat-box" style="margin-inline-start:auto;"><span>סה"כ כולל</span><strong>₪${grandTotal.toLocaleString()}</strong></div>
+      <button class="btn" id="expense-add-btn" type="button">${t('newExpenseBtn')}</button>
+      <button class="btn-secondary" id="expense-export-btn" type="button">${t('exportBtn')}</button>
+      <div class="stat-box" style="margin-inline-start:auto;"><span>${t('totalExpense')}</span><strong>₪${grandTotal.toLocaleString()}</strong></div>
     </div>`;
 
-    html += `<div class="card"><h3>סיכום חודשי</h3>`;
+    html += `<div class="card"><h3>${t('monthlySummary')}</h3>`;
     if (monthKeys.length === 0) {
-      html += `<p class="empty-msg">אין הוצאות עדיין</p>`;
+      html += `<p class="empty-msg">${t('noExpensesYet')}</p>`;
     } else {
-      html += `<div style="overflow-x:auto;"><table><thead><tr><th>חודש</th><th>סה"כ עלות</th></tr></thead><tbody>`;
+      html += `<div style="overflow-x:auto;"><table><thead><tr><th>${t('monthLabel')}</th><th>${t('totalExpense')}</th></tr></thead><tbody>`;
       monthKeys.forEach(mk => {
         const [y,m] = mk.split('-');
-        html += `<tr><td>${MONTH_NAMES[Number(m)-1]} ${y}</td><td class="num">₪${byMonth[mk].toLocaleString()}</td></tr>`;
+        html += `<tr><td>${mo(Number(m)-1)} ${y}</td><td class="num">₪${byMonth[mk].toLocaleString()}</td></tr>`;
       });
       html += `</tbody></table></div>`;
     }
     html += `</div>`;
 
-    html += `<div class="card"><h3>כל ההוצאות</h3>`;
+    html += `<div class="card"><h3>${t('allExpenses')}</h3>`;
     if (sorted.length === 0) {
-      html += `<p class="empty-msg">אין הוצאות עדיין</p>`;
+      html += `<p class="empty-msg">${t('noExpensesYet')}</p>`;
     } else {
       html += `<div style="overflow-x:auto;"><table>
-        <thead><tr><th>תאריך</th><th>פריט</th><th>סוג עבודה</th><th>ספק</th><th>קבלן מבצע</th><th>עלות</th><th></th></tr></thead>
+        <thead><tr><th>${t('colDate')}</th><th>${t('colItem')}</th><th>${t('colJobType')}</th><th>${t('colSupplier')}</th><th>${t('colContractor')}</th><th>${t('colCost')}</th><th></th></tr></thead>
         <tbody>${sorted.map(x => `
           <tr>
             <td>${x.date}</td>
@@ -1576,8 +1734,8 @@
             <td>${x.contractor || '—'}</td>
             <td class="num">${x.cost != null ? '₪'+x.cost.toLocaleString() : '—'}</td>
             <td>
-              <button class="icon-btn expense-edit-btn" data-id="${x.id}" type="button" title="עריכה">✏️</button>
-              <button class="icon-btn danger expense-delete-row-btn" data-id="${x.id}" type="button" title="מחיקה">🗑️</button>
+              <button class="icon-btn expense-edit-btn" data-id="${x.id}" type="button" title="${t('editTitle')}">✏️</button>
+              <button class="icon-btn danger expense-delete-row-btn" data-id="${x.id}" type="button" title="${t('deleteTitle')}">🗑️</button>
             </td>
           </tr>`).join('')}</tbody>
       </table></div>`;
@@ -1592,7 +1750,7 @@
       if (exp) openExpenseModal(exp);
     }));
     container.querySelectorAll('.expense-delete-row-btn').forEach(btn => btn.addEventListener('click', () => {
-      if (!confirm('למחוק את ההוצאה הזו?')) return;
+      if (!confirm(t('confirmDeleteExpense'))) return;
       expenses = expenses.filter(x => x.id !== btn.dataset.id);
       saveExpenses();
       renderExpenses();
@@ -1600,7 +1758,9 @@
   }
 
   function exportExpensesCSV() {
-    const header = ['תאריך','פריט','סוג עבודה','ספק','קבלן מבצע','עלות'];
+    const header = lang === 'ar'
+      ? ['تاريخ','بند','نوع العمل','المورّد','المقاول المنفّذ','التكلفة']
+      : ['תאריך','פריט','סוג עבודה','ספק','קבלן מבצע','עלות'];
     const lines = expenses.map(x => [
       x.date, x.item, (x.jobType||'').replace(/,/g,';'), (x.supplier||'').replace(/,/g,';'),
       (x.contractor||'').replace(/,/g,';'), x.cost != null ? x.cost : ''
@@ -1629,7 +1789,7 @@
   function setAppendixEditMode(on) {
     appendixEditMode = on;
     document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { el.contentEditable = on; });
-    $('appendix-edit-toggle').textContent = on ? '👁️ סיום עריכה (ללא שמירה)' : '✏️ עריכת נספחים';
+    $('appendix-edit-toggle').textContent = on ? t('finishEditBtn') : t('editAppendixBtn');
     $('appendix-save-btn').style.display = on ? 'inline-block' : 'none';
   }
   $('appendix-edit-toggle').addEventListener('click', () => setAppendixEditMode(!appendixEditMode));
@@ -1638,14 +1798,39 @@
     document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { data[el.id] = el.innerHTML; });
     localStorage.setItem(APPENDIX_KEY, JSON.stringify(data));
     setAppendixEditMode(false);
-    alert('הנספחים נשמרו');
+    alert(t('appendixSavedAlert'));
+  });
+
+  // ---- Weed-whacking "done / not done" checklist status (separate from the free-text appendix content) ----
+  const WEEDWHACK_KEY = 'gardeningPlanWeedwhackStatus';
+  let weedwhackStatus = {};
+  function loadWeedwhackStatus() {
+    try { weedwhackStatus = JSON.parse(localStorage.getItem(WEEDWHACK_KEY)) || {}; } catch { weedwhackStatus = {}; }
+  }
+  function saveWeedwhackStatus() { localStorage.setItem(WEEDWHACK_KEY, JSON.stringify(weedwhackStatus)); }
+  function applyWeedwhackStatus() {
+    document.querySelectorAll('.weedwhack-check').forEach(cb => {
+      cb.checked = !!weedwhackStatus[cb.dataset.key];
+      const row = cb.closest('tr') || cb.closest('li');
+      if (row) row.classList.toggle('ww-done', cb.checked);
+    });
+  }
+  document.addEventListener('change', (e) => {
+    const cb = e.target.closest('.weedwhack-check');
+    if (!cb) return;
+    weedwhackStatus[cb.dataset.key] = cb.checked;
+    saveWeedwhackStatus();
+    const row = cb.closest('tr') || cb.closest('li');
+    if (row) row.classList.toggle('ww-done', cb.checked);
   });
 
   loadAttendance();
   loadExpenses();
   loadAppendixOverrides();
+  loadWeedwhackStatus();
   plantsHeHtml = $('appendix-plants').innerHTML;
   applyStaticUILang();
+  applyWeedwhackStatus();
   renderAll();
 </script>
 </body>
