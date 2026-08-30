@@ -81,7 +81,7 @@
     .day-col.is-saturday .day-col-header { color: #8a8270; }
     .day-col.is-saturday .day-empty { color: #8a8270; font-weight: 600; }
     .day-col-header { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 15px; color: var(--accent-dark); margin-bottom: 8px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-    .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 14px; margin-bottom: 6px; cursor: grab; }
+    .day-task-item { position: relative; background: var(--accent-light); border-radius: 6px; padding: 6px 8px; padding-left: 20px; font-size: 14px; margin-bottom: 6px; cursor: grab; }
     .day-task-item.dragging { opacity: 0.35; }
     .day-col[data-dow] { transition: background .1s, outline .1s; border-radius: 8px; }
     .day-col[data-dow].drag-over { outline: 2px dashed var(--accent); outline-offset: -2px; background: var(--accent-light); }
@@ -90,6 +90,8 @@
     .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
     .day-task-item.outsourced { background: var(--pink-light); }
     .day-task-item.outsourced .dt-name { color: var(--pink); }
+    .postpone-btn { position: absolute; top: 3px; left: 3px; background: none; border: none; color: var(--ink-light); font-size: 12px; line-height: 1; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+    .postpone-btn:hover { background: rgba(0,0,0,.08); color: var(--danger); }
     .day-empty { color: var(--ink-light); font-size: 14px; text-align: center; padding: 20px 0; }
     .unpinned-list-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 15px; }
     .unpinned-list-item:last-child { border-bottom: none; }
@@ -132,7 +134,7 @@
     .task-notes { font-size: 14px; color: var(--ink-light); margin-top: 2px; }
     .schedule-summary-line-wrap { margin-bottom: 10px; }
     .schedule-summary-line-wrap:last-child { margin-bottom: 0; }
-    .schedule-summary-line { font-size: 14px; margin-bottom: 2px; margin-inline-start: 22px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .schedule-summary-line { font-size: 14px; margin-bottom: 2px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .sched-badge { background: var(--accent-light); color: var(--accent-dark); padding: 1px 6px; border-radius: 5px; font-weight: 600; }
     .sched-months { color: var(--ink-light); }
     .months-mini, .months-legend { display: grid; grid-template-columns: repeat(12, 18px); gap: 2px; margin-top: 4px; }
@@ -582,12 +584,13 @@
       filterZoneAll: 'כל האזורים', filterMonthAll: 'כל החודשים',
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
       attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
+      postponeTitle: 'דחיית ביצוע לשבוע הבא',
       hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
       emptyMsg: 'אין משימות כאלה',
       workHoursFull: '06:30–14:30 (הפסקה 11:00–11:30)', workHoursFri: '06:30–09:30',
-      noSchedules: 'אין לוחות זמנים', colTask: 'משימה', colSchedules: 'לוחות זמנים', colHoursYear: 'שעות/שנה',
+      noSchedules: 'אין לוחות זמנים', colTask: 'משימה', colSchedules: 'לוחות זמנים', colMonths: 'חודשים', colHoursYear: 'שעות/שנה',
       editTitle: 'עריכה', deleteTitle: 'מחיקה', addToZoneTitle: 'הוספת משימה לאזור זה', addToZoneBtn: '+ משימה', hoursPerYear: 'שעות/שנה',
       noFixedMonths: 'ללא חודשים קבועים',
       modalAddTitle: 'הוספת משימה', modalEditTitle: 'עריכת משימה: ', zoneLabel: 'אזור ראשי', zoneNewLabel: 'או הזן אזור חדש',
@@ -615,12 +618,13 @@
       filterZoneAll: 'كل المناطق', filterMonthAll: 'كل الأشهر',
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
       attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
+      postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم',
       hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
       emptyMsg: 'لا توجد مهام كهذه',
       workHoursFull: '06:30–14:30 (استراحة 11:00–11:30)', workHoursFri: '06:30–09:30',
-      noSchedules: 'لا توجد جداول زمنية', colTask: 'المهمة', colSchedules: 'الجداول الزمنية', colHoursYear: 'ساعات/سنة',
+      noSchedules: 'لا توجد جداول زمنية', colTask: 'المهمة', colSchedules: 'الجداول الزمنية', colMonths: 'الأشهر', colHoursYear: 'ساعات/سنة',
       editTitle: 'تعديل', deleteTitle: 'حذف', addToZoneTitle: 'إضافة مهمة لهذه المنطقة', addToZoneBtn: '+ مهمة', hoursPerYear: 'ساعات/سنة',
       noFixedMonths: 'بدون أشهر ثابتة',
       modalAddTitle: 'إضافة مهمة', modalEditTitle: 'تعديل مهمة: ', zoneLabel: 'المنطقة الرئيسية', zoneNewLabel: 'أو أدخل منطقة جديدة',
@@ -966,10 +970,7 @@
     return `<div class="months-legend" dir="rtl">${MONTH_NAMES.map((m,i) => `<span>${mo(i).slice(0,3)}${lang==='ar'?'':'׳'}</span>`).join('')}</div>`;
   }
 
-  function scheduleSummaryHtml(s) {
-    const monthsHtml = (s.months && s.months.length)
-      ? monthsMiniHtml(s.months)
-      : (s.interval === 'asneeded' ? `<div class="sched-months">${t('noFixedMonths')}</div>` : `<div class="sched-months">—</div>`);
+  function scheduleLineHtml(s) {
     const weekdayHtml = (s.weekday !== '' && s.weekday != null) ? `<span class="weekday-tag">${wd(s.weekday)}</span>` : '';
     const hoursTxt = s.hours != null ? `${s.hours} ${t('hoursShort')}` : '—';
     const workersTxt = s.workers != null ? `${workersIcon(s.workers)}${s.workers}` : '';
@@ -979,14 +980,19 @@
         <span>${hoursTxt}</span><span>${workersTxt}</span>
         ${weekdayHtml}
       </div>
-      ${monthsHtml}
     </div>`;
+  }
+  function scheduleMonthsCellHtml(s) {
+    const monthsHtml = (s.months && s.months.length)
+      ? monthsMiniHtml(s.months)
+      : (s.interval === 'asneeded' ? `<div class="sched-months">${t('noFixedMonths')}</div>` : `<div class="sched-months">—</div>`);
+    return `<div class="schedule-summary-line-wrap">${monthsHtml}</div>`;
   }
 
   function taskRowHtml(t) {
-    const schedulesHtml = (t.schedules && t.schedules.length)
-      ? t.schedules.map(scheduleSummaryHtml).join('')
-      : `<span class="no-schedules">${UI[lang].noSchedules}</span>`;
+    const hasSchedules = t.schedules && t.schedules.length;
+    const schedulesHtml = hasSchedules ? t.schedules.map(scheduleLineHtml).join('') : `<span class="no-schedules">${UI[lang].noSchedules}</span>`;
+    const monthsHtml = hasSchedules ? t.schedules.map(scheduleMonthsCellHtml).join('') : '';
     return `
       <tr class="${isMissingData(t) ? 'missing-data' : ''} ${t.outsourced ? 'outsourced-row' : ''}" data-id="${t.id}">
         <td>
@@ -994,6 +1000,7 @@
           ${t.notes ? `<div class="task-notes">${trText(t.notes)}</div>` : ''}
         </td>
         <td>${schedulesHtml}</td>
+        <td>${monthsHtml}</td>
         <td class="num">${Math.round(taskAnnualHours(t))}</td>
         <td>
           <div class="row-actions">
@@ -1037,7 +1044,7 @@
         <div class="card" style="padding:0;overflow-x:auto;">
           <table>
             <thead><tr>
-              <th style="min-width:160px;">${t('colTask')}</th><th style="min-width:220px;">${t('colSchedules')}${monthsLegendHtml()}</th><th>${t('colHoursYear')}</th><th></th>
+              <th style="min-width:160px;">${t('colTask')}</th><th style="min-width:150px;">${t('colSchedules')}</th><th style="min-width:220px;">${t('colMonths')}${monthsLegendHtml()}</th><th>${t('colHoursYear')}</th><th></th>
             </tr></thead>
             <tbody>${zoneTasks.map(taskRowHtml).join('')}</tbody>
           </table>
@@ -1132,6 +1139,7 @@
   function getTasksForDay(d) {
     const monthIdx = d.getMonth();
     const weekdayIdx = d.getDay();
+    const thisDateKey = dateKey(d);
     const items = [];
     const auto = getAutoAssignments();
     tasks.forEach(t => {
@@ -1140,6 +1148,7 @@
         if (!(s.months || []).includes(monthIdx)) return;
         const hasFixedDay = s.weekday !== '' && s.weekday != null;
         const key = t.id + '_' + s.id;
+        if ((skippedOccurrences[key] || []).includes(thisDateKey)) return; // postponed to next week
         const placedDays = new Set(auto[key] || []);
         if (hasFixedDay) placedDays.add(Number(s.weekday));
         if (placedDays.has(weekdayIdx)) {
@@ -1219,7 +1228,7 @@
   }
   // drag-and-drop a task card between days in the weekly Gantt — moving it just sets that
   // schedule's fixed weekday to the drop target, same as picking it manually in the edit form
-  function wireDragAndDrop(container) {
+  function wireWeeklyInteractions(container) {
     container.querySelectorAll('.day-task-item').forEach(el => {
       el.addEventListener('dragstart', (e) => {
         el.classList.add('dragging');
@@ -1242,6 +1251,13 @@
         if (!sched) return;
         sched.weekday = Number(col.dataset.dow);
         saveTasks(tasks);
+        renderAll();
+      });
+    });
+    container.querySelectorAll('.postpone-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        postponeOccurrence(btn.dataset.taskId, btn.dataset.scheduleId, btn.dataset.date);
         renderAll();
       });
     });
@@ -1342,6 +1358,7 @@
         } else {
           items.forEach(item => {
             html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}">
+              <button type="button" class="postpone-btn" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}" title="${t('postponeTitle')}">✕</button>
               <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
               <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</div>
             </div>`;
@@ -1356,7 +1373,7 @@
     html += referenceListsHtml(days);
     container.innerHTML = html;
 
-    wireDragAndDrop(container);
+    wireWeeklyInteractions(container);
 
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
     $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
@@ -1640,7 +1657,7 @@
   // ---- Full data backup / restore (JSON) — the only way to move data between two different
   // browser origins (e.g. a locally-opened file vs. the live boazor.com page), since
   // localStorage never crosses origins on its own ----
-  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY, WEEDWHACK_KEY]; }
+  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY, WEEDWHACK_KEY, SKIPPED_KEY]; }
   $('backup-export-btn').addEventListener('click', () => {
     const data = {};
     backupKeys().forEach(k => { const v = localStorage.getItem(k); if (v != null) data[k] = v; });
@@ -1844,6 +1861,22 @@
     alert(t('appendixSavedAlert'));
   });
 
+  // ---- Postponing a single occurrence of a recurring schedule to next week ----
+  // Removing a task from a specific date in the weekly Gantt doesn't touch the schedule itself — it just
+  // records that this one date is skipped, so the recurring pattern naturally shows it again next time it's due.
+  const SKIPPED_KEY = 'gardeningPlanSkippedOccurrences';
+  let skippedOccurrences = {};
+  function loadSkippedOccurrences() {
+    try { skippedOccurrences = JSON.parse(localStorage.getItem(SKIPPED_KEY)) || {}; } catch { skippedOccurrences = {}; }
+  }
+  function saveSkippedOccurrences() { localStorage.setItem(SKIPPED_KEY, JSON.stringify(skippedOccurrences)); }
+  function postponeOccurrence(taskId, scheduleId, dk) {
+    const key = taskId + '_' + scheduleId;
+    if (!skippedOccurrences[key]) skippedOccurrences[key] = [];
+    if (!skippedOccurrences[key].includes(dk)) skippedOccurrences[key].push(dk);
+    saveSkippedOccurrences();
+  }
+
   // ---- Weed-whacking "done / not done" checklist status (separate from the free-text appendix content) ----
   const WEEDWHACK_KEY = 'gardeningPlanWeedwhackStatus';
   let weedwhackStatus = {};
@@ -1871,6 +1904,7 @@
   loadExpenses();
   loadAppendixOverrides();
   loadWeedwhackStatus();
+  loadSkippedOccurrences();
   plantsHeHtml = $('appendix-plants').innerHTML;
   applyStaticUILang();
   applyWeedwhackStatus();
