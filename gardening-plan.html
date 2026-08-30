@@ -16,6 +16,7 @@
       --accent: #4a7c2f; --accent-dark: #386022; --accent-light: #dcecd2;
       --amber: #b8860b; --amber-light: #fbeecb;
       --border: #e0e8da; --danger: #dc2626; --danger-light: #fde8e8;
+      --pink: #c2185b; --pink-light: #fbe1ec;
     }
     body {
       font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--ink);
@@ -68,14 +69,6 @@
     .btn-small { padding: 6px 12px; font-size: 14px; border-radius: 8px; }
     .view-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-    /* monthly gantt */
-    .gantt-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    .gantt-table th, .gantt-table td { border: 1px solid var(--border); text-align: center; padding: 6px 4px; }
-    .gantt-table th.task-col, .gantt-table td.task-col { text-align: right; font-size: 15px; padding: 8px 10px; min-width: 180px; }
-    .gantt-cell-active { background: var(--accent); }
-    .gantt-cell-active.outsourced-cell { background: var(--amber); }
-    .gantt-zone-row td { background: var(--accent-light); font-weight: 600; text-align: right; color: var(--accent-dark); }
-
     /* weekly gantt */
     .week-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
     @media(max-width:900px){ .week-days-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -87,6 +80,8 @@
     .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 14px; margin-bottom: 6px; }
     .day-task-item .dt-name { font-weight: 600; color: var(--accent-dark); }
     .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
+    .day-task-item.outsourced { background: var(--pink-light); }
+    .day-task-item.outsourced .dt-name { color: var(--pink); }
     .day-empty { color: var(--ink-light); font-size: 14px; text-align: center; padding: 20px 0; }
     .unpinned-list-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 15px; }
     .unpinned-list-item:last-child { border-bottom: none; }
@@ -115,12 +110,17 @@
     th { font-size: 14px; color: var(--ink-light); font-weight: 500; }
     td.num { font-family: 'Rubik', sans-serif; font-weight: 500; white-space: nowrap; }
     tr.missing-data { background: var(--amber-light); }
+    .outsourced-row { background: var(--pink-light); }
+    tr.outsourced-row.missing-data { background: linear-gradient(90deg, var(--pink-light), var(--amber-light)); }
     .task-name { font-weight: 500; }
     .task-notes { font-size: 14px; color: var(--ink-light); margin-top: 2px; }
     .schedule-summary-line { font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .schedule-summary-line:last-child { margin-bottom: 0; }
     .sched-badge { background: var(--accent-light); color: var(--accent-dark); padding: 1px 6px; border-radius: 5px; font-weight: 600; }
     .sched-months { color: var(--ink-light); }
+    .months-mini { display: inline-flex; gap: 2px; }
+    .month-sq { width: 17px; height: 17px; border-radius: 4px; background: var(--border); color: var(--ink-light); font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; line-height: 1; }
+    .month-sq.active { background: var(--accent); color: white; }
     .weekday-tag { background: var(--amber-light); color: var(--amber); font-size: 13px; padding: 1px 6px; border-radius: 5px; }
     .no-schedules { color: var(--ink-light); font-size: 14px; }
     .row-actions { display: flex; gap: 6px; }
@@ -407,7 +407,7 @@
     </div>
     <div class="field">
       <label class="month-chip" style="display:inline-flex;width:auto;padding:8px 14px;">
-        <input type="checkbox" id="f-outsourced" style="width:auto;"> מבוצע על ידי קבלן חיצוני (לא ייכנס לגאנט)
+        <input type="checkbox" id="f-outsourced" style="width:auto;"> מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)
       </label>
     </div>
 
@@ -473,8 +473,9 @@
   const STORAGE_KEY = 'gardeningPlanTasks';
   const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   const WEEKDAY_NAMES = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'];
-  const INTERVAL_LABELS = { week:'כל שבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', asneeded:'לפי צורך' };
+  const INTERVAL_LABELS = { week:'כל שבוע', '2xweek':'פעמיים בשבוע', '3xweek':'שלוש פעמים בשבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', asneeded:'לפי צורך' };
   const INTERVAL_WEEKS = { week:1, '2weeks':2, '3weeks':3, '4weeks':4 };
+  const TIMES_PER_WEEK = { '2xweek':2, '3xweek':3 };
 
   const SEED_DATA = [
     ['כניסה לישוב', 'כניסה ליישוב - ערוגה'],
@@ -566,7 +567,7 @@
       filterZoneAll: 'כל האזורים', filterMonthAll: 'כל החודשים',
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
       attendanceLabel: 'הגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער',
-      hoursShort: 'ש׳', workersIcon: '👥', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
+      hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
       emptyMsg: 'אין משימות כאלה',
@@ -580,7 +581,7 @@
       filterZoneAll: 'كل المناطق', filterMonthAll: 'كل الأشهر',
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
       attendanceLabel: 'الحضور الفعلي:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري',
-      hoursShort: 'س', workersIcon: '👥', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
+      hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
       emptyMsg: 'لا توجد مهام كهذه',
@@ -810,9 +811,10 @@
   function scheduleOccurrences(s) {
     if (s.interval === 'asneeded') return null;
     if (s.interval === 'year') return 1;
-    const weeksPerInterval = INTERVAL_WEEKS[s.interval] || 1;
     const monthCount = (s.months || []).length;
     if (monthCount === 0) return 0;
+    if (TIMES_PER_WEEK[s.interval]) return monthCount * (52 / 12) * TIMES_PER_WEEK[s.interval];
+    const weeksPerInterval = INTERVAL_WEEKS[s.interval] || 1;
     return (monthCount * (52 / 12)) / weeksPerInterval;
   }
 
@@ -864,18 +866,22 @@
     $('stat-missing').textContent = missing;
   }
 
+  function monthsMiniHtml(months) {
+    return `<span class="months-mini">${MONTH_NAMES.map((m,i) => `<span class="month-sq${(months||[]).includes(i)?' active':''}" title="${m}">${i+1}</span>`).join('')}</span>`;
+  }
+
   function scheduleSummaryHtml(s) {
-    const monthsLabel = (s.months && s.months.length)
-      ? s.months.slice().sort((a,b)=>a-b).map(m => MONTH_NAMES[m].slice(0,3)).join(', ')
-      : (s.interval === 'asneeded' ? 'ללא חודשים קבועים' : '—');
+    const monthsHtml = (s.months && s.months.length)
+      ? monthsMiniHtml(s.months)
+      : (s.interval === 'asneeded' ? `<span class="sched-months">ללא חודשים קבועים</span>` : `<span class="sched-months">—</span>`);
     const weekdayHtml = (s.weekday !== '' && s.weekday != null) ? `<span class="weekday-tag">${WEEKDAY_NAMES[s.weekday]}</span>` : '';
     const hoursTxt = s.hours != null ? `${s.hours} ש'` : '—';
-    const workersTxt = s.workers != null ? `👥${s.workers}` : '';
+    const workersTxt = s.workers != null ? `${workersIcon(s.workers)}${s.workers}` : '';
     return `<div class="schedule-summary-line">
       <span class="sched-badge">${INTERVAL_LABELS[s.interval] || s.interval}</span>
       <span>${hoursTxt}</span><span>${workersTxt}</span>
       ${weekdayHtml}
-      <span class="sched-months">${monthsLabel}</span>
+      ${monthsHtml}
     </div>`;
   }
 
@@ -884,7 +890,7 @@
       ? t.schedules.map(scheduleSummaryHtml).join('')
       : '<span class="no-schedules">אין לוחות זמנים</span>';
     return `
-      <tr class="${isMissingData(t) ? 'missing-data' : ''}" data-id="${t.id}">
+      <tr class="${isMissingData(t) ? 'missing-data' : ''} ${t.outsourced ? 'outsourced-row' : ''}" data-id="${t.id}">
         <td>
           <div class="task-name">${trText(t.name)} ${t.outsourced ? `<span class="weekday-tag">${UI[lang].outsourcedTag}</span>` : ''}</div>
           ${t.notes ? `<div class="task-notes">${t.notes}</div>` : ''}
@@ -972,20 +978,37 @@
     return h % 5; // 0-4 => Sunday..Thursday (never lands on Fri/Sat)
   }
 
+  // for a "N times a week" schedule, derive N distinct weekdays: the fixed day (if set) plus
+  // deterministically-hashed others, so the task actually spreads across the week rather than piling on one day
+  function multiWeekdaysFor(t, s, n) {
+    const hasFixedDay = s.weekday !== '' && s.weekday != null;
+    const days = new Set();
+    if (hasFixedDay) days.add(Number(s.weekday));
+    let seed = 0;
+    while (days.size < n && seed < 30) { days.add(hashToWeekday(t.id + '_' + s.id + '_' + seed)); seed++; }
+    return days;
+  }
+
   // returns tasks placed on a specific date, using fixed weekday if set, or a deterministic guess otherwise
   function getTasksForDay(d) {
     const monthIdx = d.getMonth();
     const weekdayIdx = d.getDay();
     const items = [];
     tasks.forEach(t => {
-      if (t.outsourced) return;
       (t.schedules || []).forEach(s => {
         if (s.interval === 'asneeded' || s.interval === 'year') return;
         if (!(s.months || []).includes(monthIdx)) return;
         const hasFixedDay = s.weekday !== '' && s.weekday != null;
+        if (TIMES_PER_WEEK[s.interval]) {
+          const days = multiWeekdaysFor(t, s, TIMES_PER_WEEK[s.interval]);
+          if (days.has(weekdayIdx)) {
+            items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced });
+          }
+          return;
+        }
         const assignedWeekday = hasFixedDay ? Number(s.weekday) : hashToWeekday(t.id + '_' + s.id);
         if (assignedWeekday === weekdayIdx) {
-          items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !hasFixedDay });
+          items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !hasFixedDay, outsourced: t.outsourced });
         }
       });
     });
@@ -996,12 +1019,11 @@
   function getYearlyRelevant(days) {
     const list = [], seen = new Set();
     tasks.forEach(t => {
-      if (t.outsourced) return;
       (t.schedules || []).forEach(s => {
         if (s.interval !== 'year') return;
         const relevant = days.some(d => (s.months || []).includes(d.getMonth()));
         const key = t.id + '_' + s.id;
-        if (relevant && !seen.has(key)) { seen.add(key); list.push({ name: trText(t.name), zone: trText(t.zone), hours: s.hours, workers: s.workers }); }
+        if (relevant && !seen.has(key)) { seen.add(key); list.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, outsourced: t.outsourced }); }
       });
     });
     return list;
@@ -1012,7 +1034,7 @@
     const list = [];
     tasks.forEach(t => {
       (t.schedules || []).forEach(s => {
-        if (s.interval === 'asneeded') list.push({ name: trText(t.name), zone: trText(t.zone), hours: s.hours, workers: s.workers, outsourced: t.outsourced });
+        if (s.interval === 'asneeded') list.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, outsourced: t.outsourced });
       });
     });
     return list;
@@ -1033,6 +1055,7 @@
   function plannedPersonHours(items) {
     return items.reduce((sum, item) => sum + (item.hours != null ? item.hours * (item.workers != null ? item.workers : 1) : 0), 0);
   }
+  function workersIcon(n) { return n === 1 ? '👤' : '👥'; }
   function dateKey(d) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
@@ -1044,7 +1067,8 @@
   function saveAttendance() { localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(attendance)); }
   function capacityLineHtml(dow, items) {
     const capacity = capacityForDay(dow);
-    const planned = plannedPersonHours(items);
+    // outsourced work is done by an external contractor, not the in-house crew, so it doesn't count against capacity
+    const planned = plannedPersonHours(items.filter(i => !i.outsourced));
     const over = planned > capacity;
     return `<div class="day-capacity${over ? ' over-capacity' : ''}">${t('capacityFmt')(planned, capacity)}</div>`;
   }
@@ -1070,9 +1094,9 @@
       html += `<p class="empty-msg">${t('emptyMsg')}</p>`;
     } else {
       yearlyRelevant.forEach(item => {
-        html += `<div class="unpinned-list-item">
+        html += `<div class="unpinned-list-item${item.outsourced ? ' outsourced-row' : ''}">
           <span>${trText(item.name)} <span style="color:var(--ink-light);font-size:12px;">(${trText(item.zone)})</span></span>
-          <span style="color:var(--ink-light);">${t('onceAYear')} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· 👥'+item.workers:''}</span>
+          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag')+' · ' : ''}${t('onceAYear')} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</span>
         </div>`;
       });
     }
@@ -1083,9 +1107,9 @@
       html += `<p class="empty-msg">${t('emptyMsg')}</p>`;
     } else {
       asNeeded.forEach(item => {
-        html += `<div class="unpinned-list-item">
+        html += `<div class="unpinned-list-item${item.outsourced ? ' outsourced-row' : ''}">
           <span>${trText(item.name)} <span style="color:var(--ink-light);font-size:12px;">(${trText(item.zone)})</span></span>
-          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag') : ''} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· 👥'+item.workers:''}</span>
+          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag') : ''} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</span>
         </div>`;
       });
     }
@@ -1133,9 +1157,9 @@
           html += `<div class="day-empty">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item">
-              <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''}</div>
-              <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· 👥'+item.workers:''}</div>
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}">
+              <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
+              <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</div>
             </div>`;
           });
         }
@@ -1188,7 +1212,7 @@
           html += `<div class="day-empty" style="padding:4px 0;">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item" style="padding:4px 6px;margin-bottom:4px;">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" style="padding:4px 6px;margin-bottom:4px;">
               <div class="dt-name" style="font-size:12px;">${trText(item.name)}${item.estimated ? ' 🔹' : ''}</div>
             </div>`;
           });
