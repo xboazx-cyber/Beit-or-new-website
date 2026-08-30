@@ -135,7 +135,7 @@
     .month-sq { width: 18px; height: 18px; border-radius: 4px; background: var(--border); color: var(--ink-light); font-size: 9px; font-weight: 600; display: flex; align-items: center; justify-content: center; line-height: 1; }
     .month-sq.active { background: var(--accent); color: white; }
     .months-legend { margin-top: 0; margin-bottom: 4px; }
-    .months-legend span { font-size: 8px; color: var(--ink-light); text-align: center; white-space: nowrap; overflow: hidden; }
+    .months-legend span { font-size: 9px; font-weight: 700; color: var(--accent-dark); text-align: center; white-space: nowrap; overflow: hidden; }
     .weekday-tag { background: var(--amber-light); color: var(--amber); font-size: 13px; padding: 1px 6px; border-radius: 5px; }
     .no-schedules { color: var(--ink-light); font-size: 14px; }
     .row-actions { display: flex; gap: 6px; }
@@ -956,10 +956,10 @@
   }
 
   function monthsMiniHtml(months) {
-    return `<div class="months-mini" dir="ltr">${MONTH_NAMES.map((m,i) => `<span class="month-sq${(months||[]).includes(i)?' active':''}" title="${mo(i)}">${i+1}</span>`).join('')}</div>`;
+    return `<div class="months-mini" dir="rtl">${MONTH_NAMES.map((m,i) => `<span class="month-sq${(months||[]).includes(i)?' active':''}" title="${mo(i)}">${i+1}</span>`).join('')}</div>`;
   }
   function monthsLegendHtml() {
-    return `<div class="months-legend" dir="ltr">${MONTH_NAMES.map((m,i) => `<span>${mo(i).slice(0,3)}${lang==='ar'?'':'׳'}</span>`).join('')}</div>`;
+    return `<div class="months-legend" dir="rtl">${MONTH_NAMES.map((m,i) => `<span>${mo(i).slice(0,3)}${lang==='ar'?'':'׳'}</span>`).join('')}</div>`;
   }
 
   function scheduleSummaryHtml(s) {
