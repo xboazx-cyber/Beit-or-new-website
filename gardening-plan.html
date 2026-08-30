@@ -187,6 +187,9 @@
       <select id="filter-month"></select>
       <input type="text" id="filter-search" placeholder="חיפוש חופשי...">
       <button class="btn-secondary" id="export-btn" type="button">⬇️ ייצוא CSV</button>
+      <button class="btn-secondary" id="backup-export-btn" type="button">📤 גיבוי נתונים (JSON)</button>
+      <button class="btn-secondary" id="backup-import-btn" type="button">📥 ייבוא גיבוי</button>
+      <input type="file" id="backup-import-input" accept="application/json" style="display:none;">
     </div>
   </div>
 
@@ -1407,6 +1410,43 @@
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  });
+
+  // ---- Full data backup / restore (JSON) — the only way to move data between two different
+  // browser origins (e.g. a locally-opened file vs. the live boazor.com page), since
+  // localStorage never crosses origins on its own ----
+  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY]; }
+  $('backup-export-btn').addEventListener('click', () => {
+    const data = {};
+    backupKeys().forEach(k => { const v = localStorage.getItem(k); if (v != null) data[k] = v; });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'גיבוי-תוכנית-גינון.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+  $('backup-import-btn').addEventListener('click', () => $('backup-import-input').click());
+  $('backup-import-input').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(reader.result);
+        if (!confirm('פעולה זו תחליף את כל הנתונים הנוכחיים בדפדפן זה בנתונים מהגיבוי. להמשיך?')) return;
+        backupKeys().forEach(k => { if (data[k] != null) localStorage.setItem(k, data[k]); });
+        alert('הגיבוי יובא בהצלחה. הדף ייטען מחדש.');
+        location.reload();
+      } catch (err) {
+        alert('קובץ הגיבוי לא תקין: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   });
 
   // ---- Special monthly expenses tracker ----
