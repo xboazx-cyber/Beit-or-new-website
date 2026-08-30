@@ -86,6 +86,8 @@
     .day-col[data-dow] { transition: background .1s, outline .1s; border-radius: 8px; }
     .day-col[data-dow].drag-over { outline: 2px dashed var(--accent); outline-offset: -2px; background: var(--accent-light); }
     .day-drop-zone { min-height: 24px; }
+    .add-day-task-btn { width: 100%; background: none; border: 1px dashed var(--border); border-radius: 6px; color: var(--ink-light); font-size: 12px; padding: 5px; cursor: pointer; margin-top: 4px; }
+    .add-day-task-btn:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-light); }
     .day-task-item .dt-name { font-weight: 600; color: var(--accent-dark); }
     .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
     .day-task-item.outsourced { background: var(--pink-light); }
@@ -488,8 +490,8 @@
   const STORAGE_KEY = 'gardeningPlanTasks';
   const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   const WEEKDAY_NAMES = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'];
-  const INTERVAL_LABELS = { week:'כל שבוע', '2xweek':'פעמיים בשבוע', '3xweek':'שלוש פעמים בשבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', asneeded:'לפי צורך' };
-  const INTERVAL_LABELS_AR = { week:'كل أسبوع', '2xweek':'مرتين في الأسبوع', '3xweek':'ثلاث مرات في الأسبوع', '2weeks':'كل أسبوعين', '3weeks':'كل 3 أسابيع', '4weeks':'مرة في الشهر', year:'مرة في السنة', asneeded:'حسب الحاجة' };
+  const INTERVAL_LABELS = { week:'כל שבוע', '2xweek':'פעמיים בשבוע', '3xweek':'שלוש פעמים בשבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', once:'פעם אחת (תאריך ספציפי)', asneeded:'לפי צורך' };
+  const INTERVAL_LABELS_AR = { week:'كل أسبوع', '2xweek':'مرتين في الأسبوع', '3xweek':'ثلاث مرات في الأسبوع', '2weeks':'كل أسبوعين', '3weeks':'كل 3 أسابيع', '4weeks':'مرة في الشهر', year:'مرة في السنة', once:'مرة واحدة (تاريخ محدد)', asneeded:'حسب الحاجة' };
   const INTERVAL_WEEKS = { week:1, '2weeks':2, '3weeks':3, '4weeks':4 };
   const TIMES_PER_WEEK = { '2xweek':2, '3xweek':3 };
 
@@ -584,12 +586,12 @@
       filterZoneAll: 'כל האזורים', filterMonthAll: 'כל החודשים',
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
       attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
-      postponeTitle: 'דחיית ביצוע לשבוע הבא',
+      postponeTitle: 'דחיית ביצוע לשבוע הבא', addTaskHereBtn: '+ הוספת משימה ליום זה',
       hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
       emptyMsg: 'אין משימות כאלה',
-      workHoursFull: '06:30–14:30 (הפסקה 11:00–11:30)', workHoursFri: '06:30–09:30',
+      workHoursFull: '06:30–14:30 (הפסקה 11:00–11:30)', workHoursFri: '06:30–11:30',
       noSchedules: 'אין לוחות זמנים', colTask: 'משימה', colSchedules: 'לוחות זמנים', colMonths: 'חודשים', colHoursYear: 'שעות/שנה',
       editTitle: 'עריכה', deleteTitle: 'מחיקה', addToZoneTitle: 'הוספת משימה לאזור זה', addToZoneBtn: '+ משימה', hoursPerYear: 'שעות/שנה',
       noFixedMonths: 'ללא חודשים קבועים',
@@ -623,7 +625,7 @@
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
       emptyMsg: 'لا توجد مهام كهذه',
-      workHoursFull: '06:30–14:30 (استراحة 11:00–11:30)', workHoursFri: '06:30–09:30',
+      workHoursFull: '06:30–14:30 (استراحة 11:00–11:30)', workHoursFri: '06:30–11:30',
       noSchedules: 'لا توجد جداول زمنية', colTask: 'المهمة', colSchedules: 'الجداول الزمنية', colMonths: 'الأشهر', colHoursYear: 'ساعات/سنة',
       editTitle: 'تعديل', deleteTitle: 'حذف', addToZoneTitle: 'إضافة مهمة لهذه المنطقة', addToZoneBtn: '+ مهمة', hoursPerYear: 'ساعات/سنة',
       noFixedMonths: 'بدون أشهر ثابتة',
@@ -911,7 +913,7 @@
 
   function scheduleOccurrences(s) {
     if (s.interval === 'asneeded') return null;
-    if (s.interval === 'year') return 1;
+    if (s.interval === 'year' || s.interval === 'once') return 1;
     const monthCount = (s.months || []).length;
     if (monthCount === 0) return 0;
     if (TIMES_PER_WEEK[s.interval]) return monthCount * (52 / 12) * TIMES_PER_WEEK[s.interval];
@@ -930,12 +932,12 @@
     if (!t.schedules || t.schedules.length === 0) return true;
     return t.schedules.some(s =>
       s.hours == null || s.workers == null ||
-      (s.interval !== 'asneeded' && (!s.months || s.months.length === 0))
+      (s.interval === 'once' ? !s.date : (s.interval !== 'asneeded' && (!s.months || s.months.length === 0)))
     );
   }
 
   function taskMatchesMonth(t, monthIdx) {
-    return (t.schedules || []).some(s => (s.months || []).includes(monthIdx));
+    return (t.schedules || []).some(s => s.interval === 'once' ? (s.date && new Date(s.date).getMonth() === monthIdx) : (s.months || []).includes(monthIdx));
   }
 
   function renderFilters() {
@@ -983,9 +985,11 @@
     </div>`;
   }
   function scheduleMonthsCellHtml(s) {
-    const monthsHtml = (s.months && s.months.length)
-      ? monthsMiniHtml(s.months)
-      : (s.interval === 'asneeded' ? `<div class="sched-months">${t('noFixedMonths')}</div>` : `<div class="sched-months">—</div>`);
+    const monthsHtml = s.interval === 'once'
+      ? `<div class="sched-months">${s.date || '—'}</div>`
+      : (s.months && s.months.length)
+        ? monthsMiniHtml(s.months)
+        : (s.interval === 'asneeded' ? `<div class="sched-months">${t('noFixedMonths')}</div>` : `<div class="sched-months">—</div>`);
     return `<div class="schedule-summary-line-wrap">${monthsHtml}</div>`;
   }
 
@@ -1091,7 +1095,7 @@
     const candidates = [];
     tasks.forEach(t => {
       (t.schedules || []).forEach(s => {
-        if (s.interval === 'asneeded' || s.interval === 'year') return;
+        if (s.interval === 'asneeded' || s.interval === 'year' || s.interval === 'once') return;
         const hasFixedDay = s.weekday !== '' && s.weekday != null;
         const rawLoad = (s.hours != null ? s.hours : 0) * (s.workers != null ? s.workers : 1);
         const load = t.outsourced ? 0 : rawLoad; // outsourced work doesn't count against in-house capacity
@@ -1145,9 +1149,20 @@
     tasks.forEach(t => {
       (t.schedules || []).forEach(s => {
         if (s.interval === 'asneeded' || s.interval === 'year') return;
+        const key = t.id + '_' + s.id;
+        if (s.interval === 'once') {
+          if (s.date === thisDateKey) {
+            items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: false, outsourced: t.outsourced, once: true });
+          }
+          return;
+        }
+        // a one-time drag-and-drop relocation: show here regardless of the normal weekday pattern
+        if ((extraOccurrences[key] || []).includes(thisDateKey)) {
+          items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: false, outsourced: t.outsourced });
+          return;
+        }
         if (!(s.months || []).includes(monthIdx)) return;
         const hasFixedDay = s.weekday !== '' && s.weekday != null;
-        const key = t.id + '_' + s.id;
         if ((skippedOccurrences[key] || []).includes(thisDateKey)) return; // postponed to next week
         const placedDays = new Set(auto[key] || []);
         if (hasFixedDay) placedDays.add(Number(s.weekday));
@@ -1188,7 +1203,7 @@
   // current staffing: 2 workers x 8h Sun-Thu, 1 worker x 3h Fri, none Sat
   function capacityForDay(dow) {
     if (dow === 6) return 0;
-    if (dow === 5) return 3;
+    if (dow === 5) return 5;
     return 16;
   }
   function workHoursLabel(dow) {
@@ -1228,12 +1243,15 @@
   }
   // drag-and-drop a task card between days in the weekly Gantt — moving it just sets that
   // schedule's fixed weekday to the drop target, same as picking it manually in the edit form
-  function wireWeeklyInteractions(container) {
+  // shared by the weekly and monthly Gantt: dragging a card to another day never edits the recurring
+  // pattern itself — it's always a one-time relocation of that single occurrence (see relocateOccurrence).
+  // A "once" (specific-date) schedule has no recurring pattern to preserve, so it just moves its date.
+  function wireDayDragAndDrop(container) {
     container.querySelectorAll('.day-task-item').forEach(el => {
       el.addEventListener('dragstart', (e) => {
         el.classList.add('dragging');
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', el.dataset.taskId + '|' + el.dataset.scheduleId);
+        e.dataTransfer.setData('text/plain', el.dataset.taskId + '|' + el.dataset.scheduleId + '|' + el.dataset.date);
       });
       el.addEventListener('dragend', () => el.classList.remove('dragging'));
     });
@@ -1245,19 +1263,33 @@
         col.classList.remove('drag-over');
         const raw = e.dataTransfer.getData('text/plain');
         if (!raw) return;
-        const [taskId, scheduleId] = raw.split('|');
+        const [taskId, scheduleId, originDate] = raw.split('|');
         const task = tasks.find(x => x.id === taskId);
         const sched = task && (task.schedules || []).find(s => s.id === scheduleId);
         if (!sched) return;
-        sched.weekday = Number(col.dataset.dow);
-        saveTasks(tasks);
+        const targetDate = col.dataset.date;
+        if (sched.interval === 'once') {
+          sched.date = targetDate;
+          saveTasks(tasks);
+        } else {
+          relocateOccurrence(taskId, scheduleId, originDate, targetDate);
+        }
         renderAll();
       });
     });
     container.querySelectorAll('.postpone-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        postponeOccurrence(btn.dataset.taskId, btn.dataset.scheduleId, btn.dataset.date);
+        const task = tasks.find(x => x.id === btn.dataset.taskId);
+        const sched = task && (task.schedules || []).find(s => s.id === btn.dataset.scheduleId);
+        if (sched && sched.interval === 'once') {
+          const nd = new Date(sched.date);
+          nd.setDate(nd.getDate() + 7);
+          sched.date = dateKey(nd);
+          saveTasks(tasks);
+        } else {
+          postponeOccurrence(btn.dataset.taskId, btn.dataset.scheduleId, btn.dataset.date);
+        }
         renderAll();
       });
     });
@@ -1345,7 +1377,7 @@
       const isSaturday = dow === 6;
       const items = isSaturday ? [] : getTasksForDay(d);
       const hoursLabel = workHoursLabel(dow);
-      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}" ${isSaturday ? '' : `data-dow="${dow}"`}>
+      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}" ${isSaturday ? '' : `data-dow="${dow}" data-date="${dateKey(d)}"`}>
         <div class="day-col-header">${lang==='ar' ? wd(dow) : WEEKDAY_NAMES[dow].replace('יום ','')}<br><span style="font-weight:300;">${dateFmt(d)}</span></div>`;
       if (isSaturday) {
         html += `<div class="day-empty">${t('satNoWork')}</div>`;
@@ -1357,7 +1389,7 @@
           html += `<div class="day-empty">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
               <button type="button" class="postpone-btn" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}" title="${t('postponeTitle')}">✕</button>
               <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
               <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</div>
@@ -1365,6 +1397,7 @@
           });
         }
         html += `</div>`;
+        html += `<button type="button" class="add-day-task-btn" data-date="${dateKey(d)}">${t('addTaskHereBtn')}</button>`;
         html += attendanceSelectHtml(dateKey(d));
       }
       html += `</div>`;
@@ -1373,7 +1406,10 @@
     html += referenceListsHtml(days);
     container.innerHTML = html;
 
-    wireWeeklyInteractions(container);
+    wireDayDragAndDrop(container);
+    container.querySelectorAll('.add-day-task-btn').forEach(btn => {
+      btn.addEventListener('click', () => openModal(null, null, btn.dataset.date));
+    });
 
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
     $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
@@ -1410,7 +1446,7 @@
       const dow = d.getDay();
       const isSaturday = dow === 6;
       const items = isSaturday ? [] : getTasksForDay(d);
-      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}" style="min-height:70px;">
+      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}" style="min-height:70px;" ${isSaturday ? '' : `data-dow="${dow}" data-date="${dateKey(d)}"`}>
         <div class="day-col-header" style="margin-bottom:4px;padding-bottom:3px;">${d.getDate()}</div>`;
       if (isSaturday) {
         html += `<div class="day-empty" style="padding:4px 0;font-size:12px;">${t('satShort')}</div>`;
@@ -1420,7 +1456,7 @@
           html += `<div class="day-empty" style="padding:4px 0;">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" style="padding:4px 6px;margin-bottom:4px;">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" style="padding:4px 6px;margin-bottom:4px;" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
               <div class="dt-name" style="font-size:12px;">${trText(item.name)}${item.estimated ? ' 🔹' : ''}</div>
             </div>`;
           });
@@ -1433,6 +1469,7 @@
     html += `<p style="font-size:12px;color:var(--ink-light);text-align:center;">🔹 = ${t('estimated')}</p>`;
     html += referenceListsHtml(allDays, false);
     container.innerHTML = html;
+    wireDayDragAndDrop(container);
 
     $('gantt-month-select').addEventListener('change', (e) => {
       selectedGanttMonth = Number(e.target.value);
@@ -1452,9 +1489,9 @@
 
   const SCHEDULE_UI = {
     he: { scheduleN: 'לוח זמנים ', remove: 'הסרה', frequency: 'תדירות', hoursPerTime: 'שעות לפעם', numWorkers: "מס' עובדים",
-      fixedWeekday: 'יום קבוע בשבוע (אופציונלי)', monthsInSchedule: 'חודשים בלוח זמנים זה', selectAllYear: '✓ כל השנה' },
+      fixedWeekday: 'יום קבוע בשבוע (אופציונלי)', monthsInSchedule: 'חודשים בלוח זמנים זה', selectAllYear: '✓ כל השנה', specificDate: 'תאריך ספציפי' },
     ar: { scheduleN: 'جدول زمني ', remove: 'إزالة', frequency: 'التردد', hoursPerTime: 'ساعات في المرة', numWorkers: 'عدد العمال',
-      fixedWeekday: 'يوم ثابت في الأسبوع (اختياري)', monthsInSchedule: 'أشهر هذا الجدول الزمني', selectAllYear: '✓ كل السنة' },
+      fixedWeekday: 'يوم ثابت في الأسبوع (اختياري)', monthsInSchedule: 'أشهر هذا الجدول الزمني', selectAllYear: '✓ كل السنة', specificDate: 'تاريخ محدد' },
   };
   function su(key) { return SCHEDULE_UI[lang][key]; }
 
@@ -1483,6 +1520,11 @@
             <input type="number" class="sch-workers" data-row="${idx}" min="0" step="1" value="${s.workers != null ? s.workers : ''}">
           </div>
         </div>
+        ${s.interval === 'once' ? `
+        <div class="field" style="margin-bottom:0;">
+          <label>${su('specificDate')}</label>
+          <input type="date" class="sch-date" data-row="${idx}" value="${s.date || ''}">
+        </div>` : `
         <div class="field">
           <label>${su('fixedWeekday')}</label>
           <select class="sch-weekday" data-row="${idx}">
@@ -1496,7 +1538,7 @@
             <button type="button" class="btn-secondary btn-small select-all-months-btn" data-row="${idx}">${su('selectAllYear')}</button>
           </label>
           <div class="months-grid">${monthsPickerHtml(s.months || [], idx)}</div>
-        </div>
+        </div>`}
       </div>`).join('');
   }
 
@@ -1527,10 +1569,11 @@
     const row = t.dataset.row;
     if (row === undefined) return;
     const idx = Number(row);
-    if (t.classList.contains('sch-interval')) modalSchedules[idx].interval = t.value;
+    if (t.classList.contains('sch-interval')) { modalSchedules[idx].interval = t.value; renderScheduleRows(); }
     else if (t.classList.contains('sch-hours')) modalSchedules[idx].hours = t.value === '' ? null : Number(t.value);
     else if (t.classList.contains('sch-workers')) modalSchedules[idx].workers = t.value === '' ? null : Number(t.value);
     else if (t.classList.contains('sch-weekday')) modalSchedules[idx].weekday = t.value === '' ? '' : Number(t.value);
+    else if (t.classList.contains('sch-date')) modalSchedules[idx].date = t.value;
     else if (t.type === 'checkbox') {
       const monthVal = Number(t.value);
       const months = modalSchedules[idx].months;
@@ -1542,7 +1585,7 @@
     }
   });
 
-  function openModal(task, presetZone) {
+  function openModal(task, presetZone, presetDate) {
     editingId = task ? task.id : null;
     $('modal-title').textContent = task ? (t('modalEditTitle') + trText(task.name)) : t('modalAddTitle');
     const zoneSel = $('f-zone');
@@ -1554,7 +1597,10 @@
     $('f-outsourced').checked = task ? !!task.outsourced : false;
     modalSchedules = task ? JSON.parse(JSON.stringify(task.schedules || [])) : [];
     if (modalSchedules.length === 0) {
-      modalSchedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
+      // adding straight from a specific day in the Gantt implies a one-time task for that exact date
+      modalSchedules.push(presetDate
+        ? { id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'once', hours: null, workers: null, months: [], weekday: '', date: presetDate }
+        : { id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
     }
     renderScheduleRows();
     $('delete-btn').style.display = task ? 'inline-block' : 'none';
@@ -1638,7 +1684,7 @@
           s && s.hours != null ? s.hours : '',
           s && s.workers != null ? s.workers : '',
           s && s.weekday !== '' && s.weekday != null ? wd(s.weekday) : '',
-          s ? (s.months||[]).map(m => mo(m)).join(' ') : ''
+          s ? (s.interval === 'once' ? (s.date||'') : (s.months||[]).map(m => mo(m)).join(' ')) : ''
         ].join(','));
       });
     });
@@ -1657,7 +1703,7 @@
   // ---- Full data backup / restore (JSON) — the only way to move data between two different
   // browser origins (e.g. a locally-opened file vs. the live boazor.com page), since
   // localStorage never crosses origins on its own ----
-  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY, WEEDWHACK_KEY, SKIPPED_KEY]; }
+  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY, WEEDWHACK_KEY, SKIPPED_KEY, EXTRA_KEY]; }
   $('backup-export-btn').addEventListener('click', () => {
     const data = {};
     backupKeys().forEach(k => { const v = localStorage.getItem(k); if (v != null) data[k] = v; });
@@ -1877,6 +1923,26 @@
     saveSkippedOccurrences();
   }
 
+  // one-time relocation of a single occurrence (drag-and-drop) — the recurring pattern itself is untouched;
+  // this only adds one extra date the schedule shows up on, paired with skipping its original date that week
+  const EXTRA_KEY = 'gardeningPlanExtraOccurrences';
+  let extraOccurrences = {};
+  function loadExtraOccurrences() {
+    try { extraOccurrences = JSON.parse(localStorage.getItem(EXTRA_KEY)) || {}; } catch { extraOccurrences = {}; }
+  }
+  function saveExtraOccurrences() { localStorage.setItem(EXTRA_KEY, JSON.stringify(extraOccurrences)); }
+  function addExtraOccurrence(taskId, scheduleId, dk) {
+    const key = taskId + '_' + scheduleId;
+    if (!extraOccurrences[key]) extraOccurrences[key] = [];
+    if (!extraOccurrences[key].includes(dk)) extraOccurrences[key].push(dk);
+    saveExtraOccurrences();
+  }
+  function relocateOccurrence(taskId, scheduleId, fromDate, toDate) {
+    if (fromDate === toDate) return;
+    postponeOccurrence(taskId, scheduleId, fromDate);
+    addExtraOccurrence(taskId, scheduleId, toDate);
+  }
+
   // ---- Weed-whacking "done / not done" checklist status (separate from the free-text appendix content) ----
   const WEEDWHACK_KEY = 'gardeningPlanWeedwhackStatus';
   let weedwhackStatus = {};
@@ -1905,6 +1971,7 @@
   loadAppendixOverrides();
   loadWeedwhackStatus();
   loadSkippedOccurrences();
+  loadExtraOccurrences();
   plantsHeHtml = $('appendix-plants').innerHTML;
   applyStaticUILang();
   applyWeedwhackStatus();
