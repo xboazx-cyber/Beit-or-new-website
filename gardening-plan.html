@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>תוכנית עבודה - גינון הישוב</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Assistant:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #eef4ea; --card: #ffffff;
+      --ink: #1c2a17; --ink-light: #5c6f54;
+      --accent: #4a7c2f; --accent-dark: #386022; --accent-light: #dcecd2;
+      --amber: #b8860b; --amber-light: #fbeecb;
+      --border: #e0e8da; --danger: #dc2626; --danger-light: #fde8e8;
+    }
+    body {
+      font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--ink);
+      -webkit-font-smoothing: antialiased; padding: 24px 16px 60px;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 24px; }
+    header h1 { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 26px; margin-bottom: 6px; color: var(--accent-dark); }
+    header p { font-size: 14px; color: var(--ink-light); font-weight: 300; }
+
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px -4px rgba(20,40,10,.06);
+    }
+    .card h2, .card h3 { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 17px; margin-bottom: 14px; color: var(--accent-dark); }
+
+    /* summary */
+    .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .stat-box { background: var(--accent-light); border-radius: 10px; padding: 12px; text-align: center; }
+    .stat-box span { display: block; font-size: 12px; color: var(--ink-light); margin-bottom: 4px; }
+    .stat-box strong { font-family: 'Rubik', sans-serif; font-size: 19px; color: var(--accent-dark); }
+    @media(max-width:700px){ .summary-row{ grid-template-columns: 1fr 1fr; } }
+
+    /* form */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+    .field input, .field select, .field textarea {
+      width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Assistant', sans-serif; font-size: 15px; color: var(--ink); background: #fbfdf9;
+      outline: none;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
+    .field textarea { min-height: 50px; resize: vertical; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media(max-width:700px){ .row2, .row3 { grid-template-columns: 1fr; } }
+    .months-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    @media(max-width:700px){ .months-grid { grid-template-columns: repeat(4, 1fr); } }
+    .month-chip {
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      border: 1px solid var(--border); border-radius: 8px; padding: 7px 4px; font-size: 12px;
+      cursor: pointer; user-select: none; background: #fbfdf9;
+    }
+    .month-chip input { width: auto; margin: 0; }
+    .month-chip.checked { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); font-weight: 600; }
+
+    .btn { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 15px; font-weight: 600; font-family: 'Assistant', sans-serif; cursor: pointer; }
+    .btn:hover { opacity: .9; }
+    .btn-secondary { background: var(--card); color: var(--ink-light); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 14px; font-family: 'Assistant', sans-serif; cursor: pointer; }
+    .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+
+    /* filters */
+    .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
+    .filters select, .filters input[type="text"] { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Assistant', sans-serif; font-size: 14px; background: #fbfdf9; }
+
+    /* zone groups */
+    .zone-group { margin-bottom: 18px; }
+    .zone-group-title {
+      font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 15px; color: white;
+      background: var(--accent); padding: 8px 14px; border-radius: 8px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;
+    }
+    .zone-group-title .zone-stats { font-size: 12px; font-weight: 400; opacity: .9; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: right; padding: 9px 8px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 12px; color: var(--ink-light); font-weight: 500; }
+    td.num { font-family: 'Rubik', sans-serif; font-weight: 500; white-space: nowrap; }
+    tr.missing-data { background: var(--amber-light); }
+    .task-name { font-weight: 500; }
+    .task-notes { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
+    .schedule-summary-line { font-size: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .schedule-summary-line:last-child { margin-bottom: 0; }
+    .sched-badge { background: var(--accent-light); color: var(--accent-dark); padding: 1px 6px; border-radius: 5px; font-weight: 600; }
+    .sched-months { color: var(--ink-light); }
+    .weekday-tag { background: var(--amber-light); color: var(--amber); font-size: 11px; padding: 1px 6px; border-radius: 5px; }
+    .no-schedules { color: var(--ink-light); font-size: 12px; }
+    .row-actions { display: flex; gap: 6px; }
+    .icon-btn { background: none; border: none; cursor: pointer; font-size: 15px; padding: 2px 6px; border-radius: 6px; }
+    .icon-btn:hover { background: var(--border); }
+    .icon-btn.danger:hover { background: var(--danger-light); }
+
+    .empty-msg { text-align: center; color: var(--ink-light); font-size: 14px; padding: 20px 0; }
+
+    #form-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(20,30,15,.4); z-index: 500;
+      align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
+    }
+    #form-modal-overlay.open { display: flex; }
+    #form-modal { background: white; border-radius: 14px; padding: 24px; max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; margin: auto; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+
+    .schedule-row {
+      border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: #fbfdf9;
+    }
+    .schedule-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .schedule-row-header span { font-size: 13px; font-weight: 600; color: var(--accent-dark); }
+    #f-schedules-empty { text-align: center; color: var(--ink-light); font-size: 13px; padding: 10px 0; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>🌿 תוכנית עבודה - גינון הישוב</h1>
+    <p>ניהול אזורים, משימות, לוחות זמנים ועלויות</p>
+  </header>
+
+  <div class="card">
+    <div class="summary-row">
+      <div class="stat-box"><span>סה"כ משימות</span><strong id="stat-count">0</strong></div>
+      <div class="stat-box"><span>שעות בשנה</span><strong id="stat-hours">0</strong></div>
+      <div class="stat-box"><span>עלות שנתית</span><strong id="stat-cost">₪0</strong></div>
+      <div class="stat-box"><span>חסרים נתונים</span><strong id="stat-missing">0</strong></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="filters">
+      <button class="btn" id="add-btn" type="button">+ הוספת משימה</button>
+      <select id="filter-zone"></select>
+      <select id="filter-month"></select>
+      <input type="text" id="filter-search" placeholder="חיפוש חופשי...">
+      <button class="btn-secondary" id="export-btn" type="button">⬇️ ייצוא CSV</button>
+    </div>
+  </div>
+
+  <div id="zones-container"></div>
+
+  <p class="empty-msg" id="empty-msg" style="display:none;">אין משימות להצגה</p>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="form-modal-overlay">
+  <div id="form-modal">
+    <h2 id="modal-title">הוספת משימה</h2>
+    <div class="field">
+      <label for="f-zone">אזור ראשי</label>
+      <select id="f-zone"></select>
+    </div>
+    <div class="field">
+      <label for="f-zone-new">או הזן אזור חדש</label>
+      <input type="text" id="f-zone-new" placeholder="השאר ריק אם בחרת אזור קיים למעלה">
+    </div>
+    <div class="field">
+      <label for="f-name">שם המשימה / תת-אזור</label>
+      <input type="text" id="f-name" placeholder="לדוגמה: תפעול בריכה">
+    </div>
+    <div class="field">
+      <label for="f-cost">עלות שנתית משוערת ₪ <span style="font-weight:300;">— לא דחוף</span></label>
+      <input type="number" id="f-cost" min="0" step="10">
+    </div>
+    <div class="field">
+      <label for="f-notes">הערות</label>
+      <textarea id="f-notes" placeholder="לדוגמה: לפני פתיחת שנת הלימודים"></textarea>
+    </div>
+    <div class="field">
+      <label class="month-chip" style="display:inline-flex;width:auto;padding:8px 14px;">
+        <input type="checkbox" id="f-outsourced" style="width:auto;"> מבוצע על ידי קבלן חיצוני (לא ייכנס לגאנט)
+      </label>
+    </div>
+
+    <div class="field">
+      <label style="display:flex;justify-content:space-between;align-items:center;">
+        <span>לוחות זמנים</span>
+        <button type="button" id="add-schedule-btn" class="btn-secondary btn-small">+ הוספת לוח זמנים</button>
+      </label>
+      <p style="font-size:12px;color:var(--ink-light);margin-bottom:10px;">משימה יכולה להתנהל בכמה קצבים שונים — למשל שבועי בקיץ, וכל 3 שבועות בשאר השנה. הוסף לוח זמנים נפרד לכל קצב.</p>
+      <div id="f-schedules"></div>
+      <p id="f-schedules-empty">אין לוחות זמנים עדיין — לחץ "הוספת לוח זמנים"</p>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="save-btn" type="button">שמירה</button>
+      <button class="btn-secondary" id="cancel-btn" type="button">ביטול</button>
+      <button class="btn-secondary" id="delete-btn" type="button" style="color:var(--danger);display:none;margin-inline-start:auto;">מחיקת משימה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'gardeningPlanTasks';
+  const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+  const WEEKDAY_NAMES = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'];
+  const INTERVAL_LABELS = { week:'כל שבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', asneeded:'לפי צורך' };
+  const INTERVAL_WEEKS = { week:1, '2weeks':2, '3weeks':3, '4weeks':4 };
+
+  const SEED_DATA = [
+    ['כניסה לישוב', 'כניסה ליישוב - ערוגה'],
+    ['כניסה לישוב', 'אזור עצים בכניסה ליישוב'],
+    ['כניסה לישוב', 'תחזוקת בוגנוויליה / צמחים פולשים'],
+    ['כניסה לישוב', 'ערוגת תוספת פקעות מהשער עד הכיכר הקטנה'],
+    ['כניסה לישוב', 'כיכר "הדס צוק"'],
+    ['כניסה לישוב', 'ערוגת עצים כביש כניסה'],
+    ['כניסה לישוב', 'שדרות הזיתים', 'גיזום שנתי לאחר המסיק'],
+
+    ['אזור בית הספר והבריכה', 'בריכה (פנים)'],
+    ['אזור בית הספר והבריכה', 'תלולית מול כביש כניסה עם רימונים'],
+    ['אזור בית הספר והבריכה', 'גינון מסביב לבריכה'],
+    ['אזור בית הספר והבריכה', 'כביש הגישה החדש לבית הספר ולבריכה'],
+    ['אזור בית הספר והבריכה', 'מדרון וכניסה לבית הספר (מתחת למגרש הכדורסל)'],
+    ['אזור בית הספר והבריכה', 'מגרש כדורגל'],
+    ['אזור בית הספר והבריכה', 'חניית הבריכה הישנה'],
+    ['אזור בית הספר והבריכה', 'פארק אלטשולר'],
+    ['אזור בית הספר והבריכה', 'ערוגת ורדים ופקעות בכניסה ליישוב (אזור השלט)'],
+    ['אזור בית הספר והבריכה', 'תחנות הסעה'],
+    ['אזור בית הספר והבריכה', 'מבואת כניסה חדשה לבריכה'],
+    ['אזור בית הספר והבריכה', 'מסביב לבית הספר - חרמוש נגד דלקות ומזיקים'],
+
+    ['אזור היער', 'פארק האורן'],
+    ['אזור היער', 'פארק רימון – צנרת תת קרקעית, שבילים, תוספת עצים ופקעות'],
+    ['אזור היער', 'אנדרטאות + ערוגת עצים חדשה בפינת הברוש/אנדרטאות'],
+    ['אזור היער', 'כיכר "רחוב התאנה"'],
+    ['אזור היער', 'תחזוקת רחובות (חרמוש/עשבייה וכו\')'],
+
+    ['אזור הגבעה', 'ערוגת פרחים ברחוב היסמין'],
+    ['אזור הגבעה', 'תחזוקת רחובות (חרמוש/עשבייה וכו\')'],
+    ['אזור הגבעה', 'גינה קהילתית'],
+    ['אזור הגבעה', '"המחצבה" (כרגע חרמוש, בעתיד תחזוקה)'],
+
+    ['מרכז הישוב', 'כיכר מרכזית'],
+    ['מרכז הישוב', 'חניית הסופר'],
+    ['מרכז הישוב', 'מעונות ישנים מתחת לרחוב הגפן'],
+    ['מרכז הישוב', 'מצפה איתי'],
+    ['מרכז הישוב', 'חניית גני ילדים / בית מפעל הפיס'],
+    ['מרכז הישוב', 'מרכז מסחרי (נדרש להסדיר גביית מימון מבעלי הנכסים)'],
+    ['מרכז הישוב', 'דואר'],
+    ['מרכז הישוב', 'שני צידי שביל הולכי רגל מהזית לחניית הסופר'],
+    ['מרכז הישוב', 'מצפה בריכת המים'],
+    ['מרכז הישוב', 'בית מפעל הפיס – ורדים וערוגות בצדדים'],
+    ['מרכז הישוב', 'אדניות ברחבה המרכזית'],
+    ['מרכז הישוב', 'מסביב לבית הקהילה'],
+    ['מרכז הישוב', 'מאחורי המרכז המסחרי לכיוון רחוב הגפן'],
+    ['מרכז הישוב', 'ערוגת ורדים מאחורי מכבי'],
+    ['מרכז הישוב', 'מכבי'],
+
+    ['מוקדים נוספים', 'בית העלמין (מפוח / גיזום / פינוי אדמה מקברים חדשים / בדיקת צנרות)'],
+    ['מוקדים נוספים', 'פארק השיטה (בדיקת תקינות צנרת / זמני השקיה)'],
+
+    ['פעילויות שוטפות', 'חירמוש וניקיון רחובות ותעלות (חורף ואביב)'],
+    ['פעילויות שוטפות', 'טיפול ממוקד במינים פולשים (דטורה / דקל וושינגטוניה / שיטה מכחילה / טיון דביק / קיקיון)'],
+    ['פעילויות שוטפות', 'זיהוי מזיקים (כנימות / חולדים וכו\') וטיפול מתאים'],
+    ['פעילויות שוטפות', 'סקרים בוטניים'],
+    ['פעילויות שוטפות', 'גיזום עצי פרי / נוי ע"י בעל מקצוע (גוזם / אגרונום)'],
+    ['פעילויות שוטפות', 'ריסוס שנתי של מדרכות ושבילי חצץ', 'אזור דצמבר / ינואר, בהתאם לגשמים'],
+    ['פעילויות שוטפות', 'חישוף מסביב לישוב למניעת שריפות', 'אזור אפריל / יוני, על פי הגשמים'],
+    ['פעילויות שוטפות', 'תפעול תקלות / החלפת מחשבים ומערכות השקיה / פיצוצי צנרת', 'משימה שוטפת/ריאקטיבית, לא מתוכננת מראש'],
+    ['פעילויות שוטפות', 'דישון בקומפוסט והומוס של כל האזורים הרלבנטיים', 'לתכנן מראש לפני עונת הגשמים'],
+
+    ['פרויקטים עתידיים', 'שתילות טו בשבט'],
+    ['פרויקטים עתידיים', 'פיתוח אזור הפאמפ-טראק'],
+    ['פרויקטים עתידיים', 'פיתוח אזור מגרשי הספורט'],
+    ['פרויקטים עתידיים', 'ניקוי פארק השיטה משיטה מכחילה + הרחבת פרויקט השתילה'],
+  ];
+
+  const $ = id => document.getElementById(id);
+
+  function loadTasks() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return mergeNewSeedItems(migrateTasks(JSON.parse(raw)));
+    } catch {}
+    const seeded = SEED_DATA.map((s, i) => ({
+      id: 'seed_' + i,
+      zone: s[0],
+      name: s[1],
+      cost: null,
+      notes: s[2] || '',
+      outsourced: false,
+      schedules: []
+    }));
+    saveTasks(seeded);
+    return seeded;
+  }
+
+  // adds any SEED_DATA entries not already present (by zone+name), without touching existing filled-in tasks
+  function mergeNewSeedItems(existing) {
+    let changed = false;
+    const existingKeys = new Set(existing.map(t => t.zone + '||' + t.name));
+    SEED_DATA.forEach((s, i) => {
+      const key = s[0] + '||' + s[1];
+      if (!existingKeys.has(key)) {
+        existing.push({
+          id: 'seed_new_' + i + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2),
+          zone: s[0], name: s[1], cost: null, notes: s[2] || '', outsourced: false, schedules: []
+        });
+        changed = true;
+      }
+    });
+    if (changed) saveTasks(existing);
+    return existing;
+  }
+
+  // migrate old single-schedule task format (hours/workers/frequency/months/weekday at task level) if found
+  function migrateTasks(list) {
+    let changed = false;
+    const migrated = list.map(t => {
+      if (t.schedules) return t;
+      changed = true;
+      const hasOldData = t.hours != null || t.workers != null || (t.months && t.months.length);
+      return {
+        id: t.id, zone: t.zone, name: t.name, cost: t.cost != null ? t.cost : null, notes: t.notes || '',
+        outsourced: !!t.outsourced,
+        schedules: hasOldData ? [{
+          id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2),
+          interval: (typeof t.frequency === 'string' && t.frequency.trim().toUpperCase() === 'X') ? 'asneeded' : 'year',
+          hours: t.hours, workers: t.workers,
+          months: t.months || [],
+          weekday: t.weekday != null && t.weekday !== '' ? t.weekday : ''
+        }] : []
+      };
+    });
+    if (changed) saveTasks(migrated);
+    return migrated;
+  }
+
+  function saveTasks(list) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  let tasks = loadTasks();
+  let editingId = null;
+
+  function uniqueZones() {
+    return [...new Set(tasks.map(t => t.zone))];
+  }
+
+  function scheduleOccurrences(s) {
+    if (s.interval === 'asneeded') return null;
+    if (s.interval === 'year') return 1;
+    const weeksPerInterval = INTERVAL_WEEKS[s.interval] || 1;
+    const monthCount = (s.months || []).length;
+    if (monthCount === 0) return 0;
+    return (monthCount * (52 / 12)) / weeksPerInterval;
+  }
+
+  function taskAnnualHours(t) {
+    return (t.schedules || []).reduce((sum, s) => {
+      const occ = scheduleOccurrences(s);
+      return sum + (occ != null && s.hours != null ? s.hours * occ : 0);
+    }, 0);
+  }
+
+  function isMissingData(t) {
+    if (!t.schedules || t.schedules.length === 0) return true;
+    return t.schedules.some(s =>
+      s.hours == null || s.workers == null ||
+      (s.interval !== 'asneeded' && (!s.months || s.months.length === 0))
+    );
+  }
+
+  function taskMatchesMonth(t, monthIdx) {
+    return (t.schedules || []).some(s => (s.months || []).includes(monthIdx));
+  }
+
+  function formatCurrency(n) {
+    return '₪' + Math.round(n).toLocaleString('he-IL');
+  }
+
+  function renderFilters() {
+    const zoneSel = $('filter-zone');
+    const currentZone = zoneSel.value;
+    zoneSel.innerHTML = '<option value="">כל האזורים</option>' +
+      uniqueZones().map(z => `<option value="${z}">${z}</option>`).join('');
+    zoneSel.value = currentZone;
+
+    const monthSel = $('filter-month');
+    const currentMonth = monthSel.value;
+    monthSel.innerHTML = '<option value="">כל החודשים</option>' +
+      MONTH_NAMES.map((m, i) => `<option value="${i}">${m}</option>`).join('');
+    monthSel.value = currentMonth;
+  }
+
+  function renderSummary(filtered) {
+    let totalHours = 0, totalCost = 0, missing = 0;
+    filtered.forEach(t => {
+      totalHours += taskAnnualHours(t);
+      if (t.cost != null) totalCost += t.cost;
+      if (isMissingData(t)) missing++;
+    });
+    $('stat-count').textContent = filtered.length;
+    $('stat-hours').textContent = Math.round(totalHours).toLocaleString('he-IL');
+    $('stat-cost').textContent = formatCurrency(totalCost);
+    $('stat-missing').textContent = missing;
+  }
+
+  function scheduleSummaryHtml(s) {
+    const monthsLabel = (s.months && s.months.length)
+      ? s.months.slice().sort((a,b)=>a-b).map(m => MONTH_NAMES[m].slice(0,3)).join(', ')
+      : (s.interval === 'asneeded' ? 'ללא חודשים קבועים' : '—');
+    const weekdayHtml = (s.weekday !== '' && s.weekday != null) ? `<span class="weekday-tag">${WEEKDAY_NAMES[s.weekday]}</span>` : '';
+    const hoursTxt = s.hours != null ? `${s.hours} ש'` : '—';
+    const workersTxt = s.workers != null ? `👥${s.workers}` : '';
+    return `<div class="schedule-summary-line">
+      <span class="sched-badge">${INTERVAL_LABELS[s.interval] || s.interval}</span>
+      <span>${hoursTxt}</span><span>${workersTxt}</span>
+      ${weekdayHtml}
+      <span class="sched-months">${monthsLabel}</span>
+    </div>`;
+  }
+
+  function taskRowHtml(t) {
+    const schedulesHtml = (t.schedules && t.schedules.length)
+      ? t.schedules.map(scheduleSummaryHtml).join('')
+      : '<span class="no-schedules">אין לוחות זמנים</span>';
+    return `
+      <tr class="${isMissingData(t) ? 'missing-data' : ''}" data-id="${t.id}">
+        <td>
+          <div class="task-name">${t.name} ${t.outsourced ? '<span class="weekday-tag">קבלן חיצוני</span>' : ''}</div>
+          ${t.notes ? `<div class="task-notes">${t.notes}</div>` : ''}
+        </td>
+        <td>${schedulesHtml}</td>
+        <td class="num">${Math.round(taskAnnualHours(t))}</td>
+        <td class="num">${t.cost != null ? formatCurrency(t.cost) : '—'}</td>
+        <td>
+          <div class="row-actions">
+            <button class="icon-btn edit-btn" data-id="${t.id}" title="עריכה">✏️</button>
+            <button class="icon-btn danger delete-row-btn" data-id="${t.id}" title="מחיקה">🗑️</button>
+          </div>
+        </td>
+      </tr>`;
+  }
+
+  function renderZones() {
+    const zoneFilter = $('filter-zone').value;
+    const monthFilter = $('filter-month').value;
+    const search = $('filter-search').value.trim().toLowerCase();
+
+    let filtered = tasks.filter(t => {
+      if (zoneFilter && t.zone !== zoneFilter) return false;
+      if (monthFilter !== '' && !taskMatchesMonth(t, Number(monthFilter))) return false;
+      if (search && !(t.name + ' ' + (t.notes||'')).toLowerCase().includes(search)) return false;
+      return true;
+    });
+
+    renderSummary(filtered);
+
+    const container = $('zones-container');
+    $('empty-msg').style.display = filtered.length === 0 ? 'block' : 'none';
+
+    const zones = [...new Set(filtered.map(t => t.zone))];
+    container.innerHTML = zones.map(zone => {
+      const zoneTasks = filtered.filter(t => t.zone === zone);
+      const zoneHours = zoneTasks.reduce((s,t) => s + taskAnnualHours(t), 0);
+      const zoneCost = zoneTasks.reduce((s,t) => s + (t.cost != null ? t.cost : 0), 0);
+      return `
+      <div class="zone-group">
+        <div class="zone-group-title">
+          <span>${zone} (${zoneTasks.length})</span>
+          <span class="zone-stats">${Math.round(zoneHours)} שעות/שנה · ${formatCurrency(zoneCost)}/שנה</span>
+        </div>
+        <div class="card" style="padding:0;overflow-x:auto;">
+          <table>
+            <thead><tr>
+              <th style="min-width:160px;">משימה</th><th style="min-width:220px;">לוחות זמנים</th><th>שעות/שנה</th><th>עלות שנתית</th><th></th>
+            </tr></thead>
+            <tbody>${zoneTasks.map(taskRowHtml).join('')}</tbody>
+          </table>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderAll() {
+    renderFilters();
+    renderZones();
+  }
+
+  // ---- Schedule rows inside modal ----
+  let modalSchedules = [];
+
+  function monthsPickerHtml(selectedMonths, rowIdx) {
+    return MONTH_NAMES.map((m, i) => `
+      <label class="month-chip ${selectedMonths.includes(i) ? 'checked' : ''}">
+        <input type="checkbox" data-row="${rowIdx}" value="${i}" ${selectedMonths.includes(i) ? 'checked' : ''}> ${m.slice(0,3)}
+      </label>`).join('');
+  }
+
+  function renderScheduleRows() {
+    const container = $('f-schedules');
+    $('f-schedules-empty').style.display = modalSchedules.length === 0 ? 'block' : 'none';
+    container.innerHTML = modalSchedules.map((s, idx) => `
+      <div class="schedule-row" data-row="${idx}">
+        <div class="schedule-row-header">
+          <span>לוח זמנים ${idx + 1}</span>
+          <button type="button" class="icon-btn danger remove-schedule-btn" data-row="${idx}" title="הסרה">🗑️</button>
+        </div>
+        <div class="row3">
+          <div class="field">
+            <label>תדירות</label>
+            <select class="sch-interval" data-row="${idx}">
+              ${Object.keys(INTERVAL_LABELS).map(k => `<option value="${k}" ${s.interval===k?'selected':''}>${INTERVAL_LABELS[k]}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>שעות לפעם</label>
+            <input type="number" class="sch-hours" data-row="${idx}" min="0" step="0.5" value="${s.hours != null ? s.hours : ''}">
+          </div>
+          <div class="field">
+            <label>מס' עובדים</label>
+            <input type="number" class="sch-workers" data-row="${idx}" min="0" step="1" value="${s.workers != null ? s.workers : ''}">
+          </div>
+        </div>
+        <div class="field">
+          <label>יום קבוע בשבוע (אופציונלי)</label>
+          <select class="sch-weekday" data-row="${idx}">
+            <option value="">— ללא —</option>
+            ${WEEKDAY_NAMES.map((w,i) => `<option value="${i}" ${s.weekday===i?'selected':''}>${w}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label style="display:flex;justify-content:space-between;align-items:center;">
+            <span>חודשים בלוח זמנים זה</span>
+            <button type="button" class="btn-secondary btn-small select-all-months-btn" data-row="${idx}">✓ כל השנה</button>
+          </label>
+          <div class="months-grid">${monthsPickerHtml(s.months || [], idx)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  $('add-schedule-btn').addEventListener('click', () => {
+    modalSchedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
+    renderScheduleRows();
+  });
+
+  $('f-schedules').addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('.remove-schedule-btn');
+    const selectAllBtn = e.target.closest('.select-all-months-btn');
+    const chip = e.target.closest('.month-chip');
+    if (removeBtn) {
+      modalSchedules.splice(Number(removeBtn.dataset.row), 1);
+      renderScheduleRows();
+    } else if (selectAllBtn) {
+      const idx = Number(selectAllBtn.dataset.row);
+      const allSelected = modalSchedules[idx].months.length === 12;
+      modalSchedules[idx].months = allSelected ? [] : Array.from({length:12}, (_,i) => i);
+      renderScheduleRows();
+    } else if (chip && e.target.tagName !== 'INPUT') {
+      chip.querySelector('input').click();
+    }
+  });
+
+  $('f-schedules').addEventListener('change', (e) => {
+    const t = e.target;
+    const row = t.dataset.row;
+    if (row === undefined) return;
+    const idx = Number(row);
+    if (t.classList.contains('sch-interval')) modalSchedules[idx].interval = t.value;
+    else if (t.classList.contains('sch-hours')) modalSchedules[idx].hours = t.value === '' ? null : Number(t.value);
+    else if (t.classList.contains('sch-workers')) modalSchedules[idx].workers = t.value === '' ? null : Number(t.value);
+    else if (t.classList.contains('sch-weekday')) modalSchedules[idx].weekday = t.value === '' ? '' : Number(t.value);
+    else if (t.type === 'checkbox') {
+      const monthVal = Number(t.value);
+      const months = modalSchedules[idx].months;
+      const pos = months.indexOf(monthVal);
+      if (t.checked && pos === -1) months.push(monthVal);
+      if (!t.checked && pos !== -1) months.splice(pos, 1);
+      // refresh chip visual state without full re-render
+      t.closest('.month-chip').classList.toggle('checked', t.checked);
+    }
+  });
+
+  function openModal(task) {
+    editingId = task ? task.id : null;
+    $('modal-title').textContent = task ? 'עריכת משימה' : 'הוספת משימה';
+    const zoneSel = $('f-zone');
+    zoneSel.innerHTML = '<option value="">— בחר —</option>' + uniqueZones().map(z => `<option value="${z}">${z}</option>`).join('');
+    zoneSel.value = task ? task.zone : '';
+    $('f-zone-new').value = '';
+    $('f-name').value = task ? task.name : '';
+    $('f-cost').value = task && task.cost != null ? task.cost : '';
+    $('f-notes').value = task ? (task.notes || '') : '';
+    $('f-outsourced').checked = task ? !!task.outsourced : false;
+    modalSchedules = task ? JSON.parse(JSON.stringify(task.schedules || [])) : [];
+    renderScheduleRows();
+    $('delete-btn').style.display = task ? 'inline-block' : 'none';
+    $('form-modal-overlay').classList.add('open');
+  }
+  function closeModal() {
+    $('form-modal-overlay').classList.remove('open');
+    editingId = null;
+  }
+
+  $('add-btn').addEventListener('click', () => openModal(null));
+  $('cancel-btn').addEventListener('click', closeModal);
+  $('form-modal-overlay').addEventListener('click', (e) => { if (e.target.id === 'form-modal-overlay') closeModal(); });
+
+  $('save-btn').addEventListener('click', () => {
+    const zoneExisting = $('f-zone').value;
+    const zoneNew = $('f-zone-new').value.trim();
+    const zone = zoneNew || zoneExisting;
+    const name = $('f-name').value.trim();
+    if (!zone || !name) { alert('נא למלא אזור ושם משימה'); return; }
+
+    const data = {
+      zone, name,
+      cost: $('f-cost').value === '' ? null : Number($('f-cost').value),
+      notes: $('f-notes').value.trim(),
+      outsourced: $('f-outsourced').checked,
+      schedules: modalSchedules,
+    };
+
+    if (editingId) {
+      tasks = tasks.map(t => t.id === editingId ? { ...t, ...data } : t);
+    } else {
+      data.id = 'task_' + Date.now().toString(36) + Math.random().toString(36).slice(2);
+      tasks.push(data);
+    }
+    saveTasks(tasks);
+    closeModal();
+    renderAll();
+  });
+
+  $('delete-btn').addEventListener('click', () => {
+    if (!editingId) return;
+    if (!confirm('למחוק את המשימה הזו?')) return;
+    tasks = tasks.filter(t => t.id !== editingId);
+    saveTasks(tasks);
+    closeModal();
+    renderAll();
+  });
+
+  $('zones-container').addEventListener('click', (e) => {
+    const editBtn = e.target.closest('.edit-btn');
+    const delBtn = e.target.closest('.delete-row-btn');
+    if (editBtn) {
+      const t = tasks.find(x => x.id === editBtn.dataset.id);
+      if (t) openModal(t);
+    } else if (delBtn) {
+      if (!confirm('למחוק את המשימה הזו?')) return;
+      tasks = tasks.filter(t => t.id !== delBtn.dataset.id);
+      saveTasks(tasks);
+      renderAll();
+    }
+  });
+
+  $('filter-zone').addEventListener('change', renderZones);
+  $('filter-month').addEventListener('change', renderZones);
+  $('filter-search').addEventListener('input', renderZones);
+
+  $('export-btn').addEventListener('click', () => {
+    const header = ['אזור','משימה','הערות','עלות שנתית','תדירות','שעות לפעם','עובדים','יום קבוע','חודשים'];
+    const lines = [];
+    tasks.forEach(t => {
+      const rows = (t.schedules && t.schedules.length) ? t.schedules : [null];
+      rows.forEach(s => {
+        lines.push([
+          t.zone, t.name, (t.notes||'').replace(/,/g, ';'),
+          t.cost != null ? t.cost : '',
+          s ? (INTERVAL_LABELS[s.interval] || s.interval) : '',
+          s && s.hours != null ? s.hours : '',
+          s && s.workers != null ? s.workers : '',
+          s && s.weekday !== '' && s.weekday != null ? WEEKDAY_NAMES[s.weekday] : '',
+          s ? (s.months||[]).map(m => MONTH_NAMES[m]).join(' ') : ''
+        ].join(','));
+      });
+    });
+    const csv = '﻿' + [header.join(','), ...lines].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'תוכנית-גינון.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  renderAll();
+</script>
+</body>
+</html>
