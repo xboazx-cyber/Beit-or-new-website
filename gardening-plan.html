@@ -66,6 +66,27 @@
     .btn:hover { opacity: .9; }
     .btn-secondary { background: var(--card); color: var(--ink-light); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 14px; font-family: 'Assistant', sans-serif; cursor: pointer; }
     .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+    .view-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+    /* monthly gantt */
+    .gantt-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .gantt-table th, .gantt-table td { border: 1px solid var(--border); text-align: center; padding: 6px 4px; }
+    .gantt-table th.task-col, .gantt-table td.task-col { text-align: right; font-size: 13px; padding: 8px 10px; min-width: 180px; }
+    .gantt-cell-active { background: var(--accent); }
+    .gantt-cell-active.outsourced-cell { background: var(--amber); }
+    .gantt-zone-row td { background: var(--accent-light); font-weight: 600; text-align: right; color: var(--accent-dark); }
+
+    /* weekly gantt */
+    .week-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+    @media(max-width:900px){ .week-days-grid { grid-template-columns: repeat(2, 1fr); } }
+    .day-col { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px; min-height: 90px; }
+    .day-col-header { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 13px; color: var(--accent-dark); margin-bottom: 8px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 12px; margin-bottom: 6px; }
+    .day-task-item .dt-name { font-weight: 600; color: var(--accent-dark); }
+    .day-task-item .dt-meta { color: var(--ink-light); font-size: 11px; }
+    .day-empty { color: var(--ink-light); font-size: 12px; text-align: center; padding: 20px 0; }
+    .unpinned-list-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .unpinned-list-item:last-child { border-bottom: none; }
 
     /* filters */
     .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
@@ -134,7 +155,12 @@
   </div>
 
   <div class="card">
-    <div class="filters">
+    <div class="filters" style="margin-bottom:12px;">
+      <button class="btn-secondary view-tab active" data-view="list" type="button">📋 רשימה</button>
+      <button class="btn-secondary view-tab" data-view="monthly" type="button">📅 גאנט חודשי</button>
+      <button class="btn-secondary view-tab" data-view="weekly" type="button">📆 גאנט שבועי</button>
+    </div>
+    <div class="filters" id="list-filters">
       <button class="btn" id="add-btn" type="button">+ הוספת משימה</button>
       <select id="filter-zone"></select>
       <select id="filter-month"></select>
@@ -143,9 +169,13 @@
     </div>
   </div>
 
-  <div id="zones-container"></div>
+  <div id="view-list">
+    <div id="zones-container"></div>
+    <p class="empty-msg" id="empty-msg" style="display:none;">אין משימות להצגה</p>
+  </div>
 
-  <p class="empty-msg" id="empty-msg" style="display:none;">אין משימות להצגה</p>
+  <div id="view-monthly" style="display:none;"></div>
+  <div id="view-weekly" style="display:none;"></div>
 </div>
 
 <!-- Add/Edit Modal -->
@@ -175,11 +205,9 @@
     </div>
 
     <div class="field">
-      <label style="display:flex;justify-content:space-between;align-items:center;">
-        <span>לוחות זמנים</span>
-        <button type="button" id="add-schedule-btn" class="btn-secondary btn-small">+ הוספת לוח זמנים</button>
-      </label>
+      <label><span>לוחות זמנים</span></label>
       <p style="font-size:12px;color:var(--ink-light);margin-bottom:10px;">משימה יכולה להתנהל בכמה קצבים שונים — למשל שבועי בקיץ, וכל 3 שבועות בשאר השנה. הוסף לוח זמנים נפרד לכל קצב.</p>
+      <button type="button" id="add-schedule-btn" class="btn" style="width:100%;margin-bottom:14px;font-size:16px;">+ הוספת לוח זמנים</button>
       <div id="f-schedules"></div>
       <p id="f-schedules-empty">אין לוחות זמנים עדיין — לחץ "הוספת לוח זמנים"</p>
     </div>
@@ -483,6 +511,132 @@
   function renderAll() {
     renderFilters();
     renderZones();
+    renderMonthlyGantt();
+    renderWeeklyGantt();
+  }
+
+  // ---- View switching ----
+  document.querySelectorAll('.view-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const view = tab.dataset.view;
+      $('view-list').style.display = view === 'list' ? 'block' : 'none';
+      $('list-filters').style.display = view === 'list' ? 'flex' : 'none';
+      $('view-monthly').style.display = view === 'monthly' ? 'block' : 'none';
+      $('view-weekly').style.display = view === 'weekly' ? 'block' : 'none';
+    });
+  });
+
+  // ---- Monthly Gantt: rows = tasks, columns = months ----
+  function renderMonthlyGantt() {
+    const container = $('view-monthly');
+    const zones = uniqueZones();
+    let html = `<div class="card" style="overflow-x:auto;">
+      <table class="gantt-table">
+        <thead><tr><th class="task-col">משימה</th>${MONTH_NAMES.map(m => `<th>${m.slice(0,3)}</th>`).join('')}</tr></thead>
+        <tbody>`;
+    zones.forEach(zone => {
+      html += `<tr class="gantt-zone-row"><td class="task-col" colspan="13">${zone}</td></tr>`;
+      tasks.filter(t => t.zone === zone).forEach(t => {
+        const activeMonths = new Set();
+        (t.schedules || []).forEach(s => { if (s.interval !== 'asneeded') (s.months||[]).forEach(m => activeMonths.add(m)); });
+        html += `<tr><td class="task-col">${t.name}${t.outsourced ? ' <span class="weekday-tag">קבלן</span>' : ''}</td>`;
+        for (let m = 0; m < 12; m++) {
+          const active = activeMonths.has(m);
+          html += `<td class="${active ? 'gantt-cell-active' + (t.outsourced ? ' outsourced-cell' : '') : ''}"></td>`;
+        }
+        html += `</tr>`;
+      });
+    });
+    html += `</tbody></table></div>
+      <p style="font-size:12px;color:var(--ink-light);text-align:center;">🟩 ירוק = עבודה פנימית · 🟧 כתום = קבלן חיצוני</p>`;
+    container.innerHTML = html;
+  }
+
+  // ---- Weekly Gantt: next Sunday–Saturday, definite (weekday-pinned) placements + unpinned list ----
+  function getNextWeekDates() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const thisWeekSunday = new Date(today);
+    thisWeekSunday.setDate(today.getDate() - today.getDay());
+    const nextSunday = new Date(thisWeekSunday);
+    nextSunday.setDate(thisWeekSunday.getDate() + 7);
+    return Array.from({length:7}, (_, i) => {
+      const d = new Date(nextSunday);
+      d.setDate(nextSunday.getDate() + i);
+      return d;
+    });
+  }
+
+  function renderWeeklyGantt() {
+    const container = $('view-weekly');
+    const days = getNextWeekDates();
+    const dateFmt = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric' });
+
+    const dayBuckets = days.map(() => []);
+    const unpinned = [];
+    const seenUnpinned = new Set();
+
+    tasks.forEach(t => {
+      if (t.outsourced) return;
+      (t.schedules || []).forEach(s => {
+        if (s.interval === 'asneeded') return;
+        days.forEach((d, i) => {
+          const monthIdx = d.getMonth();
+          const weekdayIdx = d.getDay();
+          if (!(s.months || []).includes(monthIdx)) return;
+          if (s.weekday !== '' && s.weekday != null) {
+            if (Number(s.weekday) === weekdayIdx) {
+              dayBuckets[i].push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, interval: s.interval });
+            }
+          }
+        });
+        // unpinned (no fixed weekday) but relevant this week — list once per task+schedule
+        if ((s.weekday === '' || s.weekday == null)) {
+          const relevant = days.some(d => (s.months||[]).includes(d.getMonth()));
+          const key = t.id + '_' + s.id;
+          if (relevant && !seenUnpinned.has(key)) {
+            seenUnpinned.add(key);
+            unpinned.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, interval: s.interval });
+          }
+        }
+      });
+    });
+
+    let html = `<div class="card"><h3>שבוע הבא: ${dateFmt(days[0])} – ${dateFmt(days[6])}</h3>
+      <div class="week-days-grid">`;
+    days.forEach((d, i) => {
+      html += `<div class="day-col">
+        <div class="day-col-header">${WEEKDAY_NAMES[d.getDay()].replace('יום ','')}<br><span style="font-weight:300;">${dateFmt(d)}</span></div>`;
+      if (dayBuckets[i].length === 0) {
+        html += `<div class="day-empty">—</div>`;
+      } else {
+        dayBuckets[i].forEach(item => {
+          html += `<div class="day-task-item">
+            <div class="dt-name">${item.name}</div>
+            <div class="dt-meta">${item.hours!=null?item.hours+' ש׳':''} ${item.workers!=null?'· 👥'+item.workers:''}</div>
+          </div>`;
+        });
+      }
+      html += `</div>`;
+    });
+    html += `</div></div>`;
+
+    html += `<div class="card">
+      <h3>רלוונטי השבוע, ללא יום קבוע (יש לתאם)</h3>`;
+    if (unpinned.length === 0) {
+      html += `<p class="empty-msg">אין משימות כאלה השבוע</p>`;
+    } else {
+      unpinned.forEach(item => {
+        html += `<div class="unpinned-list-item">
+          <span>${item.name} <span style="color:var(--ink-light);font-size:12px;">(${item.zone})</span></span>
+          <span style="color:var(--ink-light);">${INTERVAL_LABELS[item.interval]||''} ${item.hours!=null?'· '+item.hours+' ש׳':''} ${item.workers!=null?'· 👥'+item.workers:''}</span>
+        </div>`;
+      });
+    }
+    html += `</div>`;
+    container.innerHTML = html;
   }
 
   // ---- Schedule rows inside modal ----
