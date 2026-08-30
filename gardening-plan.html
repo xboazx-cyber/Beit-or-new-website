@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>תוכנית עבודה - גינון הישוב</title>
+  <title>תוכנית עבודה - גינון כרמי יוסף</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Assistant:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -23,28 +23,28 @@
     }
     .wrap { max-width: 1200px; margin: 0 auto; }
     header { text-align: center; margin-bottom: 24px; }
-    header h1 { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 26px; margin-bottom: 6px; color: var(--accent-dark); }
-    header p { font-size: 14px; color: var(--ink-light); font-weight: 300; }
+    header h1 { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 29px; margin-bottom: 6px; color: var(--accent-dark); }
+    header p { font-size: 16px; color: var(--ink-light); font-weight: 300; }
 
     .card {
       background: var(--card); border: 1px solid var(--border); border-radius: 14px;
       padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 10px -4px rgba(20,40,10,.06);
     }
-    .card h2, .card h3 { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 17px; margin-bottom: 14px; color: var(--accent-dark); }
+    .card h2, .card h3 { font-family: 'Rubik', sans-serif; font-weight: 500; font-size: 19px; margin-bottom: 14px; color: var(--accent-dark); }
 
     /* summary */
     .summary-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
     .stat-box { background: var(--accent-light); border-radius: 10px; padding: 12px; text-align: center; }
-    .stat-box span { display: block; font-size: 12px; color: var(--ink-light); margin-bottom: 4px; }
-    .stat-box strong { font-family: 'Rubik', sans-serif; font-size: 19px; color: var(--accent-dark); }
+    .stat-box span { display: block; font-size: 14px; color: var(--ink-light); margin-bottom: 4px; }
+    .stat-box strong { font-family: 'Rubik', sans-serif; font-size: 21px; color: var(--accent-dark); }
     @media(max-width:700px){ .summary-row{ grid-template-columns: 1fr 1fr; } }
 
     /* form */
     .field { margin-bottom: 12px; }
-    .field label { display: block; font-size: 13px; font-weight: 500; color: var(--ink-light); margin-bottom: 5px; }
+    .field label { display: block; font-size: 15px; font-weight: 600; color: var(--ink-light); margin-bottom: 5px; }
     .field input, .field select, .field textarea {
       width: 100%; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
-      font-family: 'Assistant', sans-serif; font-size: 15px; color: var(--ink); background: #fbfdf9;
+      font-family: 'Assistant', sans-serif; font-size: 17px; color: var(--ink); background: #fbfdf9;
       outline: none;
     }
     .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
@@ -56,22 +56,22 @@
     @media(max-width:700px){ .months-grid { grid-template-columns: repeat(4, 1fr); } }
     .month-chip {
       display: flex; align-items: center; justify-content: center; gap: 4px;
-      border: 1px solid var(--border); border-radius: 8px; padding: 7px 4px; font-size: 12px;
+      border: 1px solid var(--border); border-radius: 8px; padding: 7px 4px; font-size: 14px;
       cursor: pointer; user-select: none; background: #fbfdf9;
     }
     .month-chip input { width: auto; margin: 0; }
     .month-chip.checked { background: var(--accent-light); border-color: var(--accent); color: var(--accent-dark); font-weight: 600; }
 
-    .btn { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 15px; font-weight: 600; font-family: 'Assistant', sans-serif; cursor: pointer; }
+    .btn { background: var(--accent); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 17px; font-weight: 600; font-family: 'Assistant', sans-serif; cursor: pointer; }
     .btn:hover { opacity: .9; }
-    .btn-secondary { background: var(--card); color: var(--ink-light); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 14px; font-family: 'Assistant', sans-serif; cursor: pointer; }
-    .btn-small { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+    .btn-secondary { background: var(--card); color: var(--ink-light); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 16px; font-family: 'Assistant', sans-serif; cursor: pointer; }
+    .btn-small { padding: 6px 12px; font-size: 14px; border-radius: 8px; }
     .view-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
 
     /* monthly gantt */
-    .gantt-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .gantt-table { width: 100%; border-collapse: collapse; font-size: 14px; }
     .gantt-table th, .gantt-table td { border: 1px solid var(--border); text-align: center; padding: 6px 4px; }
-    .gantt-table th.task-col, .gantt-table td.task-col { text-align: right; font-size: 13px; padding: 8px 10px; min-width: 180px; }
+    .gantt-table th.task-col, .gantt-table td.task-col { text-align: right; font-size: 15px; padding: 8px 10px; min-width: 180px; }
     .gantt-cell-active { background: var(--accent); }
     .gantt-cell-active.outsourced-cell { background: var(--amber); }
     .gantt-zone-row td { background: var(--accent-light); font-weight: 600; text-align: right; color: var(--accent-dark); }
@@ -80,46 +80,49 @@
     .week-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
     @media(max-width:900px){ .week-days-grid { grid-template-columns: repeat(2, 1fr); } }
     .day-col { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px; min-height: 90px; }
-    .day-col-header { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 13px; color: var(--accent-dark); margin-bottom: 8px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-    .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 12px; margin-bottom: 6px; }
+    .day-col.is-saturday { background: #f2f0ea; border-color: #d8d2c4; }
+    .day-col.is-saturday .day-col-header { color: #8a8270; }
+    .day-col.is-saturday .day-empty { color: #8a8270; font-weight: 600; }
+    .day-col-header { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 15px; color: var(--accent-dark); margin-bottom: 8px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 14px; margin-bottom: 6px; }
     .day-task-item .dt-name { font-weight: 600; color: var(--accent-dark); }
-    .day-task-item .dt-meta { color: var(--ink-light); font-size: 11px; }
-    .day-empty { color: var(--ink-light); font-size: 12px; text-align: center; padding: 20px 0; }
-    .unpinned-list-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
+    .day-empty { color: var(--ink-light); font-size: 14px; text-align: center; padding: 20px 0; }
+    .unpinned-list-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 15px; }
     .unpinned-list-item:last-child { border-bottom: none; }
 
     /* filters */
     .filters { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 4px; }
-    .filters select, .filters input[type="text"] { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Assistant', sans-serif; font-size: 14px; background: #fbfdf9; }
+    .filters select, .filters input[type="text"] { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Assistant', sans-serif; font-size: 16px; background: #fbfdf9; }
 
     /* zone groups */
     .zone-group { margin-bottom: 18px; }
     .zone-group-title {
-      font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 15px; color: white;
+      font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 17px; color: white;
       background: var(--accent); padding: 8px 14px; border-radius: 8px; margin-bottom: 8px;
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;
     }
-    .zone-group-title .zone-stats { font-size: 12px; font-weight: 400; opacity: .9; }
+    .zone-group-title .zone-stats { font-size: 14px; font-weight: 400; opacity: .9; }
 
     table { width: 100%; border-collapse: collapse; }
-    th, td { text-align: right; padding: 9px 8px; font-size: 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { font-size: 12px; color: var(--ink-light); font-weight: 500; }
+    th, td { text-align: right; padding: 9px 8px; font-size: 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { font-size: 14px; color: var(--ink-light); font-weight: 500; }
     td.num { font-family: 'Rubik', sans-serif; font-weight: 500; white-space: nowrap; }
     tr.missing-data { background: var(--amber-light); }
     .task-name { font-weight: 500; }
-    .task-notes { font-size: 12px; color: var(--ink-light); margin-top: 2px; }
-    .schedule-summary-line { font-size: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+    .task-notes { font-size: 14px; color: var(--ink-light); margin-top: 2px; }
+    .schedule-summary-line { font-size: 14px; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
     .schedule-summary-line:last-child { margin-bottom: 0; }
     .sched-badge { background: var(--accent-light); color: var(--accent-dark); padding: 1px 6px; border-radius: 5px; font-weight: 600; }
     .sched-months { color: var(--ink-light); }
-    .weekday-tag { background: var(--amber-light); color: var(--amber); font-size: 11px; padding: 1px 6px; border-radius: 5px; }
-    .no-schedules { color: var(--ink-light); font-size: 12px; }
+    .weekday-tag { background: var(--amber-light); color: var(--amber); font-size: 13px; padding: 1px 6px; border-radius: 5px; }
+    .no-schedules { color: var(--ink-light); font-size: 14px; }
     .row-actions { display: flex; gap: 6px; }
-    .icon-btn { background: none; border: none; cursor: pointer; font-size: 15px; padding: 2px 6px; border-radius: 6px; }
+    .icon-btn { background: none; border: none; cursor: pointer; font-size: 17px; padding: 2px 6px; border-radius: 6px; }
     .icon-btn:hover { background: var(--border); }
     .icon-btn.danger:hover { background: var(--danger-light); }
 
-    .empty-msg { text-align: center; color: var(--ink-light); font-size: 14px; padding: 20px 0; }
+    .empty-msg { text-align: center; color: var(--ink-light); font-size: 16px; padding: 20px 0; }
 
     #form-modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(20,30,15,.4); z-index: 500;
@@ -133,8 +136,8 @@
       border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: #fbfdf9;
     }
     .schedule-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .schedule-row-header span { font-size: 13px; font-weight: 600; color: var(--accent-dark); }
-    #f-schedules-empty { text-align: center; color: var(--ink-light); font-size: 13px; padding: 10px 0; }
+    .schedule-row-header span { font-size: 15px; font-weight: 600; color: var(--accent-dark); }
+    #f-schedules-empty { text-align: center; color: var(--ink-light); font-size: 15px; padding: 10px 0; }
   </style>
 </head>
 <body>
@@ -149,7 +152,6 @@
     <div class="summary-row">
       <div class="stat-box"><span>סה"כ משימות</span><strong id="stat-count">0</strong></div>
       <div class="stat-box"><span>שעות בשנה</span><strong id="stat-hours">0</strong></div>
-      <div class="stat-box"><span>עלות שנתית</span><strong id="stat-cost">₪0</strong></div>
       <div class="stat-box"><span>חסרים נתונים</span><strong id="stat-missing">0</strong></div>
     </div>
   </div>
@@ -212,10 +214,6 @@
       <p id="f-schedules-empty">אין לוחות זמנים עדיין — לחץ "הוספת לוח זמנים"</p>
     </div>
 
-    <div class="field">
-      <label for="f-cost">עלות שנתית משוערת ₪ <span style="font-weight:300;">— לא דחוף</span></label>
-      <input type="number" id="f-cost" min="0" step="10">
-    </div>
 
     <div class="modal-actions">
       <button class="btn" id="save-btn" type="button">שמירה</button>
@@ -281,8 +279,8 @@
     ['מרכז הישוב', 'ערוגת ורדים מאחורי מכבי'],
     ['מרכז הישוב', 'מכבי'],
 
-    ['מוקדים נוספים', 'בית העלמין (מפוח / גיזום / פינוי אדמה מקברים חדשים / בדיקת צנרות)'],
-    ['מוקדים נוספים', 'פארק השיטה (בדיקת תקינות צנרת / זמני השקיה)'],
+    ['מוקדי גינון נוספים', 'בית העלמין (מפוח / גיזום / פינוי אדמה מקברים חדשים / בדיקת צנרות)'],
+    ['מוקדי גינון נוספים', 'פארק השיטה (בדיקת תקינות צנרת / זמני השקיה)'],
 
     ['פעילויות שוטפות', 'חירמוש וניקיון רחובות ותעלות (חורף ואביב)'],
     ['פעילויות שוטפות', 'טיפול ממוקד במינים פולשים (דטורה / דקל וושינגטוניה / שיטה מכחילה / טיון דביק / קיקיון)'],
@@ -293,6 +291,7 @@
     ['פעילויות שוטפות', 'חישוף מסביב לישוב למניעת שריפות', 'אזור אפריל / יוני, על פי הגשמים'],
     ['פעילויות שוטפות', 'תפעול תקלות / החלפת מחשבים ומערכות השקיה / פיצוצי צנרת', 'משימה שוטפת/ריאקטיבית, לא מתוכננת מראש'],
     ['פעילויות שוטפות', 'דישון בקומפוסט והומוס של כל האזורים הרלבנטיים', 'לתכנן מראש לפני עונת הגשמים'],
+    ['פעילויות שוטפות', 'תחזוקת מרכז מסחרי - ניקוי, גינון ומפוח'],
 
     ['פרויקטים עתידיים', 'שתילות טו בשבט'],
     ['פרויקטים עתידיים', 'פיתוח אזור הפאמפ-טראק'],
@@ -302,16 +301,27 @@
 
   const $ = id => document.getElementById(id);
 
+  // renames applied to already-saved zone names, so filled-in data isn't orphaned when a zone label changes
+  const ZONE_RENAMES = { 'מוקדים נוספים': 'מוקדי גינון נוספים' };
+  function applyZoneRenames(list) {
+    let changed = false;
+    const renamed = list.map(t => {
+      if (ZONE_RENAMES[t.zone]) { changed = true; return { ...t, zone: ZONE_RENAMES[t.zone] }; }
+      return t;
+    });
+    if (changed) saveTasks(renamed);
+    return renamed;
+  }
+
   function loadTasks() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return mergeNewSeedItems(migrateTasks(JSON.parse(raw)));
+      if (raw) return mergeNewSeedItems(applyZoneRenames(migrateTasks(JSON.parse(raw))));
     } catch {}
     const seeded = SEED_DATA.map((s, i) => ({
       id: 'seed_' + i,
       zone: s[0],
       name: s[1],
-      cost: null,
       notes: s[2] || '',
       outsourced: false,
       schedules: []
@@ -329,7 +339,7 @@
       if (!existingKeys.has(key)) {
         existing.push({
           id: 'seed_new_' + i + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2),
-          zone: s[0], name: s[1], cost: null, notes: s[2] || '', outsourced: false, schedules: []
+          zone: s[0], name: s[1], notes: s[2] || '', outsourced: false, schedules: []
         });
         changed = true;
       }
@@ -346,7 +356,7 @@
       changed = true;
       const hasOldData = t.hours != null || t.workers != null || (t.months && t.months.length);
       return {
-        id: t.id, zone: t.zone, name: t.name, cost: t.cost != null ? t.cost : null, notes: t.notes || '',
+        id: t.id, zone: t.zone, name: t.name, notes: t.notes || '',
         outsourced: !!t.outsourced,
         schedules: hasOldData ? [{
           id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2),
@@ -419,15 +429,13 @@
   }
 
   function renderSummary(filtered) {
-    let totalHours = 0, totalCost = 0, missing = 0;
+    let totalHours = 0, missing = 0;
     filtered.forEach(t => {
       totalHours += taskAnnualHours(t);
-      if (t.cost != null) totalCost += t.cost;
       if (isMissingData(t)) missing++;
     });
     $('stat-count').textContent = filtered.length;
     $('stat-hours').textContent = Math.round(totalHours).toLocaleString('he-IL');
-    $('stat-cost').textContent = formatCurrency(totalCost);
     $('stat-missing').textContent = missing;
   }
 
@@ -458,7 +466,6 @@
         </td>
         <td>${schedulesHtml}</td>
         <td class="num">${Math.round(taskAnnualHours(t))}</td>
-        <td class="num">${t.cost != null ? formatCurrency(t.cost) : '—'}</td>
         <td>
           <div class="row-actions">
             <button class="icon-btn edit-btn" data-id="${t.id}" title="עריכה">✏️</button>
@@ -489,17 +496,19 @@
     container.innerHTML = zones.map(zone => {
       const zoneTasks = filtered.filter(t => t.zone === zone);
       const zoneHours = zoneTasks.reduce((s,t) => s + taskAnnualHours(t), 0);
-      const zoneCost = zoneTasks.reduce((s,t) => s + (t.cost != null ? t.cost : 0), 0);
       return `
       <div class="zone-group">
         <div class="zone-group-title">
           <span>${zone} (${zoneTasks.length})</span>
-          <span class="zone-stats">${Math.round(zoneHours)} שעות/שנה · ${formatCurrency(zoneCost)}/שנה</span>
+          <span style="display:flex;align-items:center;gap:10px;">
+            <span class="zone-stats">${Math.round(zoneHours)} שעות/שנה</span>
+            <button type="button" class="icon-btn add-to-zone-btn" data-zone="${zone}" title="הוספת משימה לאזור זה" style="background:rgba(255,255,255,.25);color:white;">+ משימה</button>
+          </span>
         </div>
         <div class="card" style="padding:0;overflow-x:auto;">
           <table>
             <thead><tr>
-              <th style="min-width:160px;">משימה</th><th style="min-width:220px;">לוחות זמנים</th><th>שעות/שנה</th><th>עלות שנתית</th><th></th>
+              <th style="min-width:160px;">משימה</th><th style="min-width:220px;">לוחות זמנים</th><th>שעות/שנה</th><th></th>
             </tr></thead>
             <tbody>${zoneTasks.map(taskRowHtml).join('')}</tbody>
           </table>
@@ -569,52 +578,59 @@
     });
   }
 
+  function hashToWeekday(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h % 5; // 0-4 => Sunday..Thursday (never lands on Fri/Sat)
+  }
+
   function renderWeeklyGantt() {
     const container = $('view-weekly');
     const days = getNextWeekDates();
     const dateFmt = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric' });
 
     const dayBuckets = days.map(() => []);
-    const unpinned = [];
-    const seenUnpinned = new Set();
+    const yearlyRelevant = [];
 
     tasks.forEach(t => {
       if (t.outsourced) return;
       (t.schedules || []).forEach(s => {
         if (s.interval === 'asneeded') return;
+
+        if (s.interval === 'year') {
+          // once-a-year tasks aren't pinned to a specific week — shown separately, see monthly Gantt for placement
+          const relevant = days.some(d => (s.months||[]).includes(d.getMonth()));
+          if (relevant) yearlyRelevant.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers });
+          return;
+        }
+
+        const hasFixedDay = s.weekday !== '' && s.weekday != null;
+        const assignedWeekday = hasFixedDay ? Number(s.weekday) : hashToWeekday(t.id + '_' + s.id);
         days.forEach((d, i) => {
           const monthIdx = d.getMonth();
           const weekdayIdx = d.getDay();
           if (!(s.months || []).includes(monthIdx)) return;
-          if (s.weekday !== '' && s.weekday != null) {
-            if (Number(s.weekday) === weekdayIdx) {
-              dayBuckets[i].push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, interval: s.interval });
-            }
+          if (assignedWeekday === weekdayIdx) {
+            dayBuckets[i].push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, interval: s.interval, estimated: !hasFixedDay });
           }
         });
-        // unpinned (no fixed weekday) but relevant this week — list once per task+schedule
-        if ((s.weekday === '' || s.weekday == null)) {
-          const relevant = days.some(d => (s.months||[]).includes(d.getMonth()));
-          const key = t.id + '_' + s.id;
-          if (relevant && !seenUnpinned.has(key)) {
-            seenUnpinned.add(key);
-            unpinned.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, interval: s.interval });
-          }
-        }
       });
     });
 
     let html = `<div class="card"><h3>שבוע הבא: ${dateFmt(days[0])} – ${dateFmt(days[6])}</h3>
       <div class="week-days-grid">`;
     days.forEach((d, i) => {
-      html += `<div class="day-col">
+      const isSaturday = d.getDay() === 6;
+      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}">
         <div class="day-col-header">${WEEKDAY_NAMES[d.getDay()].replace('יום ','')}<br><span style="font-weight:300;">${dateFmt(d)}</span></div>`;
-      if (dayBuckets[i].length === 0) {
+      if (isSaturday) {
+        html += `<div class="day-empty">🕯️ שבת — אין עבודה</div>`;
+      } else if (dayBuckets[i].length === 0) {
         html += `<div class="day-empty">—</div>`;
       } else {
         dayBuckets[i].forEach(item => {
           html += `<div class="day-task-item">
-            <div class="dt-name">${item.name}</div>
+            <div class="dt-name">${item.name} ${item.estimated ? '<span class="weekday-tag" title="יום משוער, לא נקבע במפורש">משוער</span>' : ''}</div>
             <div class="dt-meta">${item.hours!=null?item.hours+' ש׳':''} ${item.workers!=null?'· 👥'+item.workers:''}</div>
           </div>`;
         });
@@ -624,14 +640,14 @@
     html += `</div></div>`;
 
     html += `<div class="card">
-      <h3>רלוונטי השבוע, ללא יום קבוע (יש לתאם)</h3>`;
-    if (unpinned.length === 0) {
+      <h3>משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)</h3>`;
+    if (yearlyRelevant.length === 0) {
       html += `<p class="empty-msg">אין משימות כאלה השבוע</p>`;
     } else {
-      unpinned.forEach(item => {
+      yearlyRelevant.forEach(item => {
         html += `<div class="unpinned-list-item">
           <span>${item.name} <span style="color:var(--ink-light);font-size:12px;">(${item.zone})</span></span>
-          <span style="color:var(--ink-light);">${INTERVAL_LABELS[item.interval]||''} ${item.hours!=null?'· '+item.hours+' ש׳':''} ${item.workers!=null?'· 👥'+item.workers:''}</span>
+          <span style="color:var(--ink-light);">פעם בשנה ${item.hours!=null?'· '+item.hours+' ש׳':''} ${item.workers!=null?'· 👥'+item.workers:''}</span>
         </div>`;
       });
     }
@@ -733,18 +749,20 @@
     }
   });
 
-  function openModal(task) {
+  function openModal(task, presetZone) {
     editingId = task ? task.id : null;
-    $('modal-title').textContent = task ? 'עריכת משימה' : 'הוספת משימה';
+    $('modal-title').textContent = task ? ('עריכת משימה: ' + task.name) : 'הוספת משימה';
     const zoneSel = $('f-zone');
     zoneSel.innerHTML = '<option value="">— בחר —</option>' + uniqueZones().map(z => `<option value="${z}">${z}</option>`).join('');
-    zoneSel.value = task ? task.zone : '';
+    zoneSel.value = task ? task.zone : (presetZone || '');
     $('f-zone-new').value = '';
     $('f-name').value = task ? task.name : '';
-    $('f-cost').value = task && task.cost != null ? task.cost : '';
     $('f-notes').value = task ? (task.notes || '') : '';
     $('f-outsourced').checked = task ? !!task.outsourced : false;
     modalSchedules = task ? JSON.parse(JSON.stringify(task.schedules || [])) : [];
+    if (modalSchedules.length === 0) {
+      modalSchedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
+    }
     renderScheduleRows();
     $('delete-btn').style.display = task ? 'inline-block' : 'none';
     $('form-modal-overlay').classList.add('open');
@@ -767,7 +785,6 @@
 
     const data = {
       zone, name,
-      cost: $('f-cost').value === '' ? null : Number($('f-cost').value),
       notes: $('f-notes').value.trim(),
       outsourced: $('f-outsourced').checked,
       schedules: modalSchedules,
@@ -796,6 +813,7 @@
   $('zones-container').addEventListener('click', (e) => {
     const editBtn = e.target.closest('.edit-btn');
     const delBtn = e.target.closest('.delete-row-btn');
+    const addToZoneBtn = e.target.closest('.add-to-zone-btn');
     if (editBtn) {
       const t = tasks.find(x => x.id === editBtn.dataset.id);
       if (t) openModal(t);
@@ -804,6 +822,8 @@
       tasks = tasks.filter(t => t.id !== delBtn.dataset.id);
       saveTasks(tasks);
       renderAll();
+    } else if (addToZoneBtn) {
+      openModal(null, addToZoneBtn.dataset.zone);
     }
   });
 
@@ -812,14 +832,13 @@
   $('filter-search').addEventListener('input', renderZones);
 
   $('export-btn').addEventListener('click', () => {
-    const header = ['אזור','משימה','הערות','עלות שנתית','תדירות','שעות לפעם','עובדים','יום קבוע','חודשים'];
+    const header = ['אזור','משימה','הערות','תדירות','שעות לפעם','עובדים','יום קבוע','חודשים'];
     const lines = [];
     tasks.forEach(t => {
       const rows = (t.schedules && t.schedules.length) ? t.schedules : [null];
       rows.forEach(s => {
         lines.push([
           t.zone, t.name, (t.notes||'').replace(/,/g, ';'),
-          t.cost != null ? t.cost : '',
           s ? (INTERVAL_LABELS[s.interval] || s.interval) : '',
           s && s.hours != null ? s.hours : '',
           s && s.workers != null ? s.workers : '',
