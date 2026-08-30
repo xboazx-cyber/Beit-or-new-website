@@ -1199,9 +1199,19 @@
   function capacityLineHtml(dow, items) {
     const capacity = capacityForDay(dow);
     // outsourced work is done by an external contractor, not the in-house crew, so it doesn't count against capacity
-    const planned = plannedPersonHours(items.filter(i => !i.outsourced));
+    const inHouse = items.filter(i => !i.outsourced);
+    const planned = plannedPersonHours(inHouse);
     const over = planned > capacity;
-    return `<div class="day-capacity${over ? ' over-capacity' : ''}">${t('capacityFmt')(planned, capacity)}</div>`;
+    let html = `<div class="day-capacity${over ? ' over-capacity' : ''}">${t('capacityFmt')(planned, capacity)}</div>`;
+    if (over) {
+      // show what's actually eating the day, so a real overload (usually several fixed-weekday tasks stacked
+      // on the same day) can be resolved by moving one of them — auto-placement can't move a fixed day for you
+      const fixedHere = inHouse.filter(i => !i.estimated && i.hours != null);
+      if (fixedHere.length > 1) {
+        html += `<div class="day-capacity over-capacity" style="font-size:11px;">${fixedHere.map(i => `${trText(i.name)} (${i.hours*(i.workers||1)})`).join(' + ')}</div>`;
+      }
+    }
+    return html;
   }
   function attendanceSelectHtml(key) {
     const val = attendance[key] != null ? String(attendance[key]) : '';
