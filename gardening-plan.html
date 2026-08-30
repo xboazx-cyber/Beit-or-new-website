@@ -81,7 +81,11 @@
     .day-col.is-saturday .day-col-header { color: #8a8270; }
     .day-col.is-saturday .day-empty { color: #8a8270; font-weight: 600; }
     .day-col-header { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 15px; color: var(--accent-dark); margin-bottom: 8px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-    .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 14px; margin-bottom: 6px; }
+    .day-task-item { background: var(--accent-light); border-radius: 6px; padding: 6px 8px; font-size: 14px; margin-bottom: 6px; cursor: grab; }
+    .day-task-item.dragging { opacity: 0.35; }
+    .day-col[data-dow] { transition: background .1s, outline .1s; border-radius: 8px; }
+    .day-col[data-dow].drag-over { outline: 2px dashed var(--accent); outline-offset: -2px; background: var(--accent-light); }
+    .day-drop-zone { min-height: 24px; }
     .day-task-item .dt-name { font-weight: 600; color: var(--accent-dark); }
     .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
     .day-task-item.outsourced { background: var(--pink-light); }
@@ -1139,7 +1143,7 @@
         const placedDays = new Set(auto[key] || []);
         if (hasFixedDay) placedDays.add(Number(s.weekday));
         if (placedDays.has(weekdayIdx)) {
-          items.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced });
+          items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced });
         }
       });
     });
@@ -1213,6 +1217,36 @@
     }
     return html;
   }
+  // drag-and-drop a task card between days in the weekly Gantt — moving it just sets that
+  // schedule's fixed weekday to the drop target, same as picking it manually in the edit form
+  function wireDragAndDrop(container) {
+    container.querySelectorAll('.day-task-item').forEach(el => {
+      el.addEventListener('dragstart', (e) => {
+        el.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', el.dataset.taskId + '|' + el.dataset.scheduleId);
+      });
+      el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    });
+    container.querySelectorAll('.day-col[data-dow]').forEach(col => {
+      col.addEventListener('dragover', (e) => { e.preventDefault(); col.classList.add('drag-over'); });
+      col.addEventListener('dragleave', () => col.classList.remove('drag-over'));
+      col.addEventListener('drop', (e) => {
+        e.preventDefault();
+        col.classList.remove('drag-over');
+        const raw = e.dataTransfer.getData('text/plain');
+        if (!raw) return;
+        const [taskId, scheduleId] = raw.split('|');
+        const task = tasks.find(x => x.id === taskId);
+        const sched = task && (task.schedules || []).find(s => s.id === scheduleId);
+        if (!sched) return;
+        sched.weekday = Number(col.dataset.dow);
+        saveTasks(tasks);
+        renderAll();
+      });
+    });
+  }
+
   function attendanceSelectHtml(key) {
     const val = attendance[key] != null ? String(attendance[key]) : '';
     const opts = ['', '0','1','2','3','4'].map(v => `<option value="${v}" ${val===v?'selected':''}>${v===''?'—':v}</option>`).join('');
@@ -1295,23 +1329,25 @@
       const isSaturday = dow === 6;
       const items = isSaturday ? [] : getTasksForDay(d);
       const hoursLabel = workHoursLabel(dow);
-      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}">
+      html += `<div class="day-col${isSaturday ? ' is-saturday' : ''}" ${isSaturday ? '' : `data-dow="${dow}"`}>
         <div class="day-col-header">${lang==='ar' ? wd(dow) : WEEKDAY_NAMES[dow].replace('יום ','')}<br><span style="font-weight:300;">${dateFmt(d)}</span></div>`;
       if (isSaturday) {
         html += `<div class="day-empty">${t('satNoWork')}</div>`;
       } else {
         html += `<div class="day-work-hours">${hoursLabel}</div>`;
         html += capacityLineHtml(dow, items);
+        html += `<div class="day-drop-zone">`;
         if (items.length === 0) {
           html += `<div class="day-empty">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}">
               <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
               <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</div>
             </div>`;
           });
         }
+        html += `</div>`;
         html += attendanceSelectHtml(dateKey(d));
       }
       html += `</div>`;
@@ -1319,6 +1355,8 @@
     html += `</div></div>`;
     html += referenceListsHtml(days);
     container.innerHTML = html;
+
+    wireDragAndDrop(container);
 
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
     $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
