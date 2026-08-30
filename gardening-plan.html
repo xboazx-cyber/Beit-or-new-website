@@ -55,9 +55,8 @@
     }
     .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); }
     .field textarea { min-height: 50px; resize: vertical; }
-    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-    @media(max-width:700px){ .row2, .row3 { grid-template-columns: 1fr; } }
+    @media(max-width:700px){ .row3 { grid-template-columns: 1fr; } }
     .months-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
     @media(max-width:700px){ .months-grid { grid-template-columns: repeat(4, 1fr); } }
     .month-chip {
@@ -929,10 +928,6 @@
 
   function taskMatchesMonth(t, monthIdx) {
     return (t.schedules || []).some(s => (s.months || []).includes(monthIdx));
-  }
-
-  function formatCurrency(n) {
-    return '₪' + Math.round(n).toLocaleString('he-IL');
   }
 
   function renderFilters() {
