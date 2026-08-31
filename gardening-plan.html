@@ -182,6 +182,19 @@
     .schedule-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .schedule-row-header span { font-size: 15px; font-weight: 600; color: var(--accent-dark); }
     #f-schedules-empty { text-align: center; color: var(--ink-light); font-size: 15px; padding: 10px 0; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #view-weekly, #view-weekly * { visibility: visible; }
+      #view-weekly { position: absolute; top: 0; right: 0; left: 0; width: 100%; }
+      #week-prev-btn, #week-next-btn, #week-today-btn, #week-print-btn,
+      .postpone-btn, .edit-day-task-btn, .add-day-task-btn, .attendance-row,
+      #legacy-import-banner, #editors-panel, #auth-box { display: none !important; }
+      .week-days-grid { grid-template-columns: repeat(7, 1fr) !important; gap: 6px !important; }
+      .day-col { break-inside: avoid; border: 1px solid #999 !important; }
+      .day-task-item { padding-left: 8px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { box-shadow: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -197,6 +210,12 @@
     </div>
     <div id="auth-box" style="margin-top:10px;font-size:13px;"></div>
   </header>
+
+  <div class="card" id="legacy-import-banner" style="display:none;background:var(--amber-light);">
+    <h3>📦 נמצאו נתונים ישנים בדפדפן זה</h3>
+    <p style="margin-bottom:12px;">נראה שיש כאן נתונים שהוזנו לפני המעבר לענן (בדפדפן הזה בלבד). אפשר לייבא אותם עכשיו לענן — פעולה זו תחליף את מה שקיים כרגע בענן.</p>
+    <button class="btn" id="legacy-import-btn" type="button">ייבוא הנתונים הישנים לענן</button>
+  </div>
 
   <div class="card" id="editors-panel" style="display:none;">
     <h3>👥 ניהול הרשאות עריכה</h3>
@@ -593,6 +612,7 @@
     editorsMap = snap.val() || {};
     computeIsEditor();
     renderEditorsPanel();
+    checkLegacyImportBanner();
     renderAll();
   });
   onAuthStateChanged(fbAuth, (user) => {
@@ -600,6 +620,7 @@
     computeIsEditor();
     updateAuthUI();
     renderEditorsPanel();
+    checkLegacyImportBanner();
     renderAll();
   });
 
@@ -702,7 +723,7 @@
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
       attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
       postponeTitle: 'דחיית ביצוע לשבוע הבא', addTaskHereBtn: '+ הוספת משימה ליום זה',
-      quickAddTitle: 'הוספת משימה קיימת ליום זה', quickAddTaskLabel: 'משימה', quickAddHoursLabel: 'שעות', quickAddWorkersLabel: "מס' עובדים",
+      quickAddTitle: 'הוספת משימה קיימת ליום זה', quickAddTaskLabel: 'משימה', quickAddHoursLabel: 'שעות', quickAddWorkersLabel: "מס' עובדים", printPdfBtn: '🖨️ ייצוא PDF',
       hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
@@ -737,7 +758,7 @@
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
       attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
       postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم', addTaskHereBtn: '+ إضافة مهمة لهذا اليوم',
-      quickAddTitle: 'إضافة مهمة قائمة إلى هذا اليوم', quickAddTaskLabel: 'المهمة', quickAddHoursLabel: 'ساعات', quickAddWorkersLabel: 'عدد العمال',
+      quickAddTitle: 'إضافة مهمة قائمة إلى هذا اليوم', quickAddTaskLabel: 'المهمة', quickAddHoursLabel: 'ساعات', quickAddWorkersLabel: 'عدد العمال', printPdfBtn: '🖨️ تصدير PDF',
       hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
@@ -1484,10 +1505,11 @@
 
     let html = `<div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
       <h3 style="margin-bottom:0;">${dateFmt(days[0])} – ${dateFmt(days[6])}</h3>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn-secondary" id="week-prev-btn" type="button">▶</button>
         <button class="btn-secondary" id="week-today-btn" type="button">${t('thisWeekBtn')}</button>
         <button class="btn-secondary" id="week-next-btn" type="button">◀</button>
+        <button class="btn-secondary" id="week-print-btn" type="button">${t('printPdfBtn')}</button>
       </div>
     </div>
     <div class="card">
@@ -1535,6 +1557,7 @@
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
     $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
     $('week-today-btn').addEventListener('click', () => { selectedWeekOffset = 0; renderWeeklyGantt(); });
+    $('week-print-btn').addEventListener('click', () => window.print());
   }
 
   // ---- Monthly Gantt: full calendar for a selected month, same placement engine as the weekly view ----
@@ -2103,6 +2126,35 @@
     set(ref(fbDb, 'data'), { tasks, attendance, expenses, appendixOverrides, weedwhackStatus, skippedOccurrences, extraOccurrences });
     return true;
   }
+
+  // ---- One-time recovery: this browser may still hold data entered before the move to shared cloud storage ----
+  function readLegacyLocalData() {
+    const get = (k, fallback) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : fallback; } catch { return fallback; } };
+    const legacyTasks = get('gardeningPlanTasks', null);
+    if (!legacyTasks) return null;
+    const appendixOverrides = get('gardeningPlanAppendixHtml', {});
+    return {
+      tasks: legacyTasks,
+      attendance: get('gardeningPlanAttendance', {}),
+      expenses: get('gardeningPlanExpenses', []),
+      appendixOverrides,
+      weedwhackStatus: get('gardeningPlanWeedwhackStatus', {}),
+      skippedOccurrences: get('gardeningPlanSkippedOccurrences', {}),
+      extraOccurrences: get('gardeningPlanExtraOccurrences', {}),
+    };
+  }
+  function checkLegacyImportBanner() {
+    const legacy = readLegacyLocalData();
+    $('legacy-import-banner').style.display = (legacy && isEditor) ? 'block' : 'none';
+  }
+  $('legacy-import-btn').addEventListener('click', () => {
+    if (!requireEditorOrAlert()) return;
+    const legacy = readLegacyLocalData();
+    if (!legacy) return;
+    if (!confirm('לייבא את הנתונים הישנים מהדפדפן הזה לענן? זה יחליף את מה שקיים כרגע בענן.')) return;
+    set(ref(fbDb, 'data'), legacy);
+    $('legacy-import-banner').style.display = 'none';
+  });
 
   onValue(ref(fbDb, 'data'), (snapshot) => {
     const val = snapshot.val();
