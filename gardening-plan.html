@@ -195,7 +195,17 @@
       <button class="btn-secondary lang-btn" data-lang="he" type="button" style="padding:4px 12px;font-size:13px;">עברית</button>
       <button class="btn-secondary lang-btn" data-lang="ar" type="button" style="padding:4px 12px;font-size:13px;">العربية</button>
     </div>
+    <div id="auth-box" style="margin-top:10px;font-size:13px;"></div>
   </header>
+
+  <div class="card" id="editors-panel" style="display:none;">
+    <h3>👥 ניהול הרשאות עריכה</h3>
+    <div id="editors-list"></div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <input type="email" id="new-editor-email" placeholder="כתובת Gmail" style="flex:1;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Assistant',sans-serif;font-size:16px;">
+      <button class="btn-secondary" id="add-editor-btn" type="button">+ הוספה</button>
+    </div>
+  </div>
 
   <div class="card">
     <div class="summary-row">
@@ -515,8 +525,84 @@
   </div>
 </div>
 
-<script>
-  const STORAGE_KEY = 'gardeningPlanTasks';
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHwWnO7dUrbK8goRVYTmeLGYuRnCOjf4Q",
+    authDomain: "karmei-yosef-gardening.firebaseapp.com",
+    databaseURL: "https://karmei-yosef-gardening-default-rtdb.firebaseio.com",
+    projectId: "karmei-yosef-gardening",
+    storageBucket: "karmei-yosef-gardening.firebasestorage.app",
+    messagingSenderId: "406213888819",
+    appId: "1:406213888819:web:920d41095b411dcc9acc46",
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const fbAuth = getAuth(fbApp);
+  const fbDb = getDatabase(fbApp);
+  const OWNER_EMAIL = 'xboazx@gmail.com';
+
+  // ---- Shared cloud data (replaces localStorage as the source of truth) ----
+  // Everyone who opens the link reads the same live data. Only the owner and anyone
+  // explicitly granted access (see editors panel) can write; enforced by Firebase security rules.
+  function sanitizeEmailKey(email) { return email.replace(/[.#$\[\]]/g, ','); }
+  let currentUser = null;
+  let editorsMap = {}; // sanitizedEmailKey -> real email
+  let isEditor = false;
+  function computeIsEditor() {
+    isEditor = !!currentUser && (currentUser.email === OWNER_EMAIL || !!editorsMap[sanitizeEmailKey(currentUser.email)]);
+  }
+  function requireEditorOrAlert() {
+    if (isEditor) return true;
+    alert(currentUser ? 'אין לך הרשאת עריכה לתוכנית זו' : 'יש להתחבר עם חשבון Google מורשה כדי לערוך');
+    return false;
+  }
+  function signInGoogle() { signInWithPopup(fbAuth, new GoogleAuthProvider()).catch(err => alert('שגיאת התחברות: ' + err.message)); }
+  function signOutUser() { signOut(fbAuth); }
+  function updateAuthUI() {
+    const box = $('auth-box');
+    if (!box) return;
+    if (currentUser) {
+      box.innerHTML = `<span style="color:var(--ink-light);">${currentUser.email} ${isEditor ? '✏️' : '(צפייה בלבד)'}</span> <button class="btn-secondary btn-small" id="signout-btn" type="button">התנתקות</button>`;
+      $('signout-btn').addEventListener('click', signOutUser);
+    } else {
+      box.innerHTML = `<button class="btn-secondary btn-small" id="signin-btn" type="button">🔑 התחברות לעריכה</button>`;
+      $('signin-btn').addEventListener('click', signInGoogle);
+    }
+  }
+  function renderEditorsPanel() {
+    const panel = $('editors-panel');
+    if (!panel) return;
+    const isOwner = currentUser && currentUser.email === OWNER_EMAIL;
+    panel.style.display = isOwner ? 'block' : 'none';
+    if (!isOwner) return;
+    const keys = Object.keys(editorsMap);
+    $('editors-list').innerHTML = keys.length
+      ? keys.map(k => `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;">
+          <span>${editorsMap[k]}</span>
+          <button class="icon-btn danger remove-editor-btn" data-key="${k}" type="button">🗑️</button>
+        </div>`).join('')
+      : `<p class="empty-msg">אין עורכים נוספים עדיין</p>`;
+    $('editors-list').querySelectorAll('.remove-editor-btn').forEach(btn => {
+      btn.addEventListener('click', () => set(ref(fbDb, 'editors/' + btn.dataset.key), null));
+    });
+  }
+  onValue(ref(fbDb, 'editors'), (snap) => {
+    editorsMap = snap.val() || {};
+    computeIsEditor();
+    renderEditorsPanel();
+    renderAll();
+  });
+  onAuthStateChanged(fbAuth, (user) => {
+    currentUser = user;
+    computeIsEditor();
+    updateAuthUI();
+    renderEditorsPanel();
+    renderAll();
+  });
+
   const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
   const WEEKDAY_NAMES = ['יום ראשון','יום שני','יום שלישי','יום רביעי','יום חמישי','יום שישי','שבת'];
   const INTERVAL_LABELS = { week:'כל שבוע', '2xweek':'פעמיים בשבוע', '3xweek':'שלוש פעמים בשבוע', '2weeks':'כל שבועיים', '3weeks':'כל 3 שבועות', '4weeks':'פעם בחודש', year:'פעם בשנה', once:'פעם אחת (תאריך ספציפי)', asneeded:'לפי צורך' };
@@ -881,21 +967,10 @@
     return renamed;
   }
 
-  function loadTasks() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return mergeNewSeedItems(applyZoneRenames(migrateTasks(JSON.parse(raw))));
-    } catch {}
-    const seeded = SEED_DATA.map((s, i) => ({
-      id: 'seed_' + i,
-      zone: s[0],
-      name: s[1],
-      notes: s[2] || '',
-      outsourced: false,
-      schedules: []
+  function buildSeedTasks() {
+    return SEED_DATA.map((s, i) => ({
+      id: 'seed_' + i, zone: s[0], name: s[1], notes: s[2] || '', outsourced: false, schedules: []
     }));
-    saveTasks(seeded);
-    return seeded;
   }
 
   // adds any SEED_DATA entries not already present (by zone+name), without touching existing filled-in tasks
@@ -940,10 +1015,11 @@
   }
 
   function saveTasks(list) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+    tasks = list;
+    pushCloudData();
   }
 
-  let tasks = loadTasks();
+  let tasks = [];
   let editingId = null;
 
   function uniqueZones() {
@@ -1257,12 +1333,8 @@
   function dateKey(d) {
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   }
-  const ATTENDANCE_KEY = 'gardeningPlanAttendance';
   let attendance = {};
-  function loadAttendance() {
-    try { attendance = JSON.parse(localStorage.getItem(ATTENDANCE_KEY)) || {}; } catch { attendance = {}; }
-  }
-  function saveAttendance() { localStorage.setItem(ATTENDANCE_KEY, JSON.stringify(attendance)); }
+  function saveAttendance() { pushCloudData(); }
   function capacityLineHtml(dow, items) {
     const capacity = capacityForDay(dow);
     // outsourced work is done by an external contractor, not the in-house crew, so it doesn't count against capacity
@@ -1301,7 +1373,7 @@
         e.preventDefault();
         col.classList.remove('drag-over');
         const raw = e.dataTransfer.getData('text/plain');
-        if (!raw) return;
+        if (!raw || !requireEditorOrAlert()) return;
         const [taskId, scheduleId, originDate] = raw.split('|');
         const task = tasks.find(x => x.id === taskId);
         const sched = task && (task.schedules || []).find(s => s.id === scheduleId);
@@ -1319,6 +1391,7 @@
     container.querySelectorAll('.postpone-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (!requireEditorOrAlert()) return;
         const task = tasks.find(x => x.id === btn.dataset.taskId);
         const sched = task && (task.schedules || []).find(s => s.id === btn.dataset.scheduleId);
         if (sched && sched.interval === 'once') {
@@ -1349,6 +1422,7 @@
   document.addEventListener('change', (e) => {
     const sel = e.target.closest('.attendance-select');
     if (!sel) return;
+    if (!requireEditorOrAlert()) { renderAll(); return; }
     const key = sel.dataset.date;
     if (sel.value === '') delete attendance[key]; else attendance[key] = Number(sel.value);
     saveAttendance();
@@ -1669,6 +1743,7 @@
   $('qa-cancel-btn').addEventListener('click', closeQuickAddModal);
   $('quickadd-modal-overlay').addEventListener('click', (e) => { if (e.target.id === 'quickadd-modal-overlay') closeQuickAddModal(); });
   $('qa-save-btn').addEventListener('click', () => {
+    if (!requireEditorOrAlert()) return;
     const task = tasks.find(x => x.id === $('qa-task').value);
     if (!task) return;
     const hours = $('qa-hours').value === '' ? null : Number($('qa-hours').value);
@@ -1685,6 +1760,7 @@
   $('form-modal-overlay').addEventListener('click', (e) => { if (e.target.id === 'form-modal-overlay') closeModal(); });
 
   $('save-btn').addEventListener('click', () => {
+    if (!requireEditorOrAlert()) return;
     const zoneExisting = $('f-zone').value;
     const zoneNew = $('f-zone-new').value.trim();
     const zone = zoneNew || zoneExisting;
@@ -1710,7 +1786,7 @@
   });
 
   $('delete-btn').addEventListener('click', () => {
-    if (!editingId) return;
+    if (!editingId || !requireEditorOrAlert()) return;
     if (!confirm(t('confirmDeleteTask'))) return;
     tasks = tasks.filter(t => t.id !== editingId);
     saveTasks(tasks);
@@ -1726,6 +1802,7 @@
       const t = tasks.find(x => x.id === editBtn.dataset.id);
       if (t) openModal(t);
     } else if (delBtn) {
+      if (!requireEditorOrAlert()) return;
       if (!confirm(t('confirmDeleteTask'))) return;
       tasks = tasks.filter(t => t.id !== delBtn.dataset.id);
       saveTasks(tasks);
@@ -1772,10 +1849,11 @@
   // ---- Full data backup / restore (JSON) — the only way to move data between two different
   // browser origins (e.g. a locally-opened file vs. the live boazor.com page), since
   // localStorage never crosses origins on its own ----
-  function backupKeys() { return [STORAGE_KEY, ATTENDANCE_KEY, EXPENSES_KEY, APPENDIX_KEY, LANG_KEY, WEEDWHACK_KEY, SKIPPED_KEY, EXTRA_KEY]; }
+  // backup now reads/writes the shared cloud data directly, not per-device localStorage
   $('backup-export-btn').addEventListener('click', () => {
-    const data = {};
-    backupKeys().forEach(k => { const v = localStorage.getItem(k); if (v != null) data[k] = v; });
+    const appendixOverrides = {};
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { appendixOverrides[el.id] = el.innerHTML; });
+    const data = { tasks, attendance, expenses, appendixOverrides, weedwhackStatus, skippedOccurrences, extraOccurrences };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1786,7 +1864,7 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   });
-  $('backup-import-btn').addEventListener('click', () => $('backup-import-input').click());
+  $('backup-import-btn').addEventListener('click', () => { if (requireEditorOrAlert()) $('backup-import-input').click(); });
   $('backup-import-input').addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -1794,10 +1872,10 @@
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result);
+        if (!requireEditorOrAlert()) return;
         if (!confirm(t('confirmImportAlert'))) return;
-        backupKeys().forEach(k => { if (data[k] != null) localStorage.setItem(k, data[k]); });
+        set(ref(fbDb, 'data'), data);
         alert(t('importSuccessAlert'));
-        location.reload();
       } catch (err) {
         alert(t('invalidBackupAlert') + err.message);
       }
@@ -1807,12 +1885,8 @@
   });
 
   // ---- Special monthly expenses tracker ----
-  const EXPENSES_KEY = 'gardeningPlanExpenses';
   let expenses = [];
-  function loadExpenses() {
-    try { expenses = JSON.parse(localStorage.getItem(EXPENSES_KEY)) || []; } catch { expenses = []; }
-  }
-  function saveExpenses() { localStorage.setItem(EXPENSES_KEY, JSON.stringify(expenses)); }
+  function saveExpenses() { pushCloudData(); }
 
   let editingExpenseId = null;
   function openExpenseModal(exp) {
@@ -1833,6 +1907,7 @@
   $('expense-modal-overlay').addEventListener('click', (e) => { if (e.target.id === 'expense-modal-overlay') closeExpenseModal(); });
 
   $('expense-save-btn').addEventListener('click', () => {
+    if (!requireEditorOrAlert()) return;
     const item = $('e-item').value.trim();
     const date = $('e-date').value;
     if (!item || !date) { alert(t('fillDateItemAlert')); return; }
@@ -1855,7 +1930,7 @@
   });
 
   $('expense-delete-btn').addEventListener('click', () => {
-    if (!editingExpenseId) return;
+    if (!editingExpenseId || !requireEditorOrAlert()) return;
     if (!confirm(t('confirmDeleteExpense'))) return;
     expenses = expenses.filter(x => x.id !== editingExpenseId);
     saveExpenses();
@@ -1925,6 +2000,7 @@
       if (exp) openExpenseModal(exp);
     }));
     container.querySelectorAll('.expense-delete-row-btn').forEach(btn => btn.addEventListener('click', () => {
+      if (!requireEditorOrAlert()) return;
       if (!confirm(t('confirmDeleteExpense'))) return;
       expenses = expenses.filter(x => x.id !== btn.dataset.id);
       saveExpenses();
@@ -1953,13 +2029,6 @@
   }
 
   // ---- Appendix in-place editing ----
-  const APPENDIX_KEY = 'gardeningPlanAppendixHtml';
-  function loadAppendixOverrides() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(APPENDIX_KEY)) || {};
-      Object.keys(saved).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = saved[id]; });
-    } catch {}
-  }
   let appendixEditMode = false;
   function setAppendixEditMode(on) {
     appendixEditMode = on;
@@ -1967,11 +2036,13 @@
     $('appendix-edit-toggle').textContent = on ? t('finishEditBtn') : t('editAppendixBtn');
     $('appendix-save-btn').style.display = on ? 'inline-block' : 'none';
   }
-  $('appendix-edit-toggle').addEventListener('click', () => setAppendixEditMode(!appendixEditMode));
+  $('appendix-edit-toggle').addEventListener('click', () => {
+    if (!requireEditorOrAlert()) return;
+    setAppendixEditMode(!appendixEditMode);
+  });
   $('appendix-save-btn').addEventListener('click', () => {
-    const data = {};
-    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { data[el.id] = el.innerHTML; });
-    localStorage.setItem(APPENDIX_KEY, JSON.stringify(data));
+    if (!requireEditorOrAlert()) return;
+    pushCloudData();
     setAppendixEditMode(false);
     alert(t('appendixSavedAlert'));
   });
@@ -1979,12 +2050,8 @@
   // ---- Postponing a single occurrence of a recurring schedule to next week ----
   // Removing a task from a specific date in the weekly Gantt doesn't touch the schedule itself — it just
   // records that this one date is skipped, so the recurring pattern naturally shows it again next time it's due.
-  const SKIPPED_KEY = 'gardeningPlanSkippedOccurrences';
   let skippedOccurrences = {};
-  function loadSkippedOccurrences() {
-    try { skippedOccurrences = JSON.parse(localStorage.getItem(SKIPPED_KEY)) || {}; } catch { skippedOccurrences = {}; }
-  }
-  function saveSkippedOccurrences() { localStorage.setItem(SKIPPED_KEY, JSON.stringify(skippedOccurrences)); }
+  function saveSkippedOccurrences() { pushCloudData(); }
   function postponeOccurrence(taskId, scheduleId, dk) {
     const key = taskId + '_' + scheduleId;
     if (!skippedOccurrences[key]) skippedOccurrences[key] = [];
@@ -1994,12 +2061,8 @@
 
   // one-time relocation of a single occurrence (drag-and-drop) — the recurring pattern itself is untouched;
   // this only adds one extra date the schedule shows up on, paired with skipping its original date that week
-  const EXTRA_KEY = 'gardeningPlanExtraOccurrences';
   let extraOccurrences = {};
-  function loadExtraOccurrences() {
-    try { extraOccurrences = JSON.parse(localStorage.getItem(EXTRA_KEY)) || {}; } catch { extraOccurrences = {}; }
-  }
-  function saveExtraOccurrences() { localStorage.setItem(EXTRA_KEY, JSON.stringify(extraOccurrences)); }
+  function saveExtraOccurrences() { pushCloudData(); }
   function addExtraOccurrence(taskId, scheduleId, dk) {
     const key = taskId + '_' + scheduleId;
     if (!extraOccurrences[key]) extraOccurrences[key] = [];
@@ -2013,12 +2076,8 @@
   }
 
   // ---- Weed-whacking "done / not done" checklist status (separate from the free-text appendix content) ----
-  const WEEDWHACK_KEY = 'gardeningPlanWeedwhackStatus';
   let weedwhackStatus = {};
-  function loadWeedwhackStatus() {
-    try { weedwhackStatus = JSON.parse(localStorage.getItem(WEEDWHACK_KEY)) || {}; } catch { weedwhackStatus = {}; }
-  }
-  function saveWeedwhackStatus() { localStorage.setItem(WEEDWHACK_KEY, JSON.stringify(weedwhackStatus)); }
+  function saveWeedwhackStatus() { pushCloudData(); }
   function applyWeedwhackStatus() {
     document.querySelectorAll('.weedwhack-check').forEach(cb => {
       cb.checked = !!weedwhackStatus[cb.dataset.key];
@@ -2029,22 +2088,53 @@
   document.addEventListener('change', (e) => {
     const cb = e.target.closest('.weedwhack-check');
     if (!cb) return;
+    if (!requireEditorOrAlert()) { applyWeedwhackStatus(); return; }
     weedwhackStatus[cb.dataset.key] = cb.checked;
     saveWeedwhackStatus();
     const row = cb.closest('tr') || cb.closest('li');
     if (row) row.classList.toggle('ww-done', cb.checked);
   });
 
-  loadAttendance();
-  loadExpenses();
-  loadAppendixOverrides();
-  loadWeedwhackStatus();
-  loadSkippedOccurrences();
-  loadExtraOccurrences();
-  plantsHeHtml = $('appendix-plants').innerHTML;
+  // ---- Single combined cloud sync: one write path, one live-read subscription ----
+  function pushCloudData() {
+    if (!isEditor) return false;
+    const appendixOverrides = {};
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { appendixOverrides[el.id] = el.innerHTML; });
+    set(ref(fbDb, 'data'), { tasks, attendance, expenses, appendixOverrides, weedwhackStatus, skippedOccurrences, extraOccurrences });
+    return true;
+  }
+
+  onValue(ref(fbDb, 'data'), (snapshot) => {
+    const val = snapshot.val();
+    if (val) {
+      attendance = val.attendance || {};
+      expenses = val.expenses || [];
+      weedwhackStatus = val.weedwhackStatus || {};
+      skippedOccurrences = val.skippedOccurrences || {};
+      extraOccurrences = val.extraOccurrences || {};
+      if (val.appendixOverrides) {
+        Object.keys(val.appendixOverrides).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = val.appendixOverrides[id]; });
+      }
+      tasks = mergeNewSeedItems(applyZoneRenames(migrateTasks(val.tasks || [])));
+    } else {
+      attendance = {}; expenses = []; weedwhackStatus = {}; skippedOccurrences = {}; extraOccurrences = {};
+      tasks = buildSeedTasks();
+    }
+    plantsHeHtml = $('appendix-plants').innerHTML;
+    applyWeedwhackStatus();
+    renderAll();
+    if (!val) pushCloudData(); // first-ever load with an empty database: seed the shared baseline if we're allowed to
+  });
+
+  $('add-editor-btn').addEventListener('click', () => {
+    const email = $('new-editor-email').value.trim().toLowerCase();
+    if (!currentUser || currentUser.email !== OWNER_EMAIL) return;
+    if (!email || !email.includes('@')) { alert('נא להזין אימייל תקין'); return; }
+    set(ref(fbDb, 'editors/' + sanitizeEmailKey(email)), email);
+    $('new-editor-email').value = '';
+  });
+
   applyStaticUILang();
-  applyWeedwhackStatus();
-  renderAll();
 </script>
 </body>
 </html>
