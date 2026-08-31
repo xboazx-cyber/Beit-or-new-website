@@ -567,7 +567,7 @@
   // ---- Shared cloud data (replaces localStorage as the source of truth) ----
   // Everyone who opens the link reads the same live data. Only the owner and anyone
   // explicitly granted access (see editors panel) can write; enforced by Firebase security rules.
-  function sanitizeEmailKey(email) { return email.replace(/[.#$\[\]]/g, ','); }
+  function sanitizeEmailKey(email) { return email.replace(/[.#$\[\]/]/g, ','); }
   let currentUser = null;
   let editorsMap = {}; // sanitizedEmailKey -> real email
   let isEditor = false;
