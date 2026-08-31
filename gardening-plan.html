@@ -1534,9 +1534,10 @@
     const container = $('view-weekly');
     const days = getWeekDates(selectedWeekOffset);
     const dateFmt = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric' });
+    const dateFmtFull = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric', year:'numeric' });
 
     let html = `<div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <h3 style="margin-bottom:0;">${dateFmt(days[0])} – ${dateFmt(days[6])}</h3>
+      <h3 style="margin-bottom:0;">${dateFmtFull(days[0])} – ${dateFmtFull(days[6])}</h3>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn-secondary" id="week-prev-btn" type="button">▶</button>
         <button class="btn-secondary" id="week-today-btn" type="button">${t('thisWeekBtn')}</button>
