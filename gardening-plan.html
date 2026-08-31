@@ -184,15 +184,18 @@
     #f-schedules-empty { text-align: center; color: var(--ink-light); font-size: 15px; padding: 10px 0; }
 
     @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
       body * { visibility: hidden; }
-      #view-weekly, #view-weekly * { visibility: visible; }
-      #view-weekly { position: absolute; top: 0; right: 0; left: 0; width: 100%; }
+      header, header *, #view-weekly, #view-weekly * { visibility: visible; }
+      header { margin-bottom: 12px; }
+      #header-controls, #legacy-import-banner, #editors-panel, #stats-card, #tabs-card,
       #week-prev-btn, #week-next-btn, #week-today-btn, #week-print-btn,
       .postpone-btn, .edit-day-task-btn, .add-day-task-btn, .attendance-row,
-      #legacy-import-banner, #editors-panel, #auth-box { display: none !important; }
+      .ref-list-card { display: none !important; }
+      #view-weekly { position: absolute; top: 130px; right: 0; left: 0; width: 100%; }
       .week-days-grid { grid-template-columns: repeat(7, 1fr) !important; gap: 6px !important; }
-      .day-col { break-inside: avoid; border: 1px solid #999 !important; }
-      .day-task-item { padding-left: 8px !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .day-col { break-inside: avoid; border: 1px solid #999 !important; background: var(--card) !important; }
+      .day-task-item { padding-left: 8px !important; }
       .card { box-shadow: none !important; }
     }
   </style>
@@ -204,7 +207,7 @@
     <img src="karmey_yosef_logo.png" alt="לוגו כרמי יוסף" style="height:64px;width:auto;display:block;margin:0 auto 8px;">
     <h1 id="header-title">🌿 תוכנית עבודה - גינון כרמי יוסף</h1>
     <p id="header-subtitle">ניהול אזורים, משימות, לוחות זמנים ומעקב עובדים</p>
-    <div style="margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+    <div id="header-controls" style="margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
       <button class="btn-secondary lang-btn" data-lang="he" type="button" style="padding:4px 12px;font-size:13px;">עברית</button>
       <button class="btn-secondary lang-btn" data-lang="ar" type="button" style="padding:4px 12px;font-size:13px;">العربية</button>
       <span id="auth-box" style="font-size:13px;"></span>
@@ -231,7 +234,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="stats-card">
     <div class="summary-row">
       <div class="stat-box"><span id="stat-count-label">סה"כ משימות</span><strong id="stat-count">0</strong></div>
       <div class="stat-box"><span id="stat-hours-label">שעות בשנה</span><strong id="stat-hours">0</strong></div>
@@ -239,7 +242,7 @@
     </div>
   </div>
 
-  <div class="card">
+  <div class="card" id="tabs-card">
     <div class="filters" style="margin-bottom:12px;">
       <button class="btn-secondary view-tab active" data-view="list" type="button" id="tab-list">📋 רשימה</button>
       <button class="btn-secondary view-tab" data-view="weekly" type="button" id="tab-weekly">📆 גאנט שבועי</button>
@@ -1481,7 +1484,7 @@
   function referenceListsHtml(days) {
     const yearlyRelevant = getYearlyRelevant(days);
     const asNeeded = getAsNeededTasks();
-    let html = `<div class="card">
+    let html = `<div class="card ref-list-card">
       <h3>${t('yearlyHeader')}</h3>`;
     if (yearlyRelevant.length === 0) {
       html += `<p class="empty-msg">${t('emptyMsg')}</p>`;
@@ -1494,7 +1497,7 @@
       });
     }
     html += `</div>
-    <div class="card">
+    <div class="card ref-list-card">
       <h3>${t('asneededHeader')}</h3>`;
     if (asNeeded.length === 0) {
       html += `<p class="empty-msg">${t('emptyMsg')}</p>`;
