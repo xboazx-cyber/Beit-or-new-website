@@ -215,6 +215,7 @@
     <h3>📦 נמצאו נתונים ישנים בדפדפן זה</h3>
     <p style="margin-bottom:12px;">נראה שיש כאן נתונים שהוזנו לפני המעבר לענן (בדפדפן הזה בלבד). אפשר לייבא אותם עכשיו לענן — פעולה זו תחליף את מה שקיים כרגע בענן.</p>
     <button class="btn" id="legacy-import-btn" type="button">ייבוא הנתונים הישנים לענן</button>
+    <button class="btn-secondary" id="legacy-dismiss-btn" type="button">✕ לא רלוונטי, סגירה</button>
   </div>
 
   <div class="card" id="editors-panel" style="display:none;">
@@ -2143,16 +2144,27 @@
       extraOccurrences: get('gardeningPlanExtraOccurrences', {}),
     };
   }
+  // once the cloud already holds real filled-in data, the recovery banner must never be offered again on
+  // any device — otherwise a stale/empty local copy (e.g. from a phone that once loaded an older version
+  // of this page) could silently overwrite real data. This is the actual safety fix, not just a dismiss button.
+  let cloudHasRealData = false;
+  let legacyBannerDismissed = false;
   function checkLegacyImportBanner() {
     const legacy = readLegacyLocalData();
-    $('legacy-import-banner').style.display = (legacy && isEditor) ? 'block' : 'none';
+    const show = legacy && isEditor && !cloudHasRealData && !legacyBannerDismissed;
+    $('legacy-import-banner').style.display = show ? 'block' : 'none';
   }
   $('legacy-import-btn').addEventListener('click', () => {
     if (!requireEditorOrAlert()) return;
+    if (cloudHasRealData) { alert('בענן כבר יש נתונים אמיתיים — לא ניתן לדרוס אותם מכאן. אם באמת צריך לשחזר מגיבוי, השתמשו ב"ייבוא גיבוי" הרגיל ובחרו קובץ במודע.'); checkLegacyImportBanner(); return; }
     const legacy = readLegacyLocalData();
     if (!legacy) return;
     if (!confirm('לייבא את הנתונים הישנים מהדפדפן הזה לענן? זה יחליף את מה שקיים כרגע בענן.')) return;
     set(ref(fbDb, 'data'), legacy);
+    $('legacy-import-banner').style.display = 'none';
+  });
+  $('legacy-dismiss-btn').addEventListener('click', () => {
+    legacyBannerDismissed = true;
     $('legacy-import-banner').style.display = 'none';
   });
 
@@ -2172,8 +2184,10 @@
       attendance = {}; expenses = []; weedwhackStatus = {}; skippedOccurrences = {}; extraOccurrences = {};
       tasks = buildSeedTasks();
     }
+    cloudHasRealData = !!(val && val.tasks && val.tasks.some(x => x.schedules && x.schedules.length));
     plantsHeHtml = $('appendix-plants').innerHTML;
     applyWeedwhackStatus();
+    checkLegacyImportBanner();
     renderAll();
     if (!val) pushCloudData(); // first-ever load with an empty database: seed the shared baseline if we're allowed to
   });
