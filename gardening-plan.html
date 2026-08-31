@@ -1589,7 +1589,14 @@
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
     $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
     $('week-today-btn').addEventListener('click', () => { selectedWeekOffset = 0; renderWeeklyGantt(); });
-    $('week-print-btn').addEventListener('click', () => window.print());
+    $('week-print-btn').addEventListener('click', () => {
+      // most browsers suggest document.title as the default "Save as PDF" filename
+      const originalTitle = document.title;
+      document.title = `תוכנית שבועית ${dateKey(days[0])} עד ${dateKey(days[6])}`;
+      const restore = () => { document.title = originalTitle; window.removeEventListener('afterprint', restore); };
+      window.addEventListener('afterprint', restore);
+      window.print();
+    });
   }
 
   // ---- Monthly Gantt: full calendar for a selected month, same placement engine as the weekly view ----
