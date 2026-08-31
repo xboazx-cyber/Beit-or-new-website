@@ -81,7 +81,7 @@
     .day-col.is-saturday .day-col-header { color: #8a8270; }
     .day-col.is-saturday .day-empty { color: #8a8270; font-weight: 600; }
     .day-col-header { font-family: 'Rubik', sans-serif; font-weight: 600; font-size: 15px; color: var(--accent-dark); margin-bottom: 8px; text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-    .day-task-item { position: relative; background: var(--accent-light); border-radius: 6px; padding: 6px 8px; padding-left: 20px; font-size: 14px; margin-bottom: 6px; cursor: grab; }
+    .day-task-item { position: relative; background: var(--accent-light); border-radius: 6px; padding: 6px 8px; padding-left: 40px; font-size: 14px; margin-bottom: 6px; cursor: grab; }
     .day-task-item.dragging { opacity: 0.35; }
     .day-col[data-dow] { transition: background .1s, outline .1s; border-radius: 8px; }
     .day-col[data-dow].drag-over { outline: 2px dashed var(--accent); outline-offset: -2px; background: var(--accent-light); }
@@ -92,7 +92,10 @@
     .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
     .day-task-item.outsourced { background: var(--pink-light); }
     .day-task-item.outsourced .dt-name { color: var(--pink); }
-    .postpone-btn { position: absolute; top: 3px; left: 3px; background: none; border: none; color: var(--ink-light); font-size: 12px; line-height: 1; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+    .postpone-btn, .edit-day-task-btn { position: absolute; top: 3px; background: none; border: none; color: var(--ink-light); font-size: 12px; line-height: 1; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
+    .postpone-btn { left: 3px; }
+    .edit-day-task-btn { left: 22px; }
+    .edit-day-task-btn:hover { background: rgba(0,0,0,.08); }
     .postpone-btn:hover { background: rgba(0,0,0,.08); color: var(--danger); }
     .day-empty { color: var(--ink-light); font-size: 14px; text-align: center; padding: 20px 0; }
     .unpinned-list-item { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 15px; }
@@ -165,6 +168,12 @@
     }
     #expense-modal-overlay.open { display: flex; }
     #expense-modal { background: white; border-radius: 14px; padding: 24px; max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; margin: auto; }
+    #quickadd-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(20,30,15,.4); z-index: 500;
+      align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
+    }
+    #quickadd-modal-overlay.open { display: flex; }
+    #quickadd-modal { background: white; border-radius: 14px; padding: 24px; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto; margin: auto; }
     .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
 
     .schedule-row {
@@ -349,9 +358,6 @@
         <li>לאורך החורף והאביב, בהתאם לצורך — חרמוש נקודתי ברחובות ובנקודות קריטיות ע"י "הנערים"</li>
         <li>חישוף + חרמוש מאסיבי ע"י הקבלן עפיף, מיד לאחר האביב, בנקודות הרשומות</li>
       </ol>
-      <div style="background:var(--amber-light);border-radius:10px;padding:12px 14px;font-size:14px;">
-        ❓ <strong>שאלה פתוחה מהמסמך המקורי:</strong> האם עדיין יש לנו את "הנערים" ואת הקבלן עפיף, או לא? (המסמך מציין שאין סיבה לשנות את הסטטוס אם התשובה כן)
-      </div>
     </div>
 
     <div class="card" id="appendix-tubishvat" data-editable>
@@ -486,6 +492,29 @@
   </div>
 </div>
 
+<!-- Quick-add: attach an existing task to a specific day in the weekly Gantt -->
+<div id="quickadd-modal-overlay">
+  <div id="quickadd-modal">
+    <h2 id="quickadd-title">הוספת משימה קיימת ליום זה</h2>
+    <div class="field">
+      <label for="qa-task" id="qa-task-label">משימה</label>
+      <select id="qa-task"></select>
+    </div>
+    <div class="field">
+      <label for="qa-hours" id="qa-hours-label">שעות</label>
+      <input type="number" id="qa-hours" min="0" step="0.5">
+    </div>
+    <div class="field" style="margin-bottom:0;">
+      <label for="qa-workers" id="qa-workers-label">מס' עובדים</label>
+      <input type="number" id="qa-workers" min="0" step="1">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="qa-save-btn" type="button">שמירה</button>
+      <button class="btn-secondary" id="qa-cancel-btn" type="button">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const STORAGE_KEY = 'gardeningPlanTasks';
   const MONTH_NAMES = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
@@ -587,6 +616,7 @@
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
       attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
       postponeTitle: 'דחיית ביצוע לשבוע הבא', addTaskHereBtn: '+ הוספת משימה ליום זה',
+      quickAddTitle: 'הוספת משימה קיימת ליום זה', quickAddTaskLabel: 'משימה', quickAddHoursLabel: 'שעות', quickAddWorkersLabel: "מס' עובדים",
       hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
@@ -620,7 +650,8 @@
       filterZoneAll: 'كل المناطق', filterMonthAll: 'كل الأشهر',
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
       attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
-      postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم',
+      postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم', addTaskHereBtn: '+ إضافة مهمة لهذا اليوم',
+      quickAddTitle: 'إضافة مهمة قائمة إلى هذا اليوم', quickAddTaskLabel: 'المهمة', quickAddHoursLabel: 'ساعات', quickAddWorkersLabel: 'عدد العمال',
       hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
@@ -819,6 +850,14 @@
     // backup buttons
     $('backup-export-btn').textContent = t('backupExportBtn');
     $('backup-import-btn').textContent = t('backupImportBtn');
+
+    // quick-add modal
+    $('quickadd-title').textContent = t('quickAddTitle');
+    $('qa-task-label').textContent = t('quickAddTaskLabel');
+    $('qa-hours-label').textContent = t('quickAddHoursLabel');
+    $('qa-workers-label').textContent = t('quickAddWorkersLabel');
+    $('qa-save-btn').textContent = t('saveBtn');
+    $('qa-cancel-btn').textContent = t('cancelBtn');
   }
 
   document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -1293,6 +1332,13 @@
         renderAll();
       });
     });
+    container.querySelectorAll('.edit-day-task-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const task = tasks.find(x => x.id === btn.dataset.taskId);
+        if (task) openModal(task);
+      });
+    });
   }
 
   function attendanceSelectHtml(key) {
@@ -1390,6 +1436,7 @@
         } else {
           items.forEach(item => {
             html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
+              <button type="button" class="edit-day-task-btn" data-task-id="${item.taskId}" title="${t('editTitle')}">✏️</button>
               <button type="button" class="postpone-btn" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}" title="${t('postponeTitle')}">✕</button>
               <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
               <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</div>
@@ -1408,7 +1455,7 @@
 
     wireDayDragAndDrop(container);
     container.querySelectorAll('.add-day-task-btn').forEach(btn => {
-      btn.addEventListener('click', () => openModal(null, null, btn.dataset.date));
+      btn.addEventListener('click', () => openQuickAddModal(btn.dataset.date));
     });
 
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
@@ -1585,7 +1632,7 @@
     }
   });
 
-  function openModal(task, presetZone, presetDate) {
+  function openModal(task, presetZone) {
     editingId = task ? task.id : null;
     $('modal-title').textContent = task ? (t('modalEditTitle') + trText(task.name)) : t('modalAddTitle');
     const zoneSel = $('f-zone');
@@ -1597,10 +1644,7 @@
     $('f-outsourced').checked = task ? !!task.outsourced : false;
     modalSchedules = task ? JSON.parse(JSON.stringify(task.schedules || [])) : [];
     if (modalSchedules.length === 0) {
-      // adding straight from a specific day in the Gantt implies a one-time task for that exact date
-      modalSchedules.push(presetDate
-        ? { id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'once', hours: null, workers: null, months: [], weekday: '', date: presetDate }
-        : { id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
+      modalSchedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
     }
     renderScheduleRows();
     $('delete-btn').style.display = task ? 'inline-block' : 'none';
@@ -1610,6 +1654,31 @@
     $('form-modal-overlay').classList.remove('open');
     editingId = null;
   }
+
+  // quick-add: attach an existing task (from the task bank) to one specific day, from the weekly Gantt
+  let quickAddDate = null;
+  function openQuickAddModal(dateStr) {
+    quickAddDate = dateStr;
+    const sel = $('qa-task');
+    sel.innerHTML = tasks.map(task => `<option value="${task.id}">${trText(task.zone)} — ${trText(task.name)}</option>`).join('');
+    $('qa-hours').value = '';
+    $('qa-workers').value = '';
+    $('quickadd-modal-overlay').classList.add('open');
+  }
+  function closeQuickAddModal() { $('quickadd-modal-overlay').classList.remove('open'); }
+  $('qa-cancel-btn').addEventListener('click', closeQuickAddModal);
+  $('quickadd-modal-overlay').addEventListener('click', (e) => { if (e.target.id === 'quickadd-modal-overlay') closeQuickAddModal(); });
+  $('qa-save-btn').addEventListener('click', () => {
+    const task = tasks.find(x => x.id === $('qa-task').value);
+    if (!task) return;
+    const hours = $('qa-hours').value === '' ? null : Number($('qa-hours').value);
+    const workers = $('qa-workers').value === '' ? null : Number($('qa-workers').value);
+    task.schedules = task.schedules || [];
+    task.schedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'once', hours, workers, months: [], weekday: '', date: quickAddDate });
+    saveTasks(tasks);
+    closeQuickAddModal();
+    renderAll();
+  });
 
   $('add-btn').addEventListener('click', () => openModal(null));
   $('cancel-btn').addEventListener('click', closeModal);
