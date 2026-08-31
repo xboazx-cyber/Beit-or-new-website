@@ -2154,7 +2154,11 @@
   // of this page) could silently overwrite real data. This is the actual safety fix, not just a dismiss button.
   let cloudHasRealData = false;
   let legacyBannerDismissed = false;
+  let cloudDataLoadedOnce = false;
   function checkLegacyImportBanner() {
+    // don't show anything until we've actually heard back from the cloud at least once —
+    // otherwise a sign-in that fires before the first snapshot could flash the banner incorrectly
+    if (!cloudDataLoadedOnce) { $('legacy-import-banner').style.display = 'none'; return; }
     const legacy = readLegacyLocalData();
     const show = legacy && isEditor && !cloudHasRealData && !legacyBannerDismissed;
     $('legacy-import-banner').style.display = show ? 'block' : 'none';
@@ -2190,6 +2194,7 @@
       tasks = buildSeedTasks();
     }
     cloudHasRealData = !!(val && val.tasks && val.tasks.some(x => x.schedules && x.schedules.length));
+    cloudDataLoadedOnce = true;
     plantsHeHtml = $('appendix-plants').innerHTML;
     applyWeedwhackStatus();
     checkLegacyImportBanner();
