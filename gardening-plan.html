@@ -567,6 +567,7 @@
   const fbAuth = getAuth(fbApp);
   const fbDb = getDatabase(fbApp);
   const OWNER_EMAIL = 'xboazx@gmail.com';
+  const $ = id => document.getElementById(id);
 
   // ---- Shared cloud data (replaces localStorage as the source of truth) ----
   // Everyone who opens the link reads the same live data. Only the owner and anyone
@@ -709,8 +710,6 @@
     ['פרויקטים עתידיים', 'פיתוח אזור מגרשי הספורט'],
     ['פרויקטים עתידיים', 'ניקוי פארק השיטה משיטה מכחילה + הרחבת פרויקט השתילה'],
   ];
-
-  const $ = id => document.getElementById(id);
 
   // ---- Arabic translation (Gantt views + task list + the plant-spray appendix) ----
   const LANG_KEY = 'gardeningPlanLang';
