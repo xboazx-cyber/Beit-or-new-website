@@ -22,6 +22,7 @@
       --amber: #b8860b; --amber-light: #fbeecb;
       --border: #e0e8da; --danger: #dc2626; --danger-light: #fde8e8;
       --pink: #c2185b; --pink-light: #f9cee0;
+      --peach: #ffab76; --peach-dark: #7a3b12;
     }
     body {
       font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--ink);
@@ -72,6 +73,7 @@
     .btn-secondary { background: var(--card); color: var(--ink-light); border: 1px solid var(--border); border-radius: 10px; padding: 12px 20px; font-size: 16px; font-family: 'Assistant', sans-serif; cursor: pointer; }
     .btn-small { padding: 6px 12px; font-size: 14px; border-radius: 8px; }
     .view-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn-peach { background: var(--peach); color: var(--peach-dark); }
 
     /* weekly gantt */
     .week-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
@@ -208,7 +210,6 @@
     <h1 id="header-title">🌿 תוכנית עבודה - גינון כרמי יוסף</h1>
     <p id="header-subtitle">ניהול אזורים, משימות, לוחות זמנים ומעקב עובדים</p>
     <div id="header-controls" style="margin-top:8px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
-      <button class="btn" id="open-request-btn" type="button">📝 פתיחת בקשה</button>
       <button class="btn-secondary lang-btn" data-lang="he" type="button" style="padding:4px 12px;font-size:13px;">עברית</button>
       <button class="btn-secondary lang-btn" data-lang="ar" type="button" style="padding:4px 12px;font-size:13px;">العربية</button>
       <span id="auth-box" style="font-size:13px;"></span>
@@ -257,6 +258,7 @@
     <div class="filters" style="margin-bottom:12px;">
       <button class="btn-secondary view-tab active" data-view="list" type="button" id="tab-list">📋 רשימה</button>
       <button class="btn-secondary view-tab" data-view="weekly" type="button" id="tab-weekly">📆 גאנט שבועי</button>
+      <button class="btn btn-peach" id="open-request-btn" type="button">📝 פתיחת בקשה</button>
       <button class="btn-secondary view-tab" data-view="monthly" type="button" id="tab-monthly">📅 גאנט חודשי</button>
       <button class="btn-secondary view-tab" data-view="expenses" type="button" id="tab-expenses">💰 הוצאות</button>
       <button class="btn-secondary view-tab" data-view="appendix" type="button" id="tab-appendix">📎 נספחים</button>
