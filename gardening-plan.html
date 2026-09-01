@@ -22,7 +22,7 @@
       --amber: #b8860b; --amber-light: #fbeecb;
       --border: #e0e8da; --danger: #dc2626; --danger-light: #fde8e8;
       --pink: #c2185b; --pink-light: #f9cee0;
-      --peach: #ffab76; --peach-dark: #7a3b12;
+      --peach: #ffab76; --peach-dark: #7a3b12; --peach-light: #ffead9;
     }
     body {
       font-family: 'Assistant', sans-serif; background: var(--bg); color: var(--ink);
@@ -127,6 +127,8 @@
       display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;
     }
     .zone-group-title .zone-stats { font-size: 14px; font-weight: 400; opacity: .9; }
+    .zone-group-title.peach-zone { background: var(--peach); color: var(--peach-dark); }
+    .zone-group .peach-zone-card { background: var(--peach-light); }
 
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: right; padding: 9px 8px; font-size: 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -1400,16 +1402,18 @@
     container.innerHTML = zones.map(zone => {
       const zoneTasks = filtered.filter(t => t.zone === zone);
       const zoneHours = zoneTasks.reduce((s,t) => s + taskAnnualHours(t), 0);
+      const isBank = zone === TASK_BANK_ZONE;
+      const addBtnStyle = isBank ? 'background:rgba(0,0,0,.08);color:var(--peach-dark);' : 'background:rgba(255,255,255,.25);color:white;';
       return `
       <div class="zone-group">
-        <div class="zone-group-title">
+        <div class="zone-group-title${isBank ? ' peach-zone' : ''}">
           <span>${trText(zone)} (${zoneTasks.length})</span>
           <span style="display:flex;align-items:center;gap:10px;">
             <span class="zone-stats">${Math.round(zoneHours)} ${t('hoursPerYear')}</span>
-            <button type="button" class="icon-btn add-to-zone-btn" data-zone="${zone}" title="${t('addToZoneTitle')}" style="background:rgba(255,255,255,.25);color:white;">${t('addToZoneBtn')}</button>
+            <button type="button" class="icon-btn add-to-zone-btn" data-zone="${zone}" title="${t('addToZoneTitle')}" style="${addBtnStyle}">${t('addToZoneBtn')}</button>
           </span>
         </div>
-        <div class="card" style="padding:0;overflow-x:auto;">
+        <div class="card${isBank ? ' peach-zone-card' : ''}" style="padding:0;overflow-x:auto;">
           <table>
             <thead><tr>
               <th style="min-width:160px;">${t('colTask')}</th><th style="min-width:150px;">${t('colSchedules')}</th><th style="min-width:220px;">${t('colMonths')}${monthsLegendHtml()}</th><th>${t('colHoursYear')}</th><th></th>
