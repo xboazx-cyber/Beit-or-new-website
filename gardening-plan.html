@@ -1117,6 +1117,16 @@
   // since the DOM can be showing the Arabic display version, which must never overwrite the Hebrew source.
   let appendixHeHtml = {};
   const APPENDIX_AR = { 'appendix-plants': PLANT_APPENDIX_AR, 'appendix-weedwhack': WEEDWHACK_AR, 'appendix-spray': SPRAY_AR, 'appendix-tubishvat': TUBISHVAT_AR };
+  // the true pristine Hebrew markup shipped in this page's HTML, captured once, synchronously, before
+  // any cloud data (or a past bad save) can ever reach the DOM — used to self-heal a stored Hebrew
+  // override that's accidentally Arabic (see isHebrewOverrideCorrupted below)
+  const APPENDIX_HE_DEFAULT = {};
+  document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { APPENDIX_HE_DEFAULT[el.id] = el.innerHTML; });
+  function isHebrewOverrideCorrupted(html) {
+    const heCount = (html.match(/[֑-״]/g) || []).length;
+    const arCount = (html.match(/[؀-ۿ]/g) || []).length;
+    return arCount > heCount; // a "Hebrew" override that's predominantly Arabic script can only be the DOM-capture bug, never a real edit
+  }
   function applyAppendixLang() {
     document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => {
       const arHtml = APPENDIX_AR[el.id];
@@ -2473,9 +2483,16 @@
     }
     cloudHasRealData = !!(val && val.tasks && val.tasks.some(x => x.schedules && x.schedules.length));
     cloudDataLoadedOnce = true;
-    // any card with no stored override yet (first-ever load) falls back to its baked-in default Hebrew markup
-    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { if (appendixHeHtml[el.id] == null) appendixHeHtml[el.id] = el.innerHTML; });
+    // any card with no stored override yet (first-ever load) falls back to its baked-in default Hebrew markup;
+    // any card whose stored "Hebrew" override actually contains Arabic (a past instance of the DOM-capture bug,
+    // now fixed) self-heals back to the pristine default and re-saves the correction
+    let repairedAppendix = false;
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => {
+      if (appendixHeHtml[el.id] == null) { appendixHeHtml[el.id] = el.innerHTML; return; }
+      if (isHebrewOverrideCorrupted(appendixHeHtml[el.id])) { appendixHeHtml[el.id] = APPENDIX_HE_DEFAULT[el.id]; repairedAppendix = true; }
+    });
     applyAppendixLang(); // re-apply for the current display language — cloud data can arrive after the initial render
+    if (repairedAppendix) pushCloudData(); // persist the correction (no-ops for a viewer without edit rights)
     checkLegacyImportBanner();
     renderAll();
     if (!val) pushCloudData(); // first-ever load with an empty database: seed the shared baseline if we're allowed to
