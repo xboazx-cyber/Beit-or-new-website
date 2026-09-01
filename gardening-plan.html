@@ -297,13 +297,13 @@
       <h4 style="margin-bottom:8px;">צמחים לחיסול — כולל הוראות טיפול</h4>
       <div style="overflow-x:auto;">
         <table>
-          <thead><tr><th>צמח</th><th>שם ערבי</th><th>תכשיר מומלץ</th><th>אופן היישום</th></tr></thead>
+          <thead><tr><th>צמח</th><th>תכשיר מומלץ</th><th>אופן היישום</th></tr></thead>
           <tbody>
-            <tr><td><a href="https://he.wikipedia.org/wiki/קיקיון_מצוי" target="_blank" rel="noopener">קיקיון מצוי</a></td><td>ח'ירווע (خروع)</td><td><strong class="sched-badge">ראונדאפ / טייפון</strong></td><td>עדיף למרוח חומר מרוכז ישירות על הצמח, או לרסס בריכוז גבוה</td></tr>
-            <tr><td><a href="https://he.wikipedia.org/wiki/שיטה_כחלחלה" target="_blank" rel="noopener">שיטה מכחילה</a></td><td>سنط</td><td><strong class="sched-badge">גרלון</strong></td><td>לחתוך את כל הגבעולים ולמרוח מיד לאחר החיתוך; לפנות את הגזם</td></tr>
-            <tr><td><a href="https://he.wikipedia.org/wiki/דטורה" target="_blank" rel="noopener">דטורה</a></td><td>דאתורה / סם אל-פאר</td><td><strong class="sched-badge">טומוהוק</strong> (עדיפות) / ראונדאפ</td><td>—</td></tr>
-            <tr><td><a href="https://he.wikipedia.org/wiki/קייצת_מסולסלת" target="_blank" rel="noopener">קייצת מסולסלת</a></td><td>شيخ الربيع (שיח' א-רביע)</td><td><strong class="sched-badge">טומוהוק</strong> (עדיפות) / ראונדאפ</td><td>—</td></tr>
-            <tr><td><a href="https://he.wikipedia.org/wiki/וושינגטוניה" target="_blank" rel="noopener">דקל וושינגטוניה</a></td><td>—</td><td><strong class="sched-badge" style="background:var(--border);color:var(--ink-light);">אין צורך בריסוס</strong></td><td>לכרות עץ בוגר או לעקור נבטים — יש הרבה בשטח, אפשר לפעול באופן חופשי</td></tr>
+            <tr><td><a href="https://he.wikipedia.org/wiki/קיקיון_מצוי" target="_blank" rel="noopener">קיקיון מצוי</a> <span style="color:var(--ink-light);font-size:12px;">(Ricinus communis · خروع)</span></td><td><strong class="sched-badge">ראונדאפ / טייפון</strong></td><td>עדיף למרוח חומר מרוכז ישירות על הצמח, או לרסס בריכוז גבוה</td></tr>
+            <tr><td><a href="https://he.wikipedia.org/wiki/שיטה_כחלחלה" target="_blank" rel="noopener">שיטה מכחילה</a> <span style="color:var(--ink-light);font-size:12px;">(Acacia saligna · سنط)</span></td><td><strong class="sched-badge">גרלון</strong></td><td>לחתוך את כל הגבעולים ולמרוח מיד לאחר החיתוך; לפנות את הגזם</td></tr>
+            <tr><td><a href="https://he.wikipedia.org/wiki/דטורה" target="_blank" rel="noopener">דטורה</a> <span style="color:var(--ink-light);font-size:12px;">(Datura · داتورة)</span></td><td><strong class="sched-badge">טומוהוק</strong> (עדיפות) / ראונדאפ</td><td>—</td></tr>
+            <tr><td><a href="https://he.wikipedia.org/wiki/קייצת_מסולסלת" target="_blank" rel="noopener">קייצת מסולסלת</a> <span style="color:var(--ink-light);font-size:12px;">(Conyza bonariensis · شيخ الربيع)</span></td><td><strong class="sched-badge">טומוהוק</strong> (עדיפות) / ראונדאפ</td><td>—</td></tr>
+            <tr><td><a href="https://he.wikipedia.org/wiki/וושינגטוניה" target="_blank" rel="noopener">דקל וושינגטוניה</a> <span style="color:var(--ink-light);font-size:12px;">(Washingtonia · نخيل واشنطونيا)</span></td><td><strong class="sched-badge" style="background:var(--border);color:var(--ink-light);">אין צורך בריסוס</strong></td><td>לכרות עץ בוגר או לעקור נבטים — יש הרבה בשטח, אפשר לפעול באופן חופשי</td></tr>
           </tbody>
         </table>
       </div>
@@ -646,7 +646,7 @@
         if (!requireEditorOrAlert()) return;
         const when = new Date(Number(btn.dataset.key)).toLocaleString('he-IL');
         if (!confirm(`לשחזר את הנתונים למצב שהיה ב-${when}? זה יחליף את הנתונים הנוכחיים (גם עליהם ייווצר גיבוי אוטומטי לפני כן).`)) return;
-        set(ref(fbDb, 'data'), backupsMap[btn.dataset.key]);
+        backupThenSetData(backupsMap[btn.dataset.key]);
       });
     });
   }
@@ -953,23 +953,169 @@
     <h4 style="margin-bottom:8px;">نباتات يجب القضاء عليها — مع تعليمات المعالجة</h4>
     <div style="overflow-x:auto;">
       <table>
-        <thead><tr><th>النبات</th><th>الاسم بالعبرية (للمطابقة)</th><th>المبيد الموصى به</th><th>طريقة الاستخدام</th></tr></thead>
+        <thead><tr><th>النبات</th><th>المبيد الموصى به</th><th>طريقة الاستخدام</th></tr></thead>
         <tbody>
-          <tr><td><a href="https://he.wikipedia.org/wiki/קיקיון_מצוי" target="_blank" rel="noopener">الخروع</a></td><td>קיקיון מצוי</td><td><strong class="sched-badge">راوند أب / تايفون</strong></td><td>يُفضّل دهن مادة مركزة مباشرة على النبات، أو الرش بتركيز عالٍ</td></tr>
-          <tr><td><a href="https://he.wikipedia.org/wiki/שיטה_כחלחלה" target="_blank" rel="noopener">السنط الأزرق</a></td><td>שיטה מכחילה</td><td><strong class="sched-badge">غارلون</strong></td><td>قطع جميع السيقان والدهن فورًا بعد القطع؛ إخلاء المخلفات</td></tr>
-          <tr><td><a href="https://he.wikipedia.org/wiki/דטורה" target="_blank" rel="noopener">الداتورة</a></td><td>דטורה</td><td><strong class="sched-badge">توماهوك</strong> (الأفضلية) / راوند أب</td><td>—</td></tr>
-          <tr><td><a href="https://he.wikipedia.org/wiki/קייצת_מסולסלת" target="_blank" rel="noopener">شيخ الربيع (القيصية المجعّدة)</a></td><td>קייצת מסולסלת</td><td><strong class="sched-badge">توماهوك</strong> (الأفضلية) / راوند أب</td><td>—</td></tr>
-          <tr><td><a href="https://he.wikipedia.org/wiki/וושינגטוניה" target="_blank" rel="noopener">نخيل واشنطونيا</a></td><td>דקל וושינגטוניה</td><td><strong class="sched-badge" style="background:var(--border);color:var(--ink-light);">لا حاجة للرش</strong></td><td>قطع الشجرة الناضجة أو اقتلاع الشتلات — يوجد الكثير في الموقع، يمكن العمل بحرية</td></tr>
+          <tr><td><a href="https://he.wikipedia.org/wiki/קיקיון_מצוי" target="_blank" rel="noopener">الخروع</a> <span style="color:var(--ink-light);font-size:12px;">(קיקיון מצוי · Ricinus communis)</span></td><td><strong class="sched-badge">راوند أب / تايفون</strong></td><td>يُفضّل دهن مادة مركزة مباشرة على النبات، أو الرش بتركيز عالٍ</td></tr>
+          <tr><td><a href="https://he.wikipedia.org/wiki/שיטה_כחלחלה" target="_blank" rel="noopener">السنط الأزرق</a> <span style="color:var(--ink-light);font-size:12px;">(שיטה מכחילה · Acacia saligna)</span></td><td><strong class="sched-badge">غارلون</strong></td><td>قطع جميع السيقان والدهن فورًا بعد القطع؛ إخلاء المخلفات</td></tr>
+          <tr><td><a href="https://he.wikipedia.org/wiki/דטורה" target="_blank" rel="noopener">الداتورة</a> <span style="color:var(--ink-light);font-size:12px;">(דטורה · Datura)</span></td><td><strong class="sched-badge">توماهوك</strong> (الأفضلية) / راوند أب</td><td>—</td></tr>
+          <tr><td><a href="https://he.wikipedia.org/wiki/קייצת_מסולסלת" target="_blank" rel="noopener">شيخ الربيع (القيصية المجعّدة)</a> <span style="color:var(--ink-light);font-size:12px;">(קייצת מסולסלת · Conyza bonariensis)</span></td><td><strong class="sched-badge">توماهوك</strong> (الأفضلية) / راوند أب</td><td>—</td></tr>
+          <tr><td><a href="https://he.wikipedia.org/wiki/וושינגטוניה" target="_blank" rel="noopener">نخيل واشنطونيا</a> <span style="color:var(--ink-light);font-size:12px;">(דקל וושינגטוניה · Washingtonia)</span></td><td><strong class="sched-badge" style="background:var(--border);color:var(--ink-light);">لا حاجة للرش</strong></td><td>قطع الشجرة الناضجة أو اقتلاع الشتلات — يوجد الكثير في الموقع، يمكن العمل بحرية</td></tr>
         </tbody>
       </table>
     </div>
   `;
-  let plantsHeHtml = null;
+  const WEEDWHACK_AR = `
+    <h3>🔥 مناطق جز الأعشاب — خطة عمل 2026</h3>
+    <p style="font-size:12px;color:var(--ink-light);margin-bottom:10px;">🛠️ = يتطلب معدات هندسية</p>
+    <h4 style="margin-bottom:8px;">شوارع بدون أرصفة</h4>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table>
+        <thead><tr><th>الشارع</th><th>تم؟</th><th>ملاحظات</th></tr></thead>
+        <tbody>
+          <tr><td>التين</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:תאנה"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>السرو</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:ברוש"><span>تم</span></label></td><td>المرور على النصب التذكاري، الإنهاء</td></tr>
+          <tr><td>البلوط</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:אלון"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>الأرز</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:ארז"><span>تم</span></label></td><td>أمام النصب التذكاري — إنهاء القنوات</td></tr>
+          <tr><td>الورد</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:ורד"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>سمدار</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:סמדר"><span>تم</span></label></td><td>شامل الأرصفة</td></tr>
+          <tr><td>السيكلامين</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:רקפת"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>شقائق النعمان</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:כלנית"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>شارع الكرمة</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:רחוב הגפן"><span>تم</span></label></td><td>نهاية شارع الكرمة</td></tr>
+          <tr><td>حديقة الصنوبر</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:פארק האורן"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>حديقة الرمان</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:פארק הרימון"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>نصب السرو التذكاري</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:אנדרטת הברוש"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>منطقة مضمار الدراجات ونادي مكابي</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:אזור הפאמפ-טראק ומכבי"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>طريق الوصول إلى القرية</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:כביש גישה לישוב"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>حديقة مجتمعية</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:גינה קהילתית"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>ممر من شارع الورد إلى المدرسة</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:שביל מרחוב הוורד לבית הספר"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>حدائق شارع الكرمة</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:גנים רחוב הגפן"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>حدائق المجلس والحضانات الجديدة (من الخلف)</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="street:גני מועצה ומעונות חדשים"><span>تم</span></label></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4 style="margin-bottom:8px;">أزقة وطرق خدمة</h4>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table>
+        <thead><tr><th>الزقاق</th><th>تم؟</th><th>ملاحظات</th></tr></thead>
+        <tbody>
+          <tr><td>العنصل</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:חצב"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>الزعفران البري</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:כרכום"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>المريمية</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:מרווה"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>الزعتر البري</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:קורנית"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>الجاودار</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:שיפון"><span>تم</span></label></td><td>🛠️ معدات هندسية</td></tr>
+          <tr><td>"بوابة تل جزر"</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:שער תל גזר"><span>تم</span></label></td><td>🛠️ معدات هندسية</td></tr>
+          <tr><td>السوسن</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:אירוס"><span>تم</span></label></td><td>—</td></tr>
+          <tr><td>القمح</td><td><label class="wwstatus"><input type="checkbox" class="weedwhack-check" data-key="alley:חיטה"><span>تم</span></label></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4 style="margin-bottom:8px;">حدائق ومناطق عامة</h4>
+    <ol style="padding-inline-start:20px;line-height:1.9;">
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גן אלטשולר"><span>حديقة ألتشولر</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:שבילים למצפה"><span>الممرات المؤدية من المرصد إلى حديقة ألتشولر</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גן הרימון"><span>حديقة الرمان</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גן האורן"><span>حديقة الصنوبر — <strong>يجب إكمالها</strong></span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מצפה בריכת המים"><span>مرصد خزان المياه</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:אזור הפאמפ-טראק"><span>منطقة مضمار الدراجات</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גינה קהילתית2"><span>حديقة مجتمعية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גנים רחוב הגפן2"><span>حدائق شارع الكرمة</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:גני מועצה"><span>حدائق المجلس</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מגרש כדורגל וטניס"><span>ملعب كرة القدم والتنس — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:פתחת בלגה"><span>فتحة "بلجة" — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מגרש כדורסל"><span>ملعب كرة السلة، الوادي الصاعد باتجاه شارع الورد — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:שביל גישה"><span>ممر وصول من شارع الورد إلى المدرسة</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:אנדרטת הברוש2"><span>نصب السرو التذكاري</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מערה רקפת"><span>الكهف - السيكلامين — <strong>⚠️ الانتباه لتعشيش الطيور الجارحة</strong></span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:מורד יסמין"><span>منحدر الياسمين/السيكلامين باتجاه حديقة السنط — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:תאנה 30"><span>التين 30 (تقريبًا)، منحدر باتجاه الغابة — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:דרך ביטחון"><span>طريق الأمن المحيطي للقرية — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:פארק השיטה"><span>حديقة السنط — 🛠️ معدات هندسية</span></label></li>
+      <li><label class="wwstatus-inline"><input type="checkbox" class="weedwhack-check" data-key="garden:פתחת בלגה2"><span>فتحة بلجة — مناطق صغيرة بها نباتات متسلقة، جز مبكر للأعشاب</span></label></li>
+    </ol>
+`;
+  const SPRAY_AR = `
+    <h3>💧 مناطق الرش المقترحة 2025-2026</h3>
+    <div style="overflow-x:auto;margin-bottom:16px;">
+      <table>
+        <thead><tr><th>المنطقة</th><th>حالة الخط الحالي</th></tr></thead>
+        <tbody>
+          <tr><td>المسبح — أكرشطاين وغلاف السياج الداخلي</td><td>رش</td></tr>
+          <tr><td>الأرصفة وتقاطعات الطرق</td><td>رش</td></tr>
+          <tr><td>أسطح الحصى</td><td>رش</td></tr>
+          <tr><td>محطات الصرف الصحي</td><td>رش</td></tr>
+          <tr><td>غرف تفتيش الصرف الصحي</td><td>رش</td></tr>
+          <tr><td>حول ملعب كرة القدم</td><td>جز أعشاب</td></tr>
+          <tr><td>الأحواض</td><td>يُفضّل تجنبه — فقط في حالات استثنائية</td></tr>
+          <tr><td>حول الحوض المقابل لملعب كرة القدم (غير واضح بالضبط أي مساحة)</td><td>جز أعشاب بواسطة "הנערים"</td></tr>
+          <tr><td>المقبرة</td><td>جز أعشاب بواسطة "הנערים"</td></tr>
+          <tr><td>شارع شقائق النعمان</td><td>رُش في السنة الماضية (البستاني يوصي بجز الأعشاب)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h4 style="margin-bottom:8px;">الاستراتيجية الموسمية التي نجحت</h4>
+    <ol style="padding-inline-start:20px;line-height:1.9;margin-bottom:14px;">
+      <li>رش أولي بعد الأمطار الأولى، حسب الحالة</li>
+      <li>رش ثانٍ (في نفس النقاط) قرب نهاية الربيع</li>
+      <li>على مدار الشتاء والربيع، حسب الحاجة — جز أعشاب موضعي في الشوارع والنقاط الحرجة بواسطة "הנערים"</li>
+      <li>حراثة سطحية + جز أعشاب مكثف بواسطة المقاول عفيف، فور انتهاء الربيع، في النقاط المسجلة</li>
+    </ol>
+`;
+  const TUBISHVAT_AR = `
+    <h3>🌳 طو بشفاط — خطة الفعالية</h3>
+
+    <h4 style="margin-bottom:8px;">الموقع والفكرة</h4>
+    <p style="margin-bottom:14px;color:var(--ink-light);">(للتعبئة)</p>
+
+    <h4 style="margin-bottom:8px;">الغراسات المخطط لها</h4>
+    <p style="margin-bottom:14px;color:var(--ink-light);">(للتعبئة)</p>
+
+    <h4 style="margin-bottom:8px;">الري</h4>
+    <p style="margin-bottom:14px;color:var(--ink-light);">(للتعبئة)</p>
+
+    <h4 style="margin-bottom:8px;">محطات الأنشطة المقترحة</h4>
+    <p style="margin-bottom:14px;">مندلة · بناء مقاعد · غراسات · بيتا (מכבי צעיר?) · ليموناضة (מכבי צעיר?) · وجبة مشتركة</p>
+
+    <h4 style="margin-bottom:8px;">تقدير التكاليف</h4>
+    <div style="overflow-x:auto;margin-bottom:14px;">
+      <table>
+        <thead><tr><th>البند</th><th>التقدير</th></tr></thead>
+        <tbody>
+          <tr><td>(للتعبئة)</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 style="margin-bottom:8px;">قائمة المعدات والمهام قبل الفعالية</h4>
+    <ol style="padding-inline-start:20px;line-height:1.9;margin-bottom:14px;">
+      <li>حفر الحفر</li>
+      <li>إنشاء ممر جديد (؟)</li>
+      <li>شراء دعامات للأشجار + قماش للربط</li>
+      <li>كمبوست وتربة جيدة</li>
+      <li>أنابيب</li>
+      <li>عربات يد / مجارف وغيرها</li>
+      <li>كيس بذور (إيال)</li>
+      <li>شتلات (من المسبح)</li>
+      <li>3 طاولات قابلة للطي</li>
+      <li>مياه للري</li>
+      <li>مياه شرب</li>
+      <li>أشجار وميرمية مقدسة (סאג')</li>
+      <li>عجين للبيتا</li>
+      <li>أدوات لمحطة البيتا</li>
+      <li>طفاية حريق</li>
+    </ol>
+`;
+  // cache of each editable appendix card's authoritative Hebrew content, keyed by card id.
+  // this is the source of truth sent to Firebase (appendixOverrides) — never read live DOM for that,
+  // since the DOM can be showing the Arabic display version, which must never overwrite the Hebrew source.
+  let appendixHeHtml = {};
+  const APPENDIX_AR = { 'appendix-plants': PLANT_APPENDIX_AR, 'appendix-weedwhack': WEEDWHACK_AR, 'appendix-spray': SPRAY_AR, 'appendix-tubishvat': TUBISHVAT_AR };
   function applyAppendixLang() {
-    const el = $('appendix-plants');
-    if (!el) return;
-    if (lang === 'ar') { el.innerHTML = PLANT_APPENDIX_AR; el.contentEditable = false; }
-    else if (plantsHeHtml != null) { el.innerHTML = plantsHeHtml; }
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => {
+      const arHtml = APPENDIX_AR[el.id];
+      if (lang === 'ar' && arHtml != null) { el.innerHTML = arHtml; }
+      else if (appendixHeHtml[el.id] != null) { el.innerHTML = appendixHeHtml[el.id]; }
+    });
+    applyWeedwhackStatus(); // innerHTML swap above loses checkbox .checked state — reapply from stored data
     $('appendix-edit-toggle').disabled = (lang === 'ar');
   }
 
@@ -1957,9 +2103,7 @@
   // localStorage never crosses origins on its own ----
   // backup now reads/writes the shared cloud data directly, not per-device localStorage
   $('backup-export-btn').addEventListener('click', () => {
-    const appendixOverrides = {};
-    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { appendixOverrides[el.id] = el.innerHTML; });
-    const data = { tasks, attendance, expenses, appendixOverrides, weedwhackStatus, skippedOccurrences, extraOccurrences };
+    const data = { tasks, attendance, expenses, appendixOverrides: appendixHeHtml, weedwhackStatus, skippedOccurrences, extraOccurrences };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1980,7 +2124,7 @@
         const data = JSON.parse(reader.result);
         if (!requireEditorOrAlert()) return;
         if (!confirm(t('confirmImportAlert'))) return;
-        set(ref(fbDb, 'data'), data);
+        backupThenSetData(data);
         alert(t('importSuccessAlert'));
       } catch (err) {
         alert(t('invalidBackupAlert') + err.message);
@@ -2148,6 +2292,9 @@
   });
   $('appendix-save-btn').addEventListener('click', () => {
     if (!requireEditorOrAlert()) return;
+    // editing is only ever enabled in Hebrew display mode (see applyAppendixLang), so the live DOM
+    // here is genuinely the new Hebrew source of truth — safe to recapture it into appendixHeHtml
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { appendixHeHtml[el.id] = el.innerHTML; });
     pushCloudData();
     setAppendixEditMode(false);
     alert(t('appendixSavedAlert'));
@@ -2222,16 +2369,21 @@
     } catch (e) { /* pruning is best-effort; never block a save over it */ }
   }
 
-  function pushCloudData() {
-    if (!isEditor) return false;
-    const appendixOverrides = {};
-    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { appendixOverrides[el.id] = el.innerHTML; });
-    // back up whatever the server currently has BEFORE overwriting it — every save keeps an undo point
+  // the ONE place that writes to /data — every write here backs up whatever the server currently
+  // has BEFORE overwriting it, so any bad write (a bug, a mistake, a wrong restore) can always be undone
+  function backupThenSetData(newData) {
     if (lastSyncedSnapshot) {
       set(ref(fbDb, 'backups/' + Date.now()), lastSyncedSnapshot);
       pruneOldBackups();
     }
-    set(ref(fbDb, 'data'), { tasks, attendance, expenses, appendixOverrides, weedwhackStatus, skippedOccurrences, extraOccurrences });
+    set(ref(fbDb, 'data'), newData);
+  }
+
+  function pushCloudData() {
+    if (!isEditor) return false;
+    // read from the cached Hebrew source-of-truth map, never live DOM — the DOM may currently be
+    // showing the Arabic display version, which must never be written back as if it were Hebrew
+    backupThenSetData({ tasks, attendance, expenses, appendixOverrides: appendixHeHtml, weedwhackStatus, skippedOccurrences, extraOccurrences });
     return true;
   }
 
@@ -2274,7 +2426,7 @@
     const legacy = readLegacyLocalData();
     if (!legacy) return;
     if (!confirm('לייבא את הנתונים הישנים מהדפדפן הזה לענן? זה יחליף את מה שקיים כרגע בענן.')) return;
-    set(ref(fbDb, 'data'), legacy);
+    backupThenSetData(legacy);
     $('legacy-import-banner').style.display = 'none';
   });
   $('legacy-dismiss-btn').addEventListener('click', () => {
@@ -2292,7 +2444,7 @@
       skippedOccurrences = val.skippedOccurrences || {};
       extraOccurrences = val.extraOccurrences || {};
       if (val.appendixOverrides) {
-        Object.keys(val.appendixOverrides).forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = val.appendixOverrides[id]; });
+        Object.assign(appendixHeHtml, val.appendixOverrides);
       }
       tasks = mergeNewSeedItems(applyZoneRenames(migrateTasks(val.tasks || [])));
     } else {
@@ -2301,8 +2453,9 @@
     }
     cloudHasRealData = !!(val && val.tasks && val.tasks.some(x => x.schedules && x.schedules.length));
     cloudDataLoadedOnce = true;
-    plantsHeHtml = $('appendix-plants').innerHTML;
-    applyWeedwhackStatus();
+    // any card with no stored override yet (first-ever load) falls back to its baked-in default Hebrew markup
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { if (appendixHeHtml[el.id] == null) appendixHeHtml[el.id] = el.innerHTML; });
+    applyAppendixLang(); // re-apply for the current display language — cloud data can arrive after the initial render
     checkLegacyImportBanner();
     renderAll();
     if (!val) pushCloudData(); // first-ever load with an empty database: seed the shared baseline if we're allowed to
