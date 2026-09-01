@@ -234,6 +234,16 @@
     </div>
   </div>
 
+  <div class="card" id="backups-panel" style="display:none;padding:10px 14px;">
+    <h3 id="backups-panel-toggle" style="margin-bottom:0;cursor:pointer;font-size:15px;display:flex;align-items:center;gap:6px;">
+      <span id="backups-panel-arrow">▶</span> 🕐 גיבויים אוטומטיים ושחזור
+    </h3>
+    <div id="backups-panel-body" style="display:none;margin-top:12px;">
+      <p style="font-size:13px;color:var(--ink-light);margin-bottom:10px;">כל שמירה שומרת אוטומטית עותק של מה שהיה קיים לפני כן. ניתן לשחזר לכל נקודה כאן.</p>
+      <div id="backups-list"></div>
+    </div>
+  </div>
+
   <div class="card" id="stats-card">
     <div class="summary-row">
       <div class="stat-box"><span id="stat-count-label">סה"כ משימות</span><strong id="stat-count">0</strong></div>
@@ -555,7 +565,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
   import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-  import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+  import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAHwWnO7dUrbK8goRVYTmeLGYuRnCOjf4Q",
@@ -617,6 +627,38 @@
       btn.addEventListener('click', () => set(ref(fbDb, 'editors/' + btn.dataset.key), null));
     });
   }
+  let backupsMap = {};
+  function renderBackupsPanel() {
+    const panel = $('backups-panel');
+    if (!panel) return;
+    const isOwner = currentUser && currentUser.email === OWNER_EMAIL;
+    panel.style.display = isOwner ? 'block' : 'none';
+    if (!isOwner) return;
+    const keys = Object.keys(backupsMap).sort().reverse(); // newest first
+    $('backups-list').innerHTML = keys.length
+      ? keys.map(k => `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);">
+          <span style="font-size:13px;">${new Date(Number(k)).toLocaleString('he-IL')}</span>
+          <button class="btn-secondary btn-small restore-backup-btn" data-key="${k}" type="button">שחזור לנקודה זו</button>
+        </div>`).join('')
+      : `<p class="empty-msg">אין גיבויים עדיין — ייווצרו אוטומטית בשמירה הבאה</p>`;
+    $('backups-list').querySelectorAll('.restore-backup-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!requireEditorOrAlert()) return;
+        const when = new Date(Number(btn.dataset.key)).toLocaleString('he-IL');
+        if (!confirm(`לשחזר את הנתונים למצב שהיה ב-${when}? זה יחליף את הנתונים הנוכחיים (גם עליהם ייווצר גיבוי אוטומטי לפני כן).`)) return;
+        set(ref(fbDb, 'data'), backupsMap[btn.dataset.key]);
+      });
+    });
+  }
+  onValue(ref(fbDb, 'backups'), (snap) => {
+    backupsMap = snap.val() || {};
+    renderBackupsPanel();
+  });
+  $('backups-panel-toggle').addEventListener('click', () => {
+    const open = $('backups-panel-body').style.display !== 'none';
+    $('backups-panel-body').style.display = open ? 'none' : 'block';
+    $('backups-panel-arrow').textContent = open ? '▶' : '▼';
+  });
   $('editors-panel-toggle').addEventListener('click', () => {
     const open = $('editors-panel-body').style.display !== 'none';
     $('editors-panel-body').style.display = open ? 'none' : 'block';
@@ -634,6 +676,7 @@
     computeIsEditor();
     updateAuthUI();
     renderEditorsPanel();
+    renderBackupsPanel();
     checkLegacyImportBanner();
     renderAll();
   });
@@ -2165,10 +2208,29 @@
   });
 
   // ---- Single combined cloud sync: one write path, one live-read subscription ----
+  const MAX_BACKUPS = 200;
+  async function pruneOldBackups() {
+    try {
+      const snap = await get(ref(fbDb, 'backups'));
+      const val = snap.val();
+      if (!val) return;
+      const keys = Object.keys(val).sort(); // timestamp-based keys sort chronologically
+      const excess = keys.length - MAX_BACKUPS;
+      for (let i = 0; i < excess; i++) {
+        set(ref(fbDb, 'backups/' + keys[i]), null);
+      }
+    } catch (e) { /* pruning is best-effort; never block a save over it */ }
+  }
+
   function pushCloudData() {
     if (!isEditor) return false;
     const appendixOverrides = {};
     document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { appendixOverrides[el.id] = el.innerHTML; });
+    // back up whatever the server currently has BEFORE overwriting it — every save keeps an undo point
+    if (lastSyncedSnapshot) {
+      set(ref(fbDb, 'backups/' + Date.now()), lastSyncedSnapshot);
+      pruneOldBackups();
+    }
     set(ref(fbDb, 'data'), { tasks, attendance, expenses, appendixOverrides, weedwhackStatus, skippedOccurrences, extraOccurrences });
     return true;
   }
@@ -2192,6 +2254,9 @@
   // once the cloud already holds real filled-in data, the recovery banner must never be offered again on
   // any device — otherwise a stale/empty local copy (e.g. from a phone that once loaded an older version
   // of this page) could silently overwrite real data. This is the actual safety fix, not just a dismiss button.
+  // the last data snapshot actually confirmed by the server — used to back up "what's about to be
+  // overwritten" before every save, so any bad write (a bug, a mistake, anything) can be undone
+  let lastSyncedSnapshot = null;
   let cloudHasRealData = false;
   let legacyBannerDismissed = false;
   let cloudDataLoadedOnce = false;
@@ -2219,6 +2284,7 @@
 
   onValue(ref(fbDb, 'data'), (snapshot) => {
     const val = snapshot.val();
+    lastSyncedSnapshot = val;
     if (val) {
       attendance = val.attendance || {};
       expenses = val.expenses || [];
