@@ -129,6 +129,10 @@
     .zone-group-title .zone-stats { font-size: 14px; font-weight: 400; opacity: .9; }
     .zone-group-title.peach-zone { background: var(--peach); color: var(--peach-dark); }
     .zone-group .peach-zone-card { background: var(--peach-light); }
+    .spray-row-controls { display: none; }
+    .editing-rows .spray-row-controls { display: table-cell; }
+    #spray-add-row-btn { display: none; margin-top: 8px; }
+    .editing-rows #spray-add-row-btn { display: inline-block; }
 
     table { width: 100%; border-collapse: collapse; }
     th, td { text-align: right; padding: 9px 8px; font-size: 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -388,21 +392,22 @@
       <h3>💧 אזורי ריסוס מוצעים 2025-2026</h3>
       <div style="overflow-x:auto;margin-bottom:16px;">
         <table>
-          <thead><tr><th>אזור</th><th>סטטוס קו נוכחי</th></tr></thead>
+          <thead><tr><th>אזור</th><th>סטטוס קו נוכחי</th><th class="spray-row-controls"></th></tr></thead>
           <tbody>
-            <tr><td>בריכה — אקרשטיין ומעטפת הגדר הפנימית</td><td>ריסוס</td></tr>
-            <tr><td>מדרכות ומפגשי כבישים</td><td>ריסוס</td></tr>
-            <tr><td>משטחי חצץ</td><td>ריסוס</td></tr>
-            <tr><td>מכוני ביוב</td><td>ריסוס</td></tr>
-            <tr><td>שוחות ביוב</td><td>ריסוס</td></tr>
-            <tr><td>מסביב למגרש הכדורגל</td><td>חרמוש</td></tr>
-            <tr><td>ערוגות</td><td>בשאיפה להימנע — רק במקרים קיצוניים</td></tr>
-            <tr><td>מסביב לערוגה ממול למגרש הכדורגל (לא ברור לאיזה שטח בדיוק)</td><td>חרמוש ע"י "הנערים"</td></tr>
-            <tr><td>בית עלמין</td><td>חרמוש ע"י "הנערים"</td></tr>
-            <tr><td>רחוב הכלנית</td><td>רוסס בשנה שעברה (הגנן ממליץ לחרמש)</td></tr>
+            <tr><td>בריכה — אקרשטיין ומעטפת הגדר הפנימית</td><td>ריסוס</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>מדרכות ומפגשי כבישים</td><td>ריסוס</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>משטחי חצץ</td><td>ריסוס</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>מכוני ביוב</td><td>ריסוס</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>שוחות ביוב</td><td>ריסוס</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>מסביב למגרש הכדורגל</td><td>חרמוש</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>ערוגות</td><td>בשאיפה להימנע — רק במקרים קיצוניים</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>מסביב לערוגה ממול למגרש הכדורגל (לא ברור לאיזה שטח בדיוק)</td><td>חרמוש ע"י "הנערים"</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>בית עלמין</td><td>חרמוש ע"י "הנערים"</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
+            <tr><td>רחוב הכלנית</td><td>רוסס בשנה שעברה (הגנן ממליץ לחרמש)</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td></tr>
           </tbody>
         </table>
       </div>
+      <button type="button" id="spray-add-row-btn" class="btn-secondary btn-small" contenteditable="false">+ הוספת אזור</button>
       <h4 style="margin-bottom:8px;">האסטרטגיה העונתית שעבדה טוב</h4>
       <ol style="padding-inline-start:20px;line-height:1.9;margin-bottom:14px;">
         <li>ריסוס ראשוני אחרי הגשמים הראשונים, בהתאם למצב</li>
@@ -2312,7 +2317,7 @@
   let appendixEditMode = false;
   function setAppendixEditMode(on) {
     appendixEditMode = on;
-    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { el.contentEditable = on; });
+    document.querySelectorAll('#view-appendix .card[data-editable]').forEach(el => { el.contentEditable = on; el.classList.toggle('editing-rows', on); });
     $('appendix-edit-toggle').textContent = on ? t('finishEditBtn') : t('editAppendixBtn');
     $('appendix-save-btn').style.display = on ? 'inline-block' : 'none';
   }
@@ -2328,6 +2333,20 @@
     pushCloudData();
     setAppendixEditMode(false);
     alert(t('appendixSavedAlert'));
+  });
+
+  // ---- Adding/removing rows in the spray-areas table (only while in appendix edit mode) ----
+  $('appendix-spray').addEventListener('click', (e) => {
+    const delBtn = e.target.closest('.spray-row-delete-btn');
+    if (!delBtn || !appendixEditMode) return;
+    if (!requireEditorOrAlert()) return;
+    delBtn.closest('tr').remove();
+  });
+  $('spray-add-row-btn').addEventListener('click', () => {
+    if (!appendixEditMode || !requireEditorOrAlert()) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>אזור חדש</td><td>סטטוס</td><td class="spray-row-controls" contenteditable="false"><button type="button" class="icon-btn danger spray-row-delete-btn" contenteditable="false">🗑️</button></td>';
+    $('appendix-spray').querySelector('table tbody').appendChild(tr);
   });
 
   // ---- Postponing a single occurrence of a recurring schedule to next week ----
