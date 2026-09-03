@@ -77,6 +77,18 @@
     .btn-peach { background: var(--peach); color: var(--peach-dark); }
     .btn-danger-soft { background: var(--danger-soft); color: white; }
 
+    /* A visitor without edit rights sees this immediately instead of discovering it only after filling
+       a form and hitting save. #report-issue-btn is deliberately excluded — anyone can report a hazard. */
+    .view-only-mode #add-btn, .view-only-mode #open-request-btn, .view-only-mode #backup-import-btn,
+    .view-only-mode #export-btn, .view-only-mode #backup-export-btn, .view-only-mode #tab-expenses,
+    .view-only-mode #appendix-edit-toggle, .view-only-mode #appendix-save-btn,
+    .view-only-mode .postpone-btn, .view-only-mode .edit-btn, .view-only-mode .delete-row-btn,
+    .view-only-mode .add-to-zone-btn, .view-only-mode .add-day-task-btn, .view-only-mode .edit-day-task-btn,
+    .view-only-mode #expense-add-btn, .view-only-mode .expense-edit-btn, .view-only-mode .expense-delete-row-btn,
+    .view-only-mode .spray-row-controls, .view-only-mode #spray-add-row-btn
+    { display: none !important; }
+    .view-only-mode .weedwhack-check, .view-only-mode .attendance-select { pointer-events: none; opacity: .6; }
+
     /* weekly gantt */
     .week-days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
     @media(max-width:900px){ .week-days-grid { grid-template-columns: repeat(2, 1fr); } }
@@ -634,6 +646,9 @@
   const fbDb = getDatabase(fbApp);
   const OWNER_EMAIL = 'xboazx@gmail.com';
   const $ = id => document.getElementById(id);
+  // safe default: hide/disable editing controls until auth resolves and proves otherwise —
+  // avoids a brief flash of edit affordances for a visitor who turns out not to be an editor
+  document.body.classList.add('view-only-mode');
 
   // ---- Shared cloud data (replaces localStorage as the source of truth) ----
   // Everyone who opens the link reads the same live data. Only the owner and anyone
@@ -646,6 +661,7 @@
   let isEditor = false;
   function computeIsEditor() {
     isEditor = !!currentUser && (currentUser.email === OWNER_EMAIL || !!editorsMap[sanitizeEmailKey(currentUser.email)]);
+    document.body.classList.toggle('view-only-mode', !isEditor);
   }
   function requireEditorOrAlert() {
     if (isEditor) return true;
@@ -1888,7 +1904,7 @@
           html += `<div class="day-empty">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="${isEditor}" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
               <button type="button" class="edit-day-task-btn" data-task-id="${item.taskId}" title="${t('editTitle')}">✏️</button>
               <button type="button" class="postpone-btn" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}" title="${t('postponeTitle')}">✕</button>
               <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
@@ -1964,7 +1980,7 @@
           html += `<div class="day-empty" style="padding:4px 0;">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" style="padding:4px 6px;margin-bottom:4px;" draggable="true" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" style="padding:4px 6px;margin-bottom:4px;" draggable="${isEditor}" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
               <div class="dt-name" style="font-size:12px;">${trText(item.name)}${item.estimated ? ' 🔹' : ''}</div>
             </div>`;
           });
