@@ -250,6 +250,10 @@
         <label for="payment-date">תאריך תשלום</label>
         <input type="date" id="payment-date">
       </div>
+      <div class="payment-date-wrap" id="payment-amount-wrap">
+        <label for="payment-amount">סכום ששולם בפועל (₪)</label>
+        <input type="number" id="payment-amount" step="0.01" min="0" placeholder="לדוגמה: 120">
+      </div>
     </div>
     <p class="payment-hint no-print" id="payment-hint" style="display:none;">בחר/י חודש ספציפי כדי לסמן תשלום</p>
   </div>
@@ -269,12 +273,35 @@
     </div>
   </div>
 
-  <footer class="no-print">הנתונים נשמרים בדפדפן הזה בלבד</footer>
+  <footer class="no-print">הנתונים משותפים ומסונכרנים בין כל המכשירים עם הקישור</footer>
 </div>
 
-<script>
-  const STORAGE_KEY = 'evChargingSessions';
-  const PAYMENTS_KEY = 'evChargingPayments';
+<div class="card no-print" id="legacy-import-banner" style="display:none;background:var(--blue-light);">
+  <h3 style="margin-bottom:10px;">📦 נמצאו נתונים ישנים בדפדפן זה</h3>
+  <p style="margin-bottom:12px;font-size:15px;">נראה שיש כאן טעינות שנשמרו לפני המעבר לשיתוף בין מכשירים (בדפדפן הזה בלבד). אפשר לייבא אותן עכשיו לענן.</p>
+  <button class="btn" id="legacy-import-btn" type="button" style="margin-bottom:8px;">ייבוא הנתונים הישנים</button>
+  <button class="btn-paid" id="legacy-dismiss-btn" type="button">✕ לא רלוונטי, סגירה</button>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyASe6lHDRdCAaCIgU-wEk3kgmpYitg7Mto",
+    authDomain: "ev-charge-1590e.firebaseapp.com",
+    databaseURL: "https://ev-charge-1590e-default-rtdb.firebaseio.com",
+    projectId: "ev-charge-1590e",
+    storageBucket: "ev-charge-1590e.firebasestorage.app",
+    messagingSenderId: "973298426266",
+    appId: "1:973298426266:web:d94d235386e0043d8a1a23",
+  };
+  const fbApp = initializeApp(firebaseConfig);
+  const fbDb = getDatabase(fbApp);
+
+  // legacy localStorage keys — read once for the one-time import banner, never written to again
+  const LEGACY_STORAGE_KEY = 'evChargingSessions';
+  const LEGACY_PAYMENTS_KEY = 'evChargingPayments';
   const KW = 7.5;
   const PRICE_PER_KWH = 0.64;
   const RATE_PER_HOUR = KW * PRICE_PER_KWH;
@@ -289,24 +316,61 @@
   const paymentToggle = $('payment-toggle');
   const paymentDateWrap = $('payment-date-wrap');
   const paymentDateInput = $('payment-date');
+  const paymentAmountWrap = $('payment-amount-wrap');
+  const paymentAmountInput = $('payment-amount');
   const paymentHint = $('payment-hint');
 
   let selectedMonth = null;
 
+  // ---- Shared cloud data: every device with the link reads/writes the same live data ----
+  let sessionsMap = {};   // pushId -> {date, hours, pctFrom, pctTo}
+  let paymentsMap = {};   // monthKey -> {paid, paidDate, paidAmount}
+  let sessionsLoadedOnce = false;
+  let paymentsLoadedOnce = false;
+
   function loadSessions() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-    catch { return []; }
+    return Object.keys(sessionsMap).map(id => ({ id, ...sessionsMap[id] }));
   }
-  function loadPayments() {
-    try { return JSON.parse(localStorage.getItem(PAYMENTS_KEY)) || {}; }
-    catch { return {}; }
+  function loadPayments() { return paymentsMap; }
+  function saveNewSession(session) { push(ref(fbDb, 'sessions'), session); }
+  function deleteSession(id) { set(ref(fbDb, 'sessions/' + id), null); }
+  function savePaymentRecord(monthKey, record) { set(ref(fbDb, 'payments/' + monthKey), record); }
+
+  function readLegacyLocalData() {
+    try {
+      const sessions = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY));
+      if (!sessions || !sessions.length) return null;
+      let payments = {};
+      try { payments = JSON.parse(localStorage.getItem(LEGACY_PAYMENTS_KEY)) || {}; } catch {}
+      return { sessions, payments };
+    } catch { return null; }
   }
-  function savePayments(payments) {
-    localStorage.setItem(PAYMENTS_KEY, JSON.stringify(payments));
+  function checkLegacyImportBanner() {
+    if (!sessionsLoadedOnce) { $('legacy-import-banner').style.display = 'none'; return; }
+    const legacy = readLegacyLocalData();
+    const cloudHasData = Object.keys(sessionsMap).length > 0;
+    const show = legacy && !cloudHasData && !legacyBannerDismissed;
+    $('legacy-import-banner').style.display = show ? 'block' : 'none';
   }
-  function saveSessions(sessions) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
-  }
+  let legacyBannerDismissed = false;
+  $('legacy-import-btn').addEventListener('click', () => {
+    if (Object.keys(sessionsMap).length > 0) {
+      alert('בענן כבר יש נתונים — לא ניתן לדרוס אותם מכאן.');
+      checkLegacyImportBanner();
+      return;
+    }
+    const legacy = readLegacyLocalData();
+    if (!legacy) return;
+    if (!confirm('לייבא את הנתונים הישנים מהדפדפן הזה לענן?')) return;
+    legacy.sessions.forEach(s => saveNewSession({ date: s.date, hours: s.hours, pctFrom: s.pctFrom ?? null, pctTo: s.pctTo ?? null }));
+    Object.keys(legacy.payments).forEach(monthKey => savePaymentRecord(monthKey, legacy.payments[monthKey]));
+    $('legacy-import-banner').style.display = 'none';
+  });
+  $('legacy-dismiss-btn').addEventListener('click', () => {
+    legacyBannerDismissed = true;
+    $('legacy-import-banner').style.display = 'none';
+  });
+
   function costFor(hours) { return hours * RATE_PER_HOUR; }
   function monthKeyOf(dateStr) { return dateStr.slice(0, 7); }
   function todayStr() {
@@ -399,6 +463,7 @@
 
     if (isAll) {
       paymentDateWrap.style.display = 'none';
+      paymentAmountWrap.style.display = 'none';
       return;
     }
 
@@ -409,7 +474,9 @@
     paymentToggle.textContent = isPaid ? 'שולם ✓' : 'לא שולם';
     paymentToggle.classList.toggle('is-paid', isPaid);
     paymentDateWrap.style.display = isPaid ? 'flex' : 'none';
+    paymentAmountWrap.style.display = isPaid ? 'flex' : 'none';
     paymentDateInput.value = (record && record.paidDate) || '';
+    paymentAmountInput.value = (record && record.paidAmount != null) ? record.paidAmount : '';
   }
 
   function renderAll() {
@@ -418,6 +485,7 @@
     renderEntries(sessions);
     renderOverall(sessions);
     renderPaymentStatus();
+    checkLegacyImportBanner();
   }
 
   function updatePreview() {
@@ -436,22 +504,28 @@
 
   paymentToggle.addEventListener('click', () => {
     if (selectedMonth === 'all') return;
-    const payments = loadPayments();
-    const record = payments[selectedMonth] || { paid: false, paidDate: null };
+    const record = paymentsMap[selectedMonth] || { paid: false, paidDate: null };
     record.paid = !record.paid;
     if (record.paid && !record.paidDate) record.paidDate = todayStr();
-    payments[selectedMonth] = record;
-    savePayments(payments);
+    paymentsMap[selectedMonth] = record; // optimistic: update the local view instantly, don't wait on the round-trip
     renderPaymentStatus();
+    savePaymentRecord(selectedMonth, record);
   });
 
   paymentDateInput.addEventListener('change', () => {
     if (selectedMonth === 'all') return;
-    const payments = loadPayments();
-    const record = payments[selectedMonth] || { paid: true, paidDate: null };
+    const record = paymentsMap[selectedMonth] || { paid: true, paidDate: null };
     record.paidDate = paymentDateInput.value;
-    payments[selectedMonth] = record;
-    savePayments(payments);
+    paymentsMap[selectedMonth] = record;
+    savePaymentRecord(selectedMonth, record);
+  });
+
+  paymentAmountInput.addEventListener('change', () => {
+    if (selectedMonth === 'all') return;
+    const record = paymentsMap[selectedMonth] || { paid: true, paidDate: null };
+    record.paidAmount = paymentAmountInput.value === '' ? null : parseFloat(paymentAmountInput.value);
+    paymentsMap[selectedMonth] = record;
+    savePaymentRecord(selectedMonth, record);
   });
 
   $('download-btn').addEventListener('click', () => {
@@ -489,9 +563,9 @@
     const btn = e.target.closest('.entry-del');
     if (!btn) return;
     if (!confirm('למחוק את הטעינה הזו?')) return;
-    const sessions = loadSessions().filter(s => s.id !== btn.dataset.id);
-    saveSessions(sessions);
+    delete sessionsMap[btn.dataset.id]; // optimistic: remove from the local view instantly
     renderAll();
+    deleteSession(btn.dataset.id);
   });
 
   $('add-btn').addEventListener('click', () => {
@@ -512,16 +586,13 @@
       }
     }
 
-    const sessions = loadSessions();
-    sessions.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2), date, hours, pctFrom, pctTo });
-    saveSessions(sessions);
+    saveNewSession({ date, hours, pctFrom, pctTo });
 
     selectedMonth = monthKeyOf(date);
     hoursInput.value = '';
     pctFromInput.value = '';
     pctToInput.value = '';
     updatePreview();
-    renderAll();
   });
 
   function applyDesktopLayout() {
@@ -565,7 +636,18 @@
   maybeReflow();
 
   dateInput.value = todayStr();
-  renderAll();
+  updatePreview();
+
+  onValue(ref(fbDb, 'sessions'), snap => {
+    sessionsMap = snap.val() || {};
+    sessionsLoadedOnce = true;
+    renderAll();
+  });
+  onValue(ref(fbDb, 'payments'), snap => {
+    paymentsMap = snap.val() || {};
+    paymentsLoadedOnce = true;
+    renderAll();
+  });
 </script>
 </body>
 </html>
