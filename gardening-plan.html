@@ -1644,9 +1644,10 @@
 
   // returns tasks placed on a specific date: fixed weekday(s) if set, plus any auto-balanced day(s)
   function getTasksForDay(d) {
+    const thisDateKey = dateKey(d);
+    if (history[thisDateKey]) return history[thisDateKey]; // a completed week is frozen forever, never recomputed
     const monthIdx = d.getMonth();
     const weekdayIdx = d.getDay();
-    const thisDateKey = dateKey(d);
     const items = [];
     const auto = getAutoAssignments();
     tasks.forEach(t => {
@@ -2590,6 +2591,35 @@
     addExtraOccurrence(taskId, scheduleId, toDate);
   }
 
+  // ---- Permanent weekly history: once a work week (Sun-Thu) is over, its Gantt is frozen forever —
+  // future edits to tasks/schedules can never retroactively change what a past date shows again.
+  // history[dateKey] = frozen item list for that date; frozenWeeks[sundayKey] marks a week as done.
+  let history = {};
+  let frozenWeeks = {};
+  const HISTORY_START_DATE = new Date(2026, 8, 1); // beginning of September 2026, per explicit instruction
+  function weekStartOf(d) {
+    const sunday = new Date(d);
+    sunday.setHours(0, 0, 0, 0);
+    sunday.setDate(sunday.getDate() - sunday.getDay());
+    return sunday;
+  }
+  function freezeCompletedWeeks() {
+    const currentWeekStart = weekStartOf(new Date());
+    let changed = false;
+    for (let ws = weekStartOf(HISTORY_START_DATE); ws < currentWeekStart; ws.setDate(ws.getDate() + 7)) {
+      const wsKey = dateKey(ws);
+      if (frozenWeeks[wsKey]) continue;
+      for (let i = 0; i < 5; i++) { // Sunday..Thursday
+        const d = new Date(ws);
+        d.setDate(d.getDate() + i);
+        history[dateKey(d)] = getTasksForDay(d);
+      }
+      frozenWeeks[wsKey] = true;
+      changed = true;
+    }
+    if (changed) pushCloudData();
+  }
+
   // ---- Weed-whacking "done / not done" checklist status (separate from the free-text appendix content) ----
   let weedwhackStatus = {};
   function saveWeedwhackStatus() { pushCloudData(); }
@@ -2639,7 +2669,7 @@
     if (!isEditor) return false;
     // read from the cached Hebrew source-of-truth map, never live DOM — the DOM may currently be
     // showing the Arabic display version, which must never be written back as if it were Hebrew
-    backupThenSetData({ tasks, attendance, expenses, appendixOverrides: appendixHeHtml, weedwhackStatus, skippedOccurrences, extraOccurrences });
+    backupThenSetData({ tasks, attendance, expenses, appendixOverrides: appendixHeHtml, weedwhackStatus, skippedOccurrences, extraOccurrences, history, frozenWeeks });
     return true;
   }
 
@@ -2699,12 +2729,15 @@
       weedwhackStatus = val.weedwhackStatus || {};
       skippedOccurrences = val.skippedOccurrences || {};
       extraOccurrences = val.extraOccurrences || {};
+      history = val.history || {};
+      frozenWeeks = val.frozenWeeks || {};
       if (val.appendixOverrides) {
         Object.assign(appendixHeHtml, val.appendixOverrides);
       }
       tasks = mergeNewSeedItems(applyZoneRenames(migrateTasks(val.tasks || [])));
     } else {
       attendance = {}; expenses = []; weedwhackStatus = {}; skippedOccurrences = {}; extraOccurrences = {};
+      history = {}; frozenWeeks = {};
       tasks = buildSeedTasks();
     }
     cloudHasRealData = !!(val && val.tasks && val.tasks.some(x => x.schedules && x.schedules.length));
@@ -2719,6 +2752,7 @@
     });
     applyAppendixLang(); // re-apply for the current display language — cloud data can arrive after the initial render
     if (repairedAppendix) pushCloudData(); // persist the correction (no-ops for a viewer without edit rights)
+    freezeCompletedWeeks(); // lock in any newly-completed work week (no-ops for a viewer without edit rights)
     checkLegacyImportBanner();
     renderAll();
     if (!val) pushCloudData(); // first-ever load with an empty database: seed the shared baseline if we're allowed to
