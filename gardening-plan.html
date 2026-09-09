@@ -218,7 +218,7 @@
       header, header *, #view-weekly, #view-weekly * { visibility: visible; }
       header { margin-bottom: 12px; }
       #header-controls, #legacy-import-banner, #editors-panel, #stats-card, #tabs-card,
-      #week-prev-btn, #week-next-btn, #week-today-btn, #week-print-btn,
+      #week-prev-btn, #week-next-btn, #week-today-btn, #week-print-btn, #week-lock-btn,
       .postpone-btn, .edit-day-task-btn, .add-day-task-btn, .attendance-row,
       .ref-list-card { display: none !important; }
       #view-weekly { position: absolute; top: 130px; right: 0; left: 0; width: 100%; }
@@ -1877,9 +1877,14 @@
     const dateFmt = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric' });
     const dateFmtFull = d => d.toLocaleDateString('he-IL', { day:'numeric', month:'numeric', year:'numeric' });
 
+    const weekStartKey = dateKey(days[0]);
+    const isWeekFrozen = !!frozenWeeks[weekStartKey];
     let html = `<div class="card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
       <h3 style="margin-bottom:0;">${dateFmtFull(days[0])} – ${dateFmtFull(days[6])}</h3>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+        ${isWeekFrozen
+          ? `<span style="font-size:14px;color:var(--ink-light);">🔒 שבוע זה שמור בהיסטוריה</span>`
+          : `<button class="btn-secondary" id="week-lock-btn" type="button">🔒 קיבוע השבוע להיסטוריה</button>`}
         <button class="btn-secondary" id="week-prev-btn" type="button">▶</button>
         <button class="btn-secondary" id="week-today-btn" type="button">${t('thisWeekBtn')}</button>
         <button class="btn-secondary" id="week-next-btn" type="button">◀</button>
@@ -1928,6 +1933,14 @@
       btn.addEventListener('click', () => openQuickAddModal(btn.dataset.date));
     });
 
+    if ($('week-lock-btn')) {
+      $('week-lock-btn').addEventListener('click', () => {
+        if (!requireEditorOrAlert()) return;
+        const isPast = days[4] < new Date(new Date().setHours(0,0,0,0)); // Thursday of this week already passed?
+        if (!isPast && !confirm('השבוע הזה עדיין לא הסתיים. לקבע אותו להיסטוריה בכל זאת, לפי המצב כרגע?')) return;
+        if (freezeWeek(days[0])) { pushCloudData(); alert('השבוע נשמר להיסטוריה לצמיתות.'); renderWeeklyGantt(); }
+      });
+    }
     $('week-prev-btn').addEventListener('click', () => { selectedWeekOffset--; renderWeeklyGantt(); });
     $('week-next-btn').addEventListener('click', () => { selectedWeekOffset++; renderWeeklyGantt(); });
     $('week-today-btn').addEventListener('click', () => { selectedWeekOffset = 0; renderWeeklyGantt(); });
@@ -2603,19 +2616,23 @@
     sunday.setDate(sunday.getDate() - sunday.getDay());
     return sunday;
   }
+  // freezes one specific week (its Sunday) in-memory; returns false if it was already frozen
+  function freezeWeek(ws) {
+    const wsKey = dateKey(ws);
+    if (frozenWeeks[wsKey]) return false;
+    for (let i = 0; i < 5; i++) { // Sunday..Thursday
+      const d = new Date(ws);
+      d.setDate(d.getDate() + i);
+      history[dateKey(d)] = getTasksForDay(d);
+    }
+    frozenWeeks[wsKey] = true;
+    return true;
+  }
   function freezeCompletedWeeks() {
     const currentWeekStart = weekStartOf(new Date());
     let changed = false;
     for (let ws = weekStartOf(HISTORY_START_DATE); ws < currentWeekStart; ws.setDate(ws.getDate() + 7)) {
-      const wsKey = dateKey(ws);
-      if (frozenWeeks[wsKey]) continue;
-      for (let i = 0; i < 5; i++) { // Sunday..Thursday
-        const d = new Date(ws);
-        d.setDate(d.getDate() + i);
-        history[dateKey(d)] = getTasksForDay(d);
-      }
-      frozenWeeks[wsKey] = true;
-      changed = true;
+      if (freezeWeek(ws)) changed = true;
     }
     if (changed) pushCloudData();
   }
