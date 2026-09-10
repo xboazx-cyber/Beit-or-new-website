@@ -196,6 +196,15 @@
     }
     #quickadd-modal-overlay.open { display: flex; }
     #quickadd-modal { background: white; border-radius: 14px; padding: 24px; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto; margin: auto; }
+    #daynotes-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(20,30,15,.4); z-index: 500;
+      align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
+    }
+    #daynotes-modal-overlay.open { display: flex; }
+    #daynotes-modal { background: white; border-radius: 14px; padding: 24px; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto; margin: auto; }
+    .day-notes-btn { width: 100%; background: none; border: 1px dashed var(--border); border-radius: 6px; color: var(--ink-light); font-size: 12px; padding: 5px; cursor: pointer; margin-top: 4px; }
+    .day-notes-btn:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-light); }
+    .day-notes-btn.has-notes { border-style: solid; border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
     #report-modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(20,30,15,.4); z-index: 500;
       align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
@@ -603,6 +612,20 @@
   </div>
 </div>
 
+<div id="daynotes-modal-overlay">
+  <div id="daynotes-modal">
+    <h2 id="daynotes-title">הערות ליום</h2>
+    <div class="field" style="margin-bottom:0;">
+      <label for="daynotes-text" id="daynotes-text-label">מה נעשה בפועל היום</label>
+      <textarea id="daynotes-text" rows="5" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Assistant',sans-serif;font-size:16px;resize:vertical;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" id="daynotes-save-btn" type="button">שמירה</button>
+      <button class="btn-secondary" id="daynotes-cancel-btn" type="button">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <div id="report-modal-overlay">
   <div id="report-modal">
     <h2 id="report-modal-title">⚠️ דיווח על מפגע</h2>
@@ -892,7 +915,7 @@
       filterZoneAll: 'כל האזורים', filterMonthAll: 'כל החודשים',
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
       attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
-      postponeTitle: 'דחיית ביצוע לשבוע הבא', addTaskHereBtn: '+ הוספת משימה ליום זה',
+      postponeTitle: 'דחיית ביצוע לשבוע הבא', addTaskHereBtn: '+ הוספת משימה ליום זה', dayNotesBtn: 'הערות',
       quickAddTitle: 'הוספת משימה קיימת ליום זה', quickAddTaskLabel: 'משימה', quickAddHoursLabel: 'שעות', quickAddWorkersLabel: "מס' עובדים", printPdfBtn: '🖨️ ייצוא PDF',
       reportIssueBtn: '⚠️ דיווח על מפגע', reportModalTitle: '⚠️ דיווח על מפגע', reportTextLabel: 'מהות הבעיה', reportAddressLabel: 'כתובת / מיקום',
       reportPhotoLabel: 'תמונה (אופציונלי)', reportSubmitBtn: 'שליחת דיווח', reportFillTextAlert: 'נא לתאר את הבעיה', reportSuccessAlert: 'הדיווח נשלח, תודה!',
@@ -931,7 +954,7 @@
       filterZoneAll: 'كل المناطق', filterMonthAll: 'كل الأشهر',
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
       attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
-      postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم', addTaskHereBtn: '+ إضافة مهمة لهذا اليوم',
+      postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم', addTaskHereBtn: '+ إضافة مهمة لهذا اليوم', dayNotesBtn: 'ملاحظات',
       quickAddTitle: 'إضافة مهمة قائمة إلى هذا اليوم', quickAddTaskLabel: 'المهمة', quickAddHoursLabel: 'ساعات', quickAddWorkersLabel: 'عدد العمال', printPdfBtn: '🖨️ تصدير PDF',
       reportIssueBtn: '⚠️ الإبلاغ عن مشكلة', reportModalTitle: '⚠️ الإبلاغ عن مشكلة', reportTextLabel: 'وصف المشكلة', reportAddressLabel: 'العنوان / الموقع',
       reportPhotoLabel: 'صورة (اختياري)', reportSubmitBtn: 'إرسال البلاغ', reportFillTextAlert: 'يرجى وصف المشكلة', reportSuccessAlert: 'تم إرسال البلاغ، شكرًا!',
@@ -1645,7 +1668,9 @@
   // returns tasks placed on a specific date: fixed weekday(s) if set, plus any auto-balanced day(s)
   function getTasksForDay(d) {
     const thisDateKey = dateKey(d);
-    if (history[thisDateKey]) return history[thisDateKey]; // a completed week is frozen forever, never recomputed
+    // a completed week is frozen forever, never recomputed; old frozen weeks stored a plain items array
+    // (before day notes existed) — keep reading those correctly alongside the newer {items, notes} shape
+    if (history[thisDateKey]) return Array.isArray(history[thisDateKey]) ? history[thisDateKey] : history[thisDateKey].items;
     const monthIdx = d.getMonth();
     const weekdayIdx = d.getDay();
     const items = [];
@@ -1724,6 +1749,10 @@
   }
   let attendance = {};
   function saveAttendance() { pushCloudData(); }
+  // free-text notes per date ("what actually got done today") — live/editable day to day, then baked
+  // permanently into history when that week is frozen (see freezeWeek/unlockWeekForEditing)
+  let dailyNotes = {};
+  function saveDailyNotes() { pushCloudData(); }
   function capacityLineHtml(dow, items) {
     const capacity = capacityForDay(dow);
     // outsourced work is done by an external contractor, not the in-house crew, so it doesn't count against capacity
@@ -1929,6 +1958,8 @@
         html += `</div>`;
         html += `<button type="button" class="add-day-task-btn" data-date="${dateKey(d)}">${t('addTaskHereBtn')}</button>`;
         html += attendanceSelectHtml(dateKey(d));
+        const hasNotes = !!notesForDay(dateKey(d));
+        html += `<button type="button" class="day-notes-btn${hasNotes ? ' has-notes' : ''}" data-date="${dateKey(d)}">📝 ${t('dayNotesBtn')}${hasNotes ? ' ✓' : ''}</button>`;
       }
       html += `</div>`;
     });
@@ -1939,6 +1970,9 @@
     wireDayDragAndDrop(container);
     container.querySelectorAll('.add-day-task-btn').forEach(btn => {
       btn.addEventListener('click', () => openQuickAddModal(btn.dataset.date));
+    });
+    container.querySelectorAll('.day-notes-btn').forEach(btn => {
+      btn.addEventListener('click', () => openDayNotesModal(btn.dataset.date));
     });
 
     if ($('week-lock-btn')) {
@@ -2188,6 +2222,29 @@
     task.schedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'once', hours, workers, months: [], weekday: '', date: quickAddDate });
     saveTasks(tasks);
     closeQuickAddModal();
+    renderAll();
+  });
+
+  // ---- Day notes: free text per date, editable while its week is live, frozen into history once locked ----
+  let dayNotesDate = null;
+  function openDayNotesModal(dateStr) {
+    dayNotesDate = dateStr;
+    $('daynotes-title').textContent = t('dayNotesBtn') + ' — ' + dateStr;
+    $('daynotes-text').value = notesForDay(dateStr);
+    const editable = isEditor && !history[dateStr];
+    $('daynotes-text').disabled = !editable;
+    $('daynotes-save-btn').style.display = editable ? 'inline-block' : 'none';
+    $('daynotes-modal-overlay').classList.add('open');
+  }
+  function closeDayNotesModal() { $('daynotes-modal-overlay').classList.remove('open'); dayNotesDate = null; }
+  $('daynotes-cancel-btn').addEventListener('click', closeDayNotesModal);
+  $('daynotes-modal-overlay').addEventListener('click', (e) => { if (e.target.id === 'daynotes-modal-overlay') closeDayNotesModal(); });
+  $('daynotes-save-btn').addEventListener('click', () => {
+    if (!requireEditorOrAlert()) return;
+    if (!dayNotesDate) return;
+    dailyNotes[dayNotesDate] = $('daynotes-text').value.trim();
+    saveDailyNotes();
+    closeDayNotesModal();
     renderAll();
   });
 
@@ -2641,21 +2698,30 @@
     for (let i = 0; i < 5; i++) { // Sunday..Thursday
       const d = new Date(ws);
       d.setDate(d.getDate() + i);
-      history[dateKey(d)] = getTasksForDay(d);
+      const dk = dateKey(d);
+      history[dk] = { items: getTasksForDay(d), notes: dailyNotes[dk] || '' };
     }
     frozenWeeks[dateKey(ws)] = true;
   }
-  // reopens an already-frozen week for editing: its dates go back to live computation (so the normal
-  // drag/postpone/attendance tools work on them again), and — critically — the automatic freezer below
-  // will leave it alone (any truthy value, including 'editing', is skipped) until manually re-locked
+  // reopens an already-frozen week for editing: its dates (and their notes) go back to live/editable state
+  // (so the normal drag/postpone/attendance/notes tools work on them again), and — critically — the
+  // automatic freezer below will leave it alone (any truthy value, including 'editing', is skipped)
+  // until manually re-locked
   function unlockWeekForEditing(ws) {
     for (let i = 0; i < 5; i++) {
       const d = new Date(ws);
       d.setDate(d.getDate() + i);
-      delete history[dateKey(d)];
+      const dk = dateKey(d);
+      if (history[dk]) dailyNotes[dk] = history[dk].notes || '';
+      delete history[dk];
     }
     frozenWeeks[dateKey(ws)] = 'editing';
     pushCloudData();
+  }
+  // notes for a date: the frozen copy wins once its week is locked, exactly like getTasksForDay's items
+  function notesForDay(dk) {
+    if (!history[dk]) return dailyNotes[dk] || '';
+    return Array.isArray(history[dk]) ? '' : (history[dk].notes || '');
   }
   function freezeCompletedWeeks() {
     const currentWeekStart = weekStartOf(new Date());
@@ -2717,7 +2783,7 @@
     if (!isEditor) return false;
     // read from the cached Hebrew source-of-truth map, never live DOM — the DOM may currently be
     // showing the Arabic display version, which must never be written back as if it were Hebrew
-    backupThenSetData({ tasks, attendance, expenses, appendixOverrides: appendixHeHtml, weedwhackStatus, skippedOccurrences, extraOccurrences, history, frozenWeeks });
+    backupThenSetData({ tasks, attendance, expenses, appendixOverrides: appendixHeHtml, weedwhackStatus, skippedOccurrences, extraOccurrences, history, frozenWeeks, dailyNotes });
     return true;
   }
 
@@ -2779,13 +2845,14 @@
       extraOccurrences = val.extraOccurrences || {};
       history = val.history || {};
       frozenWeeks = val.frozenWeeks || {};
+      dailyNotes = val.dailyNotes || {};
       if (val.appendixOverrides) {
         Object.assign(appendixHeHtml, val.appendixOverrides);
       }
       tasks = mergeNewSeedItems(applyZoneRenames(migrateTasks(val.tasks || [])));
     } else {
       attendance = {}; expenses = []; weedwhackStatus = {}; skippedOccurrences = {}; extraOccurrences = {};
-      history = {}; frozenWeeks = {};
+      history = {}; frozenWeeks = {}; dailyNotes = {};
       tasks = buildSeedTasks();
     }
     cloudHasRealData = !!(val && val.tasks && val.tasks.some(x => x.schedules && x.schedules.length));
