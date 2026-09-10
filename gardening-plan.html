@@ -205,6 +205,10 @@
     .day-notes-btn { width: 100%; background: none; border: 1px dashed var(--border); border-radius: 6px; color: var(--ink-light); font-size: 12px; padding: 5px; cursor: pointer; margin-top: 4px; }
     .day-notes-btn:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-light); }
     .day-notes-btn.has-notes { border-style: solid; border-color: var(--amber); color: var(--amber); background: var(--amber-light); }
+    .day-notes-display {
+      background: var(--amber-light); border-radius: 6px; padding: 6px 8px; margin-top: 4px;
+      font-size: 12px; color: var(--ink); white-space: pre-wrap; word-break: break-word;
+    }
     #report-modal-overlay {
       display: none; position: fixed; inset: 0; background: rgba(20,30,15,.4); z-index: 500;
       align-items: center; justify-content: center; padding: 20px; overflow-y: auto;
@@ -228,12 +232,13 @@
       header { margin-bottom: 12px; }
       #header-controls, #legacy-import-banner, #editors-panel, #stats-card, #tabs-card,
       #week-prev-btn, #week-next-btn, #week-today-btn, #week-print-btn, #week-lock-btn, #week-unlock-btn,
-      .postpone-btn, .edit-day-task-btn, .add-day-task-btn, .attendance-row,
+      .postpone-btn, .edit-day-task-btn, .add-day-task-btn, .day-notes-btn, .attendance-row,
       .ref-list-card { display: none !important; }
       #view-weekly { position: absolute; top: 130px; right: 0; left: 0; width: 100%; }
       .week-days-grid { grid-template-columns: repeat(7, 1fr) !important; gap: 6px !important; }
       .day-col { break-inside: avoid; border: 1px solid #999 !important; background: var(--card) !important; }
       .day-task-item { padding-left: 8px !important; }
+      .day-notes-display { font-size: 14px; }
       .card { box-shadow: none !important; }
     }
   </style>
@@ -1958,8 +1963,9 @@
         html += `</div>`;
         html += `<button type="button" class="add-day-task-btn" data-date="${dateKey(d)}">${t('addTaskHereBtn')}</button>`;
         html += attendanceSelectHtml(dateKey(d));
-        const hasNotes = !!notesForDay(dateKey(d));
-        html += `<button type="button" class="day-notes-btn${hasNotes ? ' has-notes' : ''}" data-date="${dateKey(d)}">📝 ${t('dayNotesBtn')}${hasNotes ? ' ✓' : ''}</button>`;
+        const dayNoteText = notesForDay(dateKey(d));
+        if (dayNoteText) html += `<div class="day-notes-display">📝 ${escapeHtml(dayNoteText)}</div>`;
+        html += `<button type="button" class="day-notes-btn${dayNoteText ? ' has-notes' : ''}" data-date="${dateKey(d)}">${dayNoteText ? '✏️' : '📝'} ${t('dayNotesBtn')}</button>`;
       }
       html += `</div>`;
     });
