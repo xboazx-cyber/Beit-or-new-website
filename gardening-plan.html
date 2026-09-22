@@ -1674,8 +1674,13 @@
   function getTasksForDay(d) {
     const thisDateKey = dateKey(d);
     // a completed week is frozen forever, never recomputed; old frozen weeks stored a plain items array
-    // (before day notes existed) — keep reading those correctly alongside the newer {items, notes} shape
-    if (history[thisDateKey]) return Array.isArray(history[thisDateKey]) ? history[thisDateKey] : history[thisDateKey].items;
+    // (before day notes existed) — keep reading those correctly alongside the newer {items, notes} shape.
+    // Firebase silently drops a field entirely when it's an empty array, so a day with zero scheduled
+    // tasks ends up with no .items key at all once round-tripped through the database — default to [].
+    if (history[thisDateKey]) {
+      const h = history[thisDateKey];
+      return Array.isArray(h) ? h : (h.items || []);
+    }
     const monthIdx = d.getMonth();
     const weekdayIdx = d.getDay();
     const items = [];
