@@ -2782,12 +2782,27 @@
 
   // the ONE place that writes to /data — every write here backs up whatever the server currently
   // has BEFORE overwriting it, so any bad write (a bug, a mistake, a wrong restore) can always be undone
+  // Firebase rejects any write containing a literal `undefined` anywhere inside it (throws synchronously,
+  // blocking the whole save) — and reading back a field that was previously null/omitted naturally produces
+  // `undefined` in JS (the key is just missing), so old data can silently reintroduce this on its own.
+  // Recursively replacing undefined with null makes every write immune to this regardless of where it
+  // came from, instead of chasing each specific field that happened to trigger it.
+  function sanitizeForFirebase(v) {
+    if (Array.isArray(v)) return v.map(sanitizeForFirebase);
+    if (v && typeof v === 'object') {
+      const out = {};
+      for (const k in v) out[k] = sanitizeForFirebase(v[k]);
+      return out;
+    }
+    return v === undefined ? null : v;
+  }
   function backupThenSetData(newData) {
     if (lastSyncedSnapshot) {
-      set(ref(fbDb, 'backups/' + Date.now()), lastSyncedSnapshot);
-      pruneOldBackups();
+      // a failed backup must never block the real save — it's a safety net, not a gate
+      try { set(ref(fbDb, 'backups/' + Date.now()), sanitizeForFirebase(lastSyncedSnapshot)); pruneOldBackups(); }
+      catch (e) { console.error('backup snapshot failed, continuing with the real save anyway', e); }
     }
-    set(ref(fbDb, 'data'), newData);
+    set(ref(fbDb, 'data'), sanitizeForFirebase(newData));
   }
 
   function pushCloudData() {
