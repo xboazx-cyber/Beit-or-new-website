@@ -22,6 +22,7 @@
       --amber: #b8860b; --amber-light: #fbeecb;
       --border: #e0e8da; --danger: #dc2626; --danger-light: #fde8e8;
       --pink: #c2185b; --pink-light: #f9cee0; --pink-pale: #fdf1f6;
+      --turquoise: #00897b; --turquoise-light: #d7f3f0;
       --peach: #ffab76; --peach-dark: #7a3b12; --peach-light: #ffead9;
       --danger-soft: #ef5350;
     }
@@ -108,6 +109,8 @@
     .day-task-item .dt-meta { color: var(--ink-light); font-size: 13px; }
     .day-task-item.outsourced { background: var(--pink-light); }
     .day-task-item.outsourced .dt-name { color: var(--pink); }
+    .day-task-item.community-work { background: var(--turquoise-light); }
+    .day-task-item.community-work .dt-name { color: var(--turquoise); }
     .postpone-btn, .edit-day-task-btn { position: absolute; top: 3px; background: none; border: none; color: var(--ink-light); font-size: 12px; line-height: 1; cursor: pointer; padding: 2px 4px; border-radius: 4px; }
     .postpone-btn { left: 3px; }
     .edit-day-task-btn { left: 22px; }
@@ -157,6 +160,10 @@
     tr.outsourced-row { border-right: 5px solid var(--pink); }
     tr.outsourced-row .task-name { color: var(--pink); font-weight: 700; }
     tr.outsourced-row.missing-data { background: linear-gradient(90deg, var(--pink-light), var(--amber-light)) !important; }
+    .community-work-row { background: var(--turquoise-light) !important; }
+    tr.community-work-row { border-right: 5px solid var(--turquoise); }
+    tr.community-work-row .task-name { color: var(--turquoise); font-weight: 700; }
+    tr.community-work-row.missing-data { background: linear-gradient(90deg, var(--turquoise-light), var(--amber-light)) !important; }
     .task-name { font-weight: 500; }
     .task-notes { font-size: 14px; color: var(--ink-light); margin-top: 2px; }
     .schedule-summary-line-wrap { margin-bottom: 10px; }
@@ -533,6 +540,11 @@
     <div class="field">
       <label class="month-chip" style="display:inline-flex;width:auto;padding:8px 14px;">
         <input type="checkbox" id="f-outsourced" style="width:auto;"> <span id="f-outsourced-label">מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)</span>
+      </label>
+    </div>
+    <div class="field">
+      <label class="month-chip" style="display:inline-flex;width:auto;padding:8px 14px;">
+        <input type="checkbox" id="f-community-work" style="width:auto;"> <span id="f-community-work-label">משימה חיצונית — נוער הישוב (יופיע בגאנט בצבע טורקיז)</span>
       </label>
     </div>
 
@@ -919,13 +931,13 @@
       statCount: 'סה"כ משימות', statHours: 'שעות בשנה', statMissing: 'חסרים נתונים',
       filterZoneAll: 'כל האזורים', filterMonthAll: 'כל החודשים',
       nextWeek: 'שבוע הבא', monthLabel: 'חודש', capacityFmt: (p,c) => `מתוכנן: ${p} ש׳ / קיבולת: ${c} ש׳`,
-      attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', satShort: 'שבת', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
+      attendanceLabel: 'מס\' פועלים שהגיעו בפועל:', satNoWork: '🕯️ שבת — אין עבודה', friNoWork: 'אין עבודה ביום שישי', satShort: 'שבת', friShort: 'שישי', estimated: 'משוער', thisWeekBtn: 'השבוע הנוכחי',
       postponeTitle: 'דחיית ביצוע לשבוע הבא', addTaskHereBtn: '+ הוספת משימה ליום זה', dayNotesBtn: 'הערות',
       quickAddTitle: 'הוספת משימה קיימת ליום זה', quickAddTaskLabel: 'משימה', quickAddHoursLabel: 'שעות', quickAddWorkersLabel: "מס' עובדים", printPdfBtn: '🖨️ ייצוא PDF',
       reportIssueBtn: '⚠️ דיווח על מפגע', reportModalTitle: '⚠️ דיווח על מפגע', reportTextLabel: 'מהות הבעיה', reportAddressLabel: 'כתובת / מיקום',
       reportPhotoLabel: 'תמונה (אופציונלי)', reportSubmitBtn: 'שליחת דיווח', reportFillTextAlert: 'נא לתאר את הבעיה', reportSuccessAlert: 'הדיווח נשלח, תודה!',
       reportSubmitFailedAlert: 'שליחת הדיווח נכשלה, נסו שוב', reportInvalidImageAlert: 'קובץ לא תקין, נא לבחור תמונה', reportImageTooBigAlert: 'התמונה גדולה מדי, נסו תמונה קטנה יותר',
-      hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני',
+      hoursShort: 'ש׳', noTasks: '—', onceAYear: 'פעם בשנה', outsourcedTag: 'קבלן חיצוני', communityWorkTag: 'נוער הישוב',
       yearlyHeader: 'משימות שנתיות רלוונטיות לתקופה זו (לתאם יום ידנית)',
       asneededHeader: 'משימות "לפי צורך" (ללא לוח זמנים קבוע — לא ניתנות לשיבוץ)',
       emptyMsg: 'אין משימות כאלה',
@@ -935,7 +947,7 @@
       noFixedMonths: 'ללא חודשים קבועים',
       modalAddTitle: 'הוספת משימה', modalEditTitle: 'עריכת משימה: ', zoneLabel: 'אזור ראשי', zoneNewLabel: 'או הזן אזור חדש',
       zoneNewPh: 'השאר ריק אם בחרת אזור קיים למעלה', nameLabel: 'שם המשימה / תת-אזור', namePh: 'לדוגמה: תפעול בריכה',
-      notesLabel: 'הערות', notesPh: 'לדוגמה: לפני פתיחת שנת הלימודים', outsourcedLabel: 'מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)',
+      notesLabel: 'הערות', notesPh: 'לדוגמה: לפני פתיחת שנת הלימודים', outsourcedLabel: 'מבוצע על ידי קבלן חיצוני (יופיע בגאנט בצבע ורוד)', communityWorkLabel: 'משימה חיצונית — נוער הישוב (יופיע בגאנט בצבע טורקיז)',
       schedulesTitle: 'לוחות זמנים', schedulesDesc: 'משימה יכולה להתנהל בכמה קצבים שונים — למשל שבועי בקיץ, וכל 3 שבועות בשאר השנה. הוסף לוח זמנים נפרד לכל קצב.',
       addScheduleBtn: '+ הוספת לוח זמנים', noSchedulesYet: 'אין לוחות זמנים עדיין — לחץ "הוספת לוח זמנים"',
       saveBtn: 'שמירה', cancelBtn: 'ביטול', deleteTaskBtn: 'מחיקת משימה', zonePick: '— בחר —', weekdayNone: '— ללא —',
@@ -958,13 +970,13 @@
       statCount: 'إجمالي المهام', statHours: 'ساعات في السنة', statMissing: 'بيانات ناقصة',
       filterZoneAll: 'كل المناطق', filterMonthAll: 'كل الأشهر',
       nextWeek: 'الأسبوع القادم', monthLabel: 'الشهر', capacityFmt: (p,c) => `المخطط: ${p} س / الطاقة: ${c} س`,
-      attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
+      attendanceLabel: 'عدد العمال الذين حضروا فعليًا:', satNoWork: '🕯️ السبت — لا عمل', friNoWork: 'لا عمل يوم الجمعة', satShort: 'السبت', estimated: 'تقديري', thisWeekBtn: 'الأسبوع الحالي',
       postponeTitle: 'تأجيل التنفيذ إلى الأسبوع القادم', addTaskHereBtn: '+ إضافة مهمة لهذا اليوم', dayNotesBtn: 'ملاحظات',
       quickAddTitle: 'إضافة مهمة قائمة إلى هذا اليوم', quickAddTaskLabel: 'المهمة', quickAddHoursLabel: 'ساعات', quickAddWorkersLabel: 'عدد العمال', printPdfBtn: '🖨️ تصدير PDF',
       reportIssueBtn: '⚠️ الإبلاغ عن مشكلة', reportModalTitle: '⚠️ الإبلاغ عن مشكلة', reportTextLabel: 'وصف المشكلة', reportAddressLabel: 'العنوان / الموقع',
       reportPhotoLabel: 'صورة (اختياري)', reportSubmitBtn: 'إرسال البلاغ', reportFillTextAlert: 'يرجى وصف المشكلة', reportSuccessAlert: 'تم إرسال البلاغ، شكرًا!',
       reportSubmitFailedAlert: 'فشل إرسال البلاغ، حاول مرة أخرى', reportInvalidImageAlert: 'ملف غير صالح، يرجى اختيار صورة', reportImageTooBigAlert: 'الصورة كبيرة جدًا، جرّب صورة أصغر',
-      hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي',
+      hoursShort: 'س', noTasks: '—', onceAYear: 'مرة في السنة', outsourcedTag: 'مقاول خارجي', communityWorkTag: 'شباب القرية',
       yearlyHeader: 'مهام سنوية ذات صلة بهذه الفترة (يجب تحديد يوم يدويًا)',
       asneededHeader: 'مهام "حسب الحاجة" (بدون جدول ثابت — لا يمكن تحديد موعد لها)',
       emptyMsg: 'لا توجد مهام كهذه',
@@ -974,7 +986,7 @@
       noFixedMonths: 'بدون أشهر ثابتة',
       modalAddTitle: 'إضافة مهمة', modalEditTitle: 'تعديل مهمة: ', zoneLabel: 'المنطقة الرئيسية', zoneNewLabel: 'أو أدخل منطقة جديدة',
       zoneNewPh: 'اترك فارغًا إذا اخترت منطقة قائمة أعلاه', nameLabel: 'اسم المهمة / المنطقة الفرعية', namePh: 'مثال: تشغيل المسبح',
-      notesLabel: 'ملاحظات', notesPh: 'مثال: قبل بدء العام الدراسي', outsourcedLabel: 'يُنفَّذ بواسطة مقاول خارجي (سيظهر في الجدول باللون الوردي)',
+      notesLabel: 'ملاحظات', notesPh: 'مثال: قبل بدء العام الدراسي', outsourcedLabel: 'يُنفَّذ بواسطة مقاول خارجي (سيظهر في الجدول باللون الوردي)', communityWorkLabel: 'مهمة خارجية — شباب القرية (سيظهر في الجدول باللون الفيروزي)',
       schedulesTitle: 'الجداول الزمنية', schedulesDesc: 'يمكن أن تسير المهمة بعدة وتيرات مختلفة — مثلاً أسبوعيًا في الصيف، وكل 3 أسابيع في باقي السنة. أضف جدولًا زمنيًا منفصلًا لكل وتيرة.',
       addScheduleBtn: '+ إضافة جدول زمني', noSchedulesYet: 'لا توجد جداول زمنية بعد — اضغط "إضافة جدول زمني"',
       saveBtn: 'حفظ', cancelBtn: 'إلغاء', deleteTaskBtn: 'حذف المهمة', zonePick: '— اختر —', weekdayNone: '— بدون —',
@@ -1311,6 +1323,7 @@
     $('f-notes-label').textContent = t('notesLabel');
     $('f-notes').placeholder = t('notesPh');
     $('f-outsourced-label').textContent = t('outsourcedLabel');
+    $('f-community-work-label').textContent = t('communityWorkLabel');
     $('f-schedules-title').textContent = t('schedulesTitle');
     $('f-schedules-desc').textContent = t('schedulesDesc');
     $('add-schedule-btn').textContent = t('addScheduleBtn');
@@ -1527,9 +1540,9 @@
     const schedulesHtml = hasSchedules ? t.schedules.map(scheduleLineHtml).join('') : `<span class="no-schedules">${UI[lang].noSchedules}</span>`;
     const monthsHtml = hasSchedules ? t.schedules.map(scheduleMonthsCellHtml).join('') : '';
     return `
-      <tr class="${isMissingData(t) ? 'missing-data' : ''} ${t.outsourced ? 'outsourced-row' : ''}" data-id="${t.id}">
+      <tr class="${isMissingData(t) ? 'missing-data' : ''} ${t.outsourced ? 'outsourced-row' : ''} ${t.communityWork ? 'community-work-row' : ''}" data-id="${t.id}">
         <td>
-          <div class="task-name">${trText(t.name)} ${t.outsourced ? `<span class="weekday-tag">${UI[lang].outsourcedTag}</span>` : ''}</div>
+          <div class="task-name">${trText(t.name)} ${t.outsourced ? `<span class="weekday-tag">${UI[lang].outsourcedTag}</span>` : ''} ${t.communityWork ? `<span class="weekday-tag" style="background:var(--turquoise-light);color:var(--turquoise);">${UI[lang].communityWorkTag}</span>` : ''}</div>
           ${t.notes ? `<div class="task-notes">${trText(t.notes)}</div>` : ''}
         </td>
         <td>${schedulesHtml}</td>
@@ -1629,7 +1642,7 @@
         if (s.interval === 'asneeded' || s.interval === 'year' || s.interval === 'once') return;
         const hasFixedDay = s.weekday !== '' && s.weekday != null;
         const rawLoad = (s.hours != null ? s.hours : 0) * (s.workers != null ? s.workers : 1);
-        const load = t.outsourced ? 0 : rawLoad; // outsourced work doesn't count against in-house capacity
+        const load = (t.outsourced || t.communityWork) ? 0 : rawLoad; // outsourced/community work doesn't count against in-house capacity
         const months = s.months || [];
         const key = t.id + '_' + s.id;
         const totalDays = TIMES_PER_WEEK[s.interval] || 1;
@@ -1691,13 +1704,13 @@
         const key = t.id + '_' + s.id;
         if (s.interval === 'once') {
           if (s.date === thisDateKey) {
-            items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: false, outsourced: t.outsourced, once: true });
+            items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: false, outsourced: t.outsourced, communityWork: t.communityWork, once: true });
           }
           return;
         }
         // a one-time drag-and-drop relocation: show here regardless of the normal weekday pattern
         if ((extraOccurrences[key] || []).includes(thisDateKey)) {
-          items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: false, outsourced: t.outsourced });
+          items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: false, outsourced: t.outsourced, communityWork: t.communityWork });
           return;
         }
         if (!(s.months || []).includes(monthIdx)) return;
@@ -1706,7 +1719,7 @@
         const placedDays = new Set(auto[key] || []);
         if (hasFixedDay) placedDays.add(Number(s.weekday));
         if (placedDays.has(weekdayIdx)) {
-          items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced });
+          items.push({ taskId: t.id, scheduleId: s.id, name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, estimated: !(hasFixedDay && Number(s.weekday) === weekdayIdx), outsourced: t.outsourced, communityWork: t.communityWork });
         }
       });
     });
@@ -1721,7 +1734,7 @@
         if (s.interval !== 'year') return;
         const relevant = days.some(d => (s.months || []).includes(d.getMonth()));
         const key = t.id + '_' + s.id;
-        if (relevant && !seen.has(key)) { seen.add(key); list.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, outsourced: t.outsourced }); }
+        if (relevant && !seen.has(key)) { seen.add(key); list.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, outsourced: t.outsourced, communityWork: t.communityWork }); }
       });
     });
     return list;
@@ -1732,7 +1745,7 @@
     const list = [];
     tasks.forEach(t => {
       (t.schedules || []).forEach(s => {
-        if (s.interval === 'asneeded') list.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, outsourced: t.outsourced });
+        if (s.interval === 'asneeded') list.push({ name: t.name, zone: t.zone, hours: s.hours, workers: s.workers, outsourced: t.outsourced, communityWork: t.communityWork });
       });
     });
     return list;
@@ -1766,7 +1779,7 @@
   function capacityLineHtml(dow, items) {
     const capacity = capacityForDay(dow);
     // outsourced work is done by an external contractor, not the in-house crew, so it doesn't count against capacity
-    const inHouse = items.filter(i => !i.outsourced);
+    const inHouse = items.filter(i => !i.outsourced && !i.communityWork);
     const planned = plannedPersonHours(inHouse);
     const over = planned > capacity;
     let html = `<div class="day-capacity${over ? ' over-capacity' : ''}">${t('capacityFmt')(planned, capacity)}</div>`;
@@ -1870,9 +1883,9 @@
       html += `<p class="empty-msg">${t('emptyMsg')}</p>`;
     } else {
       yearlyRelevant.forEach(item => {
-        html += `<div class="unpinned-list-item${item.outsourced ? ' outsourced-row' : ''}">
+        html += `<div class="unpinned-list-item${item.outsourced ? ' outsourced-row' : ''}${item.communityWork ? ' community-work-row' : ''}">
           <span>${trText(item.name)} <span style="color:var(--ink-light);font-size:12px;">(${trText(item.zone)})</span></span>
-          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag')+' · ' : ''}${t('onceAYear')} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</span>
+          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag')+' · ' : ''}${item.communityWork ? t('communityWorkTag')+' · ' : ''}${t('onceAYear')} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</span>
         </div>`;
       });
     }
@@ -1883,9 +1896,9 @@
       html += `<p class="empty-msg">${t('emptyMsg')}</p>`;
     } else {
       asNeeded.forEach(item => {
-        html += `<div class="unpinned-list-item${item.outsourced ? ' outsourced-row' : ''}">
+        html += `<div class="unpinned-list-item${item.outsourced ? ' outsourced-row' : ''}${item.communityWork ? ' community-work-row' : ''}">
           <span>${trText(item.name)} <span style="color:var(--ink-light);font-size:12px;">(${trText(item.zone)})</span></span>
-          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag') : ''} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</span>
+          <span style="color:var(--ink-light);">${item.outsourced ? t('outsourcedTag') : ''} ${item.communityWork ? t('communityWorkTag') : ''} ${item.hours!=null?'· '+item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</span>
         </div>`;
       });
     }
@@ -1957,10 +1970,10 @@
           html += `<div class="day-empty">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" draggable="${isEditor}" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}${item.communityWork ? ' community-work' : ''}" draggable="${isEditor}" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
               <button type="button" class="edit-day-task-btn" data-task-id="${item.taskId}" title="${t('editTitle')}">✏️</button>
               <button type="button" class="postpone-btn" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}" title="${t('postponeTitle')}">✕</button>
-              <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''}</div>
+              <div class="dt-name">${trText(item.name)} ${item.estimated ? `<span class="weekday-tag" title="${t('estimated')}">${t('estimated')}</span>` : ''} ${item.outsourced ? `<span class="weekday-tag">${t('outsourcedTag')}</span>` : ''} ${item.communityWork ? `<span class="weekday-tag" style="background:var(--turquoise-light);color:var(--turquoise);">${t('communityWorkTag')}</span>` : ''}</div>
               <div class="dt-meta">${item.hours!=null?item.hours+' '+t('hoursShort'):''} ${item.workers!=null?'· '+workersIcon(item.workers)+item.workers:''}</div>
             </div>`;
           });
@@ -2058,7 +2071,7 @@
           html += `<div class="day-empty" style="padding:4px 0;">${t('noTasks')}</div>`;
         } else {
           items.forEach(item => {
-            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}" style="padding:4px 6px;margin-bottom:4px;" draggable="${isEditor}" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
+            html += `<div class="day-task-item${item.outsourced ? ' outsourced' : ''}${item.communityWork ? ' community-work' : ''}" style="padding:4px 6px;margin-bottom:4px;" draggable="${isEditor}" data-task-id="${item.taskId}" data-schedule-id="${item.scheduleId}" data-date="${dateKey(d)}">
               <div class="dt-name" style="font-size:12px;">${trText(item.name)}${item.estimated ? ' 🔹' : ''}</div>
             </div>`;
           });
@@ -2197,6 +2210,7 @@
     $('f-name').value = task ? task.name : '';
     $('f-notes').value = task ? (task.notes || '') : '';
     $('f-outsourced').checked = task ? !!task.outsourced : false;
+    $('f-community-work').checked = task ? !!task.communityWork : false;
     modalSchedules = task ? JSON.parse(JSON.stringify(task.schedules || [])) : [];
     if (modalSchedules.length === 0) {
       modalSchedules.push({ id: 'sch_' + Date.now().toString(36) + Math.random().toString(36).slice(2), interval: 'year', hours: null, workers: null, months: [], weekday: '' });
@@ -2366,6 +2380,7 @@
       zone, name,
       notes: $('f-notes').value.trim(),
       outsourced: $('f-outsourced').checked,
+      communityWork: $('f-community-work').checked,
       schedules: modalSchedules,
     };
 
